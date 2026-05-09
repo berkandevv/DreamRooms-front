@@ -1,34 +1,12 @@
-import { useEffect, useState } from 'react'
-import HeroSearch from './components/HeroSearch'
-import HotelGrid from './components/HotelGrid'
-import Layout from './components/Layout'
-import PartnerCTA from './components/PartnerCTA'
-import { getHotels } from './services/hotelService'
+import { Route, Routes } from 'react-router'
+import HotelDetailPage from './pages/HotelDetailPage'
+import HomePage from './pages/HomePage'
 
 export default function App() {
-  const [hotels, setHotels] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    getHotels()
-      .then((data) => {
-        setHotels(data)
-        setError('')
-      })
-      .catch(() => {
-        setError('No se pudo cargar la lista de hoteles.')
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  }, [])
-
   return (
-    <Layout>
-      <HeroSearch />
-      <HotelGrid error={error} hotels={hotels} isLoading={isLoading} />
-      <PartnerCTA />
-    </Layout>
+    <Routes>
+      <Route element={<HomePage />} path="/" />
+      <Route element={<HotelDetailPage />} path="/hotels/:slug" />
+    </Routes>
   )
 }

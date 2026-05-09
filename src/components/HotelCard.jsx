@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import placeholderImg from '../assets/hero.png'
 
 export default function HotelCard({ hotel }) {
@@ -48,12 +49,12 @@ export default function HotelCard({ hotel }) {
             </p>
           </div>
 
-          <button
-            className="h-10 shrink-0 rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary transition hover:opacity-90"
-            type="button"
+          <Link
+            className="flex h-10 shrink-0 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary transition hover:opacity-90"
+            to={`/hotels/${hotel.slug}`}
           >
             Ver detalles
-          </button>
+          </Link>
         </div>
       </div>
     </article>

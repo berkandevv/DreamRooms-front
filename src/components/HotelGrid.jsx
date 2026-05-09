@@ -36,10 +36,10 @@ export default function HotelGrid({ hotels, isLoading, error }) {
       <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h2 className="text-3xl font-bold text-on-surface">
-            Colección de hoteles
+            Hoteles mejor valorados
           </h2>
           <p className="mt-2 text-secondary">
-            Descubre alojamientos seleccionados para tu próxima escapada.
+            Los alojamientos con mejor puntuación de nuestros viajeros.
           </p>
         </div>
 
