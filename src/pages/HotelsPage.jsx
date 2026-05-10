@@ -109,7 +109,7 @@ export default function HotelsPage() {
         setError('')
       })
       .catch(() => {
-        setError('No se pudo cargar la lista de hoteles.')
+        setError('No se pudo cargar la lista de hoteles!')
       })
       .finally(() => {
         setIsLoading(false)

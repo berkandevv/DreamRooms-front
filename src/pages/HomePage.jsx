@@ -25,7 +25,7 @@ export default function HomePage() {
         setError('')
       })
       .catch(() => {
-        setError('No se pudo cargar la lista de hoteles.')
+        setError('No se pudo cargar la lista de hoteles!')
       })
       .finally(() => {
         setIsLoading(false)
