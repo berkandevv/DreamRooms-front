@@ -143,7 +143,11 @@ export default function HotelDetailPage() {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {hotel.room_types?.map((roomType) => (
-              <RoomTypeCard key={roomType.id} roomType={roomType} />
+              <RoomTypeCard
+                currencySymbol={hotel.currency_symbol}
+                key={roomType.id}
+                roomType={roomType}
+              />
             ))}
           </div>
         </section>

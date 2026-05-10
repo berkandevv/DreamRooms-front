@@ -1,17 +1,25 @@
 import { FaCheck, FaUsers } from 'react-icons/fa'
 import placeholderImg from '../assets/hero.png'
 import { formatServices } from '../utils/formatServices'
+import { formatPrice } from '../utils/formatPrice'
 
-export default function RoomTypeCard({ roomType }) {
+export default function RoomTypeCard({ roomType, currencySymbol }) {
   const imageUrl = roomType.cover_image?.url || placeholderImg
   const imageAlt = roomType.cover_image?.alt_text || roomType.name
+  const price = formatPrice(roomType.base_price, currencySymbol)
   const services = formatServices(roomType.services)
   const servicesText =
     services.length > 0 ? services.join(', ') : 'Servicios no disponibles'
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.10)]">
-      <img alt={imageAlt} className="h-48 w-full object-cover" src={imageUrl} />
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.10)] transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_18px_40px_rgba(19,27,46,0.16)]">
+      <div className="h-48 overflow-hidden">
+        <img
+          alt={imageAlt}
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          src={imageUrl}
+        />
+      </div>
 
       <div className="flex flex-1 flex-col p-5">
         <div>
@@ -46,7 +54,7 @@ export default function RoomTypeCard({ roomType }) {
                 Desde
               </p>
               <p className="mt-1 text-2xl font-bold text-primary">
-                {roomType.base_price || 'Consultar'}
+                {price}
                 <span className="text-base font-normal text-secondary">
                   /noche
                 </span>

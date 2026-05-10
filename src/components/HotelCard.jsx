@@ -1,10 +1,11 @@
 import { Link } from 'react-router'
 import placeholderImg from '../assets/hero.png'
+import { formatPrice } from '../utils/formatPrice'
 
 export default function HotelCard({ hotel }) {
   const city = hotel.location?.city || 'Ciudad no disponible'
   const country = hotel.location?.country || 'País no disponible'
-  const price = hotel.starting_price || 'Consultar'
+  const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
   const rating = hotel.average_rating || 'Nuevo'
   const imageUrl = hotel.cover_image?.url || placeholderImg
   const imageAlt = hotel.cover_image?.alt_text || hotel.name
