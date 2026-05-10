@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FaRegStar, FaStar } from 'react-icons/fa'
+import { useSearchParams } from 'react-router'
 import HotelListCard from '../components/HotelListCard'
 import Layout from '../components/Layout'
 import { getHotels } from '../services/hotelService'
@@ -64,6 +65,42 @@ function normalizeText(text) {
   return text.trim().toLowerCase()
 }
 
+function hotelMatchesSearch(hotel, searchText) {
+  if (!searchText) {
+    return true
+  }
+
+  const normalizedSearch = normalizeText(searchText)
+  const searchableText = [
+    hotel.name,
+    hotel.location?.city,
+    hotel.location?.region,
+    hotel.location?.country,
+  ]
+    .filter(Boolean)
+    .map((value) => normalizeText(value))
+    .join(' ')
+
+  return searchableText.includes(normalizedSearch)
+}
+
+function hotelMatchesCapacity(hotel, adults, children) {
+  if (!adults && !children) {
+    return true
+  }
+
+  if (!hotel.room_types || hotel.room_types.length === 0) {
+    return true
+  }
+
+  return hotel.room_types.some((roomType) => {
+    const adultCapacity = Number(roomType.capacity_adults)
+    const childrenCapacity = Number(roomType.capacity_children)
+
+    return adultCapacity >= adults && childrenCapacity >= children
+  })
+}
+
 function renderStars(rating) {
   const stars = []
 
@@ -84,8 +121,13 @@ function filterHotels(
   selectedRating,
   selectedServices,
   maxPrice,
+  searchText,
+  adults,
+  children,
 ) {
   return hotels.filter((hotel) => {
+    const searchMatches = hotelMatchesSearch(hotel, searchText)
+    const capacityMatches = hotelMatchesCapacity(hotel, adults, children)
     const zoneMatches = selectedZone === 'all' || getHotelZone(hotel) === selectedZone
     const ratingMatches =
       selectedRating === 'all' ||
@@ -101,11 +143,24 @@ function filterHotels(
         return hotelServices.includes(normalizeText(service))
       })
 
-    return zoneMatches && ratingMatches && priceMatches && servicesMatch
+    return (
+      searchMatches &&
+      capacityMatches &&
+      zoneMatches &&
+      ratingMatches &&
+      priceMatches &&
+      servicesMatch
+    )
   })
 }
 
 export default function HotelsPage() {
+  const [searchParams] = useSearchParams()
+  const searchText = searchParams.get('destination') || ''
+  const adults = Number(searchParams.get('adults')) || 0
+  const children = Number(searchParams.get('children')) || 0
+  const checkIn = searchParams.get('check_in') || ''
+  const checkOut = searchParams.get('check_out') || ''
   const [hotels, setHotels] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -140,6 +195,9 @@ export default function HotelsPage() {
     selectedRating,
     selectedServices,
     maxPrice,
+    searchText,
+    adults,
+    children,
   )
   const sortedHotels = sortHotels(filteredHotels, sortBy)
   const totalPages = Math.ceil(sortedHotels.length / HOTELS_PER_PAGE)
@@ -208,6 +266,24 @@ export default function HotelsPage() {
             <p className="mt-2 text-secondary">
               Explora todos los alojamientos disponibles en Dream Rooms
             </p>
+            {(searchText || adults > 0 || children > 0 || checkIn || checkOut) && (
+              <p className="mt-3 text-sm font-semibold text-secondary">
+                Búsqueda:{' '}
+                {searchText && <span>{searchText}</span>}
+                {(adults > 0 || children > 0) && (
+                  <span>
+                    {' '}
+                    · {adults || 0} adultos, {children || 0} niños
+                  </span>
+                )}
+                {(checkIn || checkOut) && (
+                  <span>
+                    {' '}
+                    · {checkIn || 'sin entrada'} - {checkOut || 'sin salida'}
+                  </span>
+                )}
+              </p>
+            )}
           </div>
 
           <label className="flex items-center gap-3 text-sm font-semibold text-secondary">
