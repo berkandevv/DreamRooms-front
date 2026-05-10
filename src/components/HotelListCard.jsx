@@ -38,10 +38,10 @@ export default function HotelListCard({ hotel }) {
           </div>
 
           {services.length > 0 && (
-            <div className="hidden flex-wrap justify-end gap-2 md:flex">
+            <div className="hidden shrink-0 flex-nowrap justify-end gap-2 md:flex">
               {services.map((service) => (
                 <span
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container text-secondary"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-container text-secondary"
                   key={service}
                   title={service}
                 >
