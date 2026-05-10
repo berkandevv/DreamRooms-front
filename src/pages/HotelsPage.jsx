@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { FaRegStar, FaStar } from 'react-icons/fa'
 import HotelListCard from '../components/HotelListCard'
 import Layout from '../components/Layout'
 import { getHotels } from '../services/hotelService'
@@ -63,6 +64,20 @@ function normalizeText(text) {
   return text.trim().toLowerCase()
 }
 
+function renderStars(rating) {
+  const stars = []
+
+  for (let index = 0; index < 5; index += 1) {
+    if (index < Number(rating)) {
+      stars.push(<FaStar className="h-4 w-4 text-[#10B981]" key={index} />)
+    } else {
+      stars.push(<FaRegStar className="h-4 w-4 text-[#10B981]" key={index} />)
+    }
+  }
+
+  return stars
+}
+
 function filterHotels(
   hotels,
   selectedZone,
@@ -94,7 +109,7 @@ export default function HotelsPage() {
   const [hotels, setHotels] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
-  const [sortBy, setSortBy] = useState('recommended')
+  const [sortBy, setSortBy] = useState('rating')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedZone, setSelectedZone] = useState('all')
   const [selectedRating, setSelectedRating] = useState('all')
@@ -202,7 +217,6 @@ export default function HotelsPage() {
               onChange={handleSortChange}
               value={sortBy}
             >
-              <option value="recommended">Recomendados</option>
               <option value="rating">Mejor valoración</option>
               <option value="price">Precio más bajo</option>
             </select>
@@ -287,7 +301,9 @@ export default function HotelsPage() {
                         type="radio"
                         value={rating}
                       />
-                      <span>{rating} o más</span>
+                      <span className="flex items-center gap-1">
+                        {renderStars(rating)}
+                      </span>
                     </label>
                   ))}
                   <label className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-secondary">
