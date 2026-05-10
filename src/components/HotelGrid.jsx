@@ -25,7 +25,7 @@ export default function HotelGrid({ hotels, isLoading, error }) {
     return (
       <section className="mx-auto max-w-7xl px-5 py-10 md:px-8">
         <p className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 text-center text-secondary">
-          No hay hoteles disponibles en este momento.
+          No hay hoteles disponibles en este momento!
         </p>
       </section>
     )
@@ -39,7 +39,7 @@ export default function HotelGrid({ hotels, isLoading, error }) {
             Hoteles mejor valorados
           </h2>
           <p className="mt-2 text-secondary">
-            Los alojamientos con mejor puntuación de nuestros viajeros.
+            Los alojamientos con mejor puntuación de nuestros viajeros
           </p>
         </div>
 

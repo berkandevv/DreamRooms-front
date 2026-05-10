@@ -191,7 +191,7 @@ export default function HotelsPage() {
           <div>
             <h1 className="text-4xl font-bold text-on-surface">Hoteles</h1>
             <p className="mt-2 text-secondary">
-              Explora todos los alojamientos disponibles en Dream Rooms.
+              Explora todos los alojamientos disponibles en Dream Rooms
             </p>
           </div>
 

@@ -60,7 +60,7 @@ export default function RoomTypeCard({ roomType, currencySymbol }) {
                 </span>
               </p>
               <p className="mt-1 text-xs font-semibold text-on-tertiary-container">
-                {roomType.total_units || 0} unidades
+                {roomType.total_units || 0} unidades disponibles
               </p>
             </div>
 

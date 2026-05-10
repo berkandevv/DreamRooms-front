@@ -10,8 +10,10 @@ import {
   FaSwimmingPool,
   FaTshirt,
   FaUtensils,
+  FaCocktail,
   FaWifi,
 } from 'react-icons/fa'
+import { MdFreeBreakfast } from "react-icons/md"
 
 export function getServiceIcon(service, className) {
   const name = service.toLowerCase()
@@ -45,7 +47,11 @@ export function getServiceIcon(service, className) {
   }
 
   if (name.includes('restaurant') || name.includes('restaurante')) {
-    return <FaUtensils className={className} />
+    return <FaCocktail className={className} />
+  }
+
+  if (name.includes('breakfast') || name.includes('desayuno')) {
+    return <MdFreeBreakfast className={className} />
   }
 
   if (name.includes('kitchen') || name.includes('cocina') || name.includes('cocinita') || name.includes('kitchenette')) {
