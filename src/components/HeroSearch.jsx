@@ -16,7 +16,7 @@ export default function HeroSearch() {
             Tu próxima escapada empieza aquí
           </h1>
 
-          <form className="mt-8 grid gap-3 rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-[0_18px_45px_rgba(19,27,46,0.22)] md:grid-cols-[1.3fr_1fr_1fr_1fr_auto] md:rounded-full">
+          <form className="mt-8 grid gap-3 rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-[0_18px_45px_rgba(19,27,46,0.22)] md:grid-cols-[1.3fr_1fr_1fr_0.8fr_0.8fr_auto] md:rounded-full">
             <label className="px-4 py-2 md:border-r md:border-outline-variant">
               <span className="block text-xs font-bold uppercase text-secondary">
                 Dónde vas
@@ -50,12 +50,24 @@ export default function HeroSearch() {
 
             <label className="px-4 py-2 md:border-r md:border-outline-variant">
               <span className="block text-xs font-bold uppercase text-secondary">
-                Personas
+                Adultos
               </span>
               <input
                 className="mt-1 w-full border-0 p-0 text-on-surface outline-none placeholder:text-outline"
                 min="1"
-                placeholder="2 adultos"
+                placeholder="2"
+                type="number"
+              />
+            </label>
+
+            <label className="px-4 py-2 md:border-r md:border-outline-variant">
+              <span className="block text-xs font-bold uppercase text-secondary">
+                Niños
+              </span>
+              <input
+                className="mt-1 w-full border-0 p-0 text-on-surface outline-none placeholder:text-outline"
+                min="0"
+                placeholder="0"
                 type="number"
               />
             </label>
