@@ -33,7 +33,7 @@ export default function HotelDetailPage() {
         setDetail({
           hotel: null,
           isLoading: false,
-          error: 'No se pudo cargar el detalle del hotel.',
+          error: 'No se pudo cargar el detalle del hotel!',
         })
       })
 
@@ -43,7 +43,7 @@ export default function HotelDetailPage() {
         setReviewsError('')
       })
       .catch(() => {
-        setReviewsError('No se pudieron cargar las reseñas.')
+        setReviewsError('No se pudieron cargar las reseñas!')
       })
   }, [slug])
 
