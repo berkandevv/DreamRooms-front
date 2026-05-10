@@ -51,8 +51,8 @@ export function formatServices(services) {
       if (Array.isArray(parsedServices)) {
         return formatServices(parsedServices)
       }
-    } catch {
-
+    } catch (error) {
+      console.warn('Services are not JSON, using comma separated text.', error)
     }
 
     return services
