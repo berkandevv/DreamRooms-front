@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router'
 import HotelDetailPage from './pages/HotelDetailPage'
 import HotelsPage from './pages/HotelsPage'
 import HomePage from './pages/HomePage'
+import RegisterPage from './pages/RegisterPage'
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
       <Route element={<HomePage />} path="/" />
       <Route element={<HotelsPage />} path="/hotels" />
       <Route element={<HotelDetailPage />} path="/hotels/:slug" />
+      <Route element={<RegisterPage />} path="/register" />
     </Routes>
   )
 }
