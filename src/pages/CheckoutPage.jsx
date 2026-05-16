@@ -47,14 +47,36 @@ function getIsoDate(date) {
   return new Date(`${date}T00:00:00Z`).toISOString()
 }
 
-function getTotalPrice(roomType, nights, unitsBooked, currencySymbol) {
+function getBookingAmounts(roomType, hotel, nights, unitsBooked) {
   const basePrice = Number(roomType?.base_price)
+  const taxRate = Number(hotel?.pricing?.tax_rate_percent) || 0
+  const discountRate = Number(hotel?.pricing?.discount_rate_percent) || 0
 
   if (!basePrice || !nights) {
-    return 'Consultar'
+    return {
+      discount: 0,
+      discountRate,
+      subtotal: 0,
+      taxes: 0,
+      taxRate,
+      total: 0,
+    }
   }
 
-  return formatPrice(basePrice * nights * unitsBooked, currencySymbol)
+  const subtotal = basePrice * nights * unitsBooked
+  const discount = subtotal * (discountRate / 100)
+  const taxableAmount = subtotal - discount
+  const taxes = taxableAmount * (taxRate / 100)
+  const total = taxableAmount + taxes
+
+  return {
+    discount,
+    discountRate,
+    subtotal,
+    taxes,
+    taxRate,
+    total,
+  }
 }
 
 export default function CheckoutPage() {
@@ -106,12 +128,9 @@ export default function CheckoutPage() {
   }, [hotel, roomTypeId])
   const nights = getNights(stayData.check_in, stayData.check_out)
   const unitsBooked = Number(stayData.units_booked) || 1
-  const totalPrice = getTotalPrice(
-    roomType,
-    nights,
-    unitsBooked,
-    hotel?.currency_symbol,
-  )
+  const currencySymbol =
+    hotel?.pricing?.currency_symbol || hotel?.currency_symbol || '€'
+  const amounts = getBookingAmounts(roomType, hotel, nights, unitsBooked)
 
   function handleStayChange(event) {
     const { name, value } = event.target
@@ -417,16 +436,35 @@ export default function CheckoutPage() {
                 <SummaryRow label="Habitaciones" value={stayData.units_booked} />
                 <SummaryRow
                   label="Precio base"
-                  value={`${formatPrice(roomType.base_price, hotel.currency_symbol)}/noche`}
+                  value={`${formatPrice(roomType.base_price, currencySymbol)}/noche`}
+                />
+                <SummaryRow
+                  label="Subtotal"
+                  value={formatPrice(amounts.subtotal, currencySymbol)}
+                />
+                {amounts.discount > 0 && (
+                  <SummaryRow
+                    label={`Descuento (${amounts.discountRate}%)`}
+                    value={`-${formatPrice(amounts.discount, currencySymbol)}`}
+                  />
+                )}
+                <SummaryRow
+                  label={`Tasas (${amounts.taxRate}%)`}
+                  value={formatPrice(amounts.taxes, currencySymbol)}
                 />
               </div>
 
               <div className="flex items-end justify-between gap-4">
                 <span className="text-lg font-bold text-primary">Total</span>
                 <span className="text-3xl font-bold text-primary">
-                  {totalPrice}
+                  {formatPrice(amounts.total, currencySymbol)}
                 </span>
               </div>
+
+              <p className="rounded-lg bg-surface-container p-3 text-xs font-semibold text-secondary">
+                Total estimado con las tasas y descuentos configurados por el
+                hotel
+              </p>
 
               <button
                 className="h-12 w-full rounded-lg bg-primary px-4 font-semibold text-on-primary shadow-lg transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
@@ -437,7 +475,7 @@ export default function CheckoutPage() {
               </button>
 
               <p className="text-center text-xs font-semibold text-secondary">
-                La reserva se crea con estado pendiente hasta su aprobación.
+                La reserva se crea con estado pendiente hasta su aprobación
               </p>
             </div>
           </aside>
