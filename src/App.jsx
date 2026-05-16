@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router'
+import AboutPage from './pages/AboutPage'
 import HotelDetailPage from './pages/HotelDetailPage'
 import HotelsPage from './pages/HotelsPage'
 import HomePage from './pages/HomePage'
@@ -14,6 +15,7 @@ export default function App() {
       <Route element={<HotelsPage />} path="/hotels" />
       <Route element={<HotelDetailPage />} path="/hotels/:slug" />
       <Route element={<CheckoutPage />} path="/hotels/:slug/checkout" />
+      <Route element={<AboutPage />} path="/about" />
       <Route element={<MyBookingsPage />} path="/my-bookings" />
       <Route element={<LoginPage />} path="/login" />
       <Route element={<RegisterPage />} path="/register" />

@@ -110,12 +110,9 @@ export default function Navbar() {
               Mis reservas
             </NavLink>
           )}
-          <a
-            className="border-b-2 border-transparent pb-1 text-secondary transition hover:text-primary"
-            href="#"
-          >
+          <NavLink className={navLinkClass} to="/about">
             Nosotros
-          </a>
+          </NavLink>
         </div>
 
         {isAuthenticated ? (
