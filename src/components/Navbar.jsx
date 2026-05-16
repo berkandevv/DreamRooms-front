@@ -105,9 +105,11 @@ export default function Navbar() {
           <NavLink className={navLinkClass} to="/hotels">
             Hoteles
           </NavLink>
-          <NavLink className={navLinkClass} to="/my-bookings">
-            Mis reservas
-          </NavLink>
+          {isAuthenticated && (
+            <NavLink className={navLinkClass} to="/my-bookings">
+              Mis reservas
+            </NavLink>
+          )}
           <a
             className="border-b-2 border-transparent pb-1 text-secondary transition hover:text-primary"
             href="#"
@@ -152,12 +154,20 @@ export default function Navbar() {
             )}
           </div>
         ) : (
-          <Link
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
-            to="/login"
-          >
-            Iniciar sesión / Registrarse
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-surface hover:shadow-md"
+              to="/login"
+            >
+              Iniciar sesión
+            </Link>
+            <Link
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
+              to="/register"
+            >
+              Registrarse
+            </Link>
+          </div>
         )}
       </nav>
     </header>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaRegStar, FaStar } from 'react-icons/fa'
+import { FaChevronDown, FaRegStar, FaStar } from 'react-icons/fa'
 import { useSearchParams } from 'react-router'
 import HotelListCard from '../components/HotelListCard'
 import Layout from '../components/Layout'
@@ -274,6 +274,7 @@ export default function HotelsPage() {
   const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false)
   const [availabilityError, setAvailabilityError] = useState('')
   const [sortBy, setSortBy] = useState('rating')
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedZone, setSelectedZone] = useState('all')
   const [selectedRating, setSelectedRating] = useState('all')
@@ -383,8 +384,9 @@ export default function HotelsPage() {
     firstHotelIndex + HOTELS_PER_PAGE,
   )
 
-  function handleSortChange(event) {
-    setSortBy(event.target.value)
+  function handleSortChange(value) {
+    setSortBy(value)
+    setIsSortMenuOpen(false)
     setCurrentPage(1)
   }
 
@@ -425,12 +427,20 @@ export default function HotelsPage() {
     setCurrentPage(1)
   }
 
+  function scrollToPageTop() {
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
+  }
+
   function goToPreviousPage() {
     setCurrentPage((page) => page - 1)
+    scrollToPageTop()
   }
 
   function goToNextPage() {
     setCurrentPage((page) => page + 1)
+    scrollToPageTop()
   }
 
   return (
@@ -462,22 +472,54 @@ export default function HotelsPage() {
             )}
           </div>
 
-          <label className="flex items-center gap-3 text-sm font-semibold text-secondary">
-            Ordenar por
-            <select
-              className="rounded-lg border border-outline-variant bg-surface px-3 py-2 text-on-surface outline-none focus:border-primary"
-              onChange={handleSortChange}
-              value={sortBy}
+          <div
+            className="relative flex items-center gap-3 text-sm font-semibold text-secondary"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setIsSortMenuOpen(false)
+              }
+            }}
+          >
+            <span>Ordenar por</span>
+            <button
+              className="flex min-w-48 cursor-pointer items-center justify-between gap-3 rounded-lg border border-outline-variant bg-surface px-3 py-2 text-left text-on-surface outline-none transition hover:border-primary focus:border-primary"
+              onClick={() => setIsSortMenuOpen((isOpen) => !isOpen)}
+              type="button"
             >
-              <option value="rating">Mejor valoración</option>
-              <option value="price">Precio más bajo</option>
-            </select>
-          </label>
+              <span>
+                {sortBy === 'rating' ? 'Mejor valoración' : 'Precio más bajo'}
+              </span>
+              <FaChevronDown
+                className={`h-3 w-3 transition-transform ${
+                  isSortMenuOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {isSortMenuOpen && (
+              <div className="absolute right-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest shadow-[0_12px_30px_rgba(19,27,46,0.18)]">
+                <button
+                  className="block w-full cursor-pointer px-4 py-3 text-left text-sm font-semibold text-on-surface transition hover:bg-surface-container"
+                  onClick={() => handleSortChange('rating')}
+                  type="button"
+                >
+                  Mejor valoración
+                </button>
+                <button
+                  className="block w-full cursor-pointer px-4 py-3 text-left text-sm font-semibold text-on-surface transition hover:bg-surface-container"
+                  onClick={() => handleSortChange('price')}
+                  type="button"
+                >
+                  Precio más bajo
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-8 md:flex-row">
           <aside className="w-full shrink-0 md:w-72">
-            <div className="sticky top-24 space-y-8 rounded-xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
+            <div className="sticky top-32 space-y-8 rounded-xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
               <div className="flex items-center justify-between gap-4">
                 <h2 className="whitespace-nowrap text-xl font-bold text-on-surface">
                   Filtrar resultados
