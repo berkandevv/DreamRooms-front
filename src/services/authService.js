@@ -1,16 +1,15 @@
 const API_BASE_URL = 'http://localhost:8000/api/auth'
 
 export function getAuthToken() {
-  return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+  return sessionStorage.getItem('auth_token')
 }
 
 export function getTokenType() {
-  return localStorage.getItem('token_type') || sessionStorage.getItem('token_type') || 'Bearer'
+  return sessionStorage.getItem('token_type') || 'Bearer'
 }
 
 export function getAuthenticatedUser() {
-  const storedUser =
-    localStorage.getItem('auth_user') || sessionStorage.getItem('auth_user')
+  const storedUser = sessionStorage.getItem('auth_user')
 
   if (!storedUser) {
     return null
@@ -31,11 +30,15 @@ function saveAuthSession(result) {
     throw new Error('La respuesta de autenticación no incluye token')
   }
 
-  localStorage.setItem('auth_token', token)
-  localStorage.setItem('token_type', result.token_type || 'Bearer')
+  localStorage.removeItem('auth_token')
+  localStorage.removeItem('token_type')
+  localStorage.removeItem('auth_user')
+
+  sessionStorage.setItem('auth_token', token)
+  sessionStorage.setItem('token_type', result.token_type || 'Bearer')
 
   if (user) {
-    localStorage.setItem('auth_user', JSON.stringify(user))
+    sessionStorage.setItem('auth_user', JSON.stringify(user))
   }
 }
 
