@@ -1,7 +1,5 @@
-import placeholderImg from '../assets/hero.png'
-
 export default function HotelDetailHero({ hotel }) {
-  const imageUrl = hotel.cover_image?.url || placeholderImg
+  const imageUrl = hotel.cover_image?.url
   const imageAlt = hotel.cover_image?.alt_text || hotel.name
   const address = hotel.location?.address || hotel.contact?.address
   const city = hotel.location?.city
@@ -9,13 +7,15 @@ export default function HotelDetailHero({ hotel }) {
 
   return (
     <section className="lg:col-span-2">
-      <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container shadow-[0_8px_24px_rgba(19,27,46,0.10)]">
-        <img
-          alt={imageAlt}
-          className="aspect-video h-full w-full object-cover"
-          src={imageUrl}
-        />
-      </div>
+      {imageUrl && (
+        <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container shadow-[0_8px_24px_rgba(19,27,46,0.10)]">
+          <img
+            alt={imageAlt}
+            className="aspect-video h-full w-full object-cover"
+            src={imageUrl}
+          />
+        </div>
+      )}
 
       <div className="mt-5">
         <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">

@@ -1,5 +1,4 @@
 import { Link } from 'react-router'
-import placeholderImg from '../assets/hero.png'
 import { formatPrice } from '../utils/formatPrice'
 
 export default function HotelCard({ hotel }) {
@@ -7,17 +6,19 @@ export default function HotelCard({ hotel }) {
   const country = hotel.location?.country || 'País no disponible'
   const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
   const rating = hotel.average_rating || 'Nuevo'
-  const imageUrl = hotel.cover_image?.url || placeholderImg
+  const imageUrl = hotel.cover_image?.url
   const imageAlt = hotel.cover_image?.alt_text || hotel.name
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.10)] transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_18px_40px_rgba(19,27,46,0.16)]">
       <div className="relative h-64 overflow-hidden">
-        <img
-          alt={imageAlt}
-          className="h-full w-full object-cover transition duration-500 hover:scale-105"
-          src={imageUrl}
-        />
+        {imageUrl && (
+          <img
+            alt={imageAlt}
+            className="h-full w-full object-cover transition duration-500 hover:scale-105"
+            src={imageUrl}
+          />
+        )}
 
         <div className="absolute right-4 top-4 rounded-lg bg-surface-container-lowest/90 px-3 py-1 text-sm font-semibold text-on-surface shadow">
           <span className="text-[#10B981]">☆</span> {rating}
