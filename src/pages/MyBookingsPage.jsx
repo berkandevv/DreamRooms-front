@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { FaCheckCircle, FaRegStar, FaStar } from 'react-icons/fa'
 import { Link } from 'react-router'
 import Layout from '../components/Layout'
-import { getAuthenticatedUser, getAuthToken } from '../services/authService'
+import {
+  getAuthenticatedUser,
+  getAuthToken,
+  setAuthenticatedUser,
+} from '../services/authService'
 import {
   cancelCustomerBooking,
   createCustomerBookingReview,
@@ -127,6 +131,17 @@ export default function MyBookingsPage() {
     getCustomerBookings()
       .then((data) => enrichBookingsWithHotelImages(data))
       .then((enrichedBookings) => {
+        const customer = enrichedBookings.find((booking) => {
+          return booking.customer?.name || booking.customer?.email
+        })?.customer
+
+        if (customer) {
+          setAuthenticatedUser({
+            email: customer.email,
+            name: customer.name,
+          })
+        }
+
         setBookings(enrichedBookings)
         setError('')
       })
