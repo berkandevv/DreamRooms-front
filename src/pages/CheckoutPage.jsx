@@ -35,6 +35,10 @@ function getNights(checkIn, checkOut) {
   return Math.ceil(difference / 86400000)
 }
 
+function pluralize(count, singular, plural) {
+  return Number(count) === 1 ? singular : plural
+}
+
 function getIsoDate(date) {
   if (!date) {
     return ''
@@ -281,7 +285,8 @@ export default function CheckoutPage() {
               </div>
 
               <div className="mt-5 rounded-lg bg-surface-container p-4 text-sm font-semibold text-secondary">
-                Duración total: {nights || 0} noches
+                Duración total: {nights || 0}{' '}
+                {pluralize(nights, 'noche', 'noches')}
               </div>
             </section>
 
