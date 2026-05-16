@@ -59,8 +59,8 @@ body {
 
 @keyframes auth-page-enter-left {
   from {
-    opacity: 0;
-    transform: translateX(-64px);
+    opacity: 0.82;
+    transform: translateX(-72px);
   }
 
   to {
@@ -71,8 +71,8 @@ body {
 
 @keyframes auth-page-enter-right {
   from {
-    opacity: 0;
-    transform: translateX(64px);
+    opacity: 0.82;
+    transform: translateX(72px);
   }
 
   to {
@@ -88,8 +88,8 @@ body {
   }
 
   to {
-    opacity: 0;
-    transform: translateX(-64px);
+    opacity: 0.82;
+    transform: translateX(-72px);
   }
 }
 
@@ -100,8 +100,8 @@ body {
   }
 
   to {
-    opacity: 0;
-    transform: translateX(64px);
+    opacity: 0.82;
+    transform: translateX(72px);
   }
 }
 
@@ -121,11 +121,21 @@ body {
   animation: auth-page-exit-right 260ms ease-in both;
 }
 
+.route-slide-in-left {
+  animation: auth-page-enter-left 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.route-slide-in-right {
+  animation: auth-page-enter-right 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .auth-enter-left,
   .auth-enter-right,
   .auth-exit-left,
-  .auth-exit-right {
+  .auth-exit-right,
+  .route-slide-in-left,
+  .route-slide-in-right {
     animation: none;
   }
 }
