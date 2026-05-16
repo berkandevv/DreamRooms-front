@@ -10,7 +10,6 @@ const initialFormData = {
 export default function LoginPage() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState(initialFormData)
-  const [rememberSession, setRememberSession] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -30,24 +29,7 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const result = await loginUser(formData)
-
-      if (!rememberSession) {
-        const token = result.token || result.access_token || result.data?.token
-        const user = result.user || result.data?.user
-
-        sessionStorage.setItem('auth_token', token)
-        sessionStorage.setItem('token_type', result.token_type || 'Bearer')
-
-        if (user) {
-          sessionStorage.setItem('auth_user', JSON.stringify(user))
-        }
-
-        localStorage.removeItem('auth_token')
-        localStorage.removeItem('token_type')
-        localStorage.removeItem('auth_user')
-      }
-
+      await loginUser(formData)
       navigate('/')
     } catch (loginError) {
       setError(loginError.message)
@@ -115,19 +97,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4">
-              <label className="flex items-center gap-3 text-sm font-semibold text-on-surface-variant">
-                <input
-                  checked={rememberSession}
-                  className="h-4 w-4 accent-primary"
-                  onChange={(event) =>
-                    setRememberSession(event.target.checked)
-                  }
-                  type="checkbox"
-                />
-                Recordarme
-              </label>
-
+            <div className="flex justify-end">
               <a
                 className="text-sm font-semibold text-primary hover:underline"
                 href="#"
