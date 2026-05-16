@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
 import HotelDetailHero from '../components/HotelDetailHero'
 import Layout from '../components/Layout'
@@ -10,6 +10,7 @@ import { getHotelBySlug, getHotelReviews } from '../services/hotelService'
 
 export default function HotelDetailPage() {
   const { slug } = useParams()
+  const [searchParams] = useSearchParams()
   const [detail, setDetail] = useState({
     hotel: null,
     isLoading: true,
@@ -145,8 +146,10 @@ export default function HotelDetailPage() {
             {hotel.room_types?.map((roomType) => (
               <RoomTypeCard
                 currencySymbol={hotel.currency_symbol}
+                hotelSlug={hotel.slug}
                 key={roomType.id}
                 roomType={roomType}
+                searchParams={searchParams}
               />
             ))}
           </div>

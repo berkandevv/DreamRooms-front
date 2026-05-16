@@ -1,9 +1,10 @@
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { formatServices } from '../utils/formatServices'
 import { formatPrice } from '../utils/formatPrice'
 import { getServiceIcon } from '../utils/getServiceIcon'
 
 export default function HotelListCard({ hotel }) {
+  const location = useLocation()
   const city = hotel.location?.city || 'Ciudad no disponible'
   const country = hotel.location?.country || 'País no disponible'
   const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
@@ -72,7 +73,7 @@ export default function HotelListCard({ hotel }) {
 
           <Link
             className="flex h-11 shrink-0 items-center rounded-lg bg-primary px-5 text-sm font-semibold text-on-primary transition hover:opacity-90"
-            to={`/hotels/${hotel.slug}`}
+            to={`/hotels/${hotel.slug}${location.search}`}
           >
             Ver detalles
           </Link>

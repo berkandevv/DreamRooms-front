@@ -1,5 +1,28 @@
 const API_BASE_URL = 'http://localhost:8000/api/auth'
 
+export function getAuthToken() {
+  return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+}
+
+export function getTokenType() {
+  return localStorage.getItem('token_type') || sessionStorage.getItem('token_type') || 'Bearer'
+}
+
+export function getAuthenticatedUser() {
+  const storedUser =
+    localStorage.getItem('auth_user') || sessionStorage.getItem('auth_user')
+
+  if (!storedUser) {
+    return null
+  }
+
+  try {
+    return JSON.parse(storedUser)
+  } catch {
+    return null
+  }
+}
+
 function saveAuthSession(result) {
   const token = result.token || result.access_token || result.data?.token
   const user = result.user || result.data?.user
@@ -13,6 +36,18 @@ function saveAuthSession(result) {
 
   if (user) {
     localStorage.setItem('auth_user', JSON.stringify(user))
+  }
+}
+
+export function getAuthHeaders() {
+  const token = getAuthToken()
+
+  if (!token) {
+    return {}
+  }
+
+  return {
+    Authorization: `${getTokenType()} ${token}`,
   }
 }
 

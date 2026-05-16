@@ -1,14 +1,29 @@
 import { FaCheck, FaUsers } from 'react-icons/fa'
+import { useNavigate } from 'react-router'
 import { formatServices } from '../utils/formatServices'
 import { formatPrice } from '../utils/formatPrice'
 
-export default function RoomTypeCard({ roomType, currencySymbol }) {
+export default function RoomTypeCard({
+  roomType,
+  currencySymbol,
+  hotelSlug,
+  searchParams,
+}) {
+  const navigate = useNavigate()
   const imageUrl = roomType.cover_image?.url
   const imageAlt = roomType.cover_image?.alt_text || roomType.name
   const price = formatPrice(roomType.base_price, currencySymbol)
   const services = formatServices(roomType.services)
   const servicesText =
     services.length > 0 ? services.join(', ') : 'Servicios no disponibles'
+
+  function handleSelectRoomType() {
+    const checkoutParams = new URLSearchParams(searchParams)
+
+    checkoutParams.set('room_type_id', roomType.id)
+
+    navigate(`/hotels/${hotelSlug}/checkout?${checkoutParams.toString()}`)
+  }
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.10)] transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_18px_40px_rgba(19,27,46,0.16)]">
@@ -67,6 +82,7 @@ export default function RoomTypeCard({ roomType, currencySymbol }) {
 
             <button
               className="h-10 shrink-0 rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary transition hover:opacity-90"
+              onClick={handleSelectRoomType}
               type="button"
             >
               Seleccionar
