@@ -1,4 +1,4 @@
-export function formatPrice(price, currencySymbol = '€') {
+export function formatPrice(price, currencySymbol = '€', options = {}) {
   if (price === null || price === undefined || price === '') {
     return 'Consultar'
   }
@@ -9,11 +9,15 @@ export function formatPrice(price, currencySymbol = '€') {
     return 'Consultar'
   }
 
-  const hasDecimals = !Number.isInteger(numericPrice)
+  const shouldShowDecimals = options.decimals === true
+  const formattedNumber = shouldShowDecimals
+    ? numericPrice
+    : Math.round(numericPrice)
+  const hasDecimals = shouldShowDecimals && !Number.isInteger(formattedNumber)
   const formattedPrice = new Intl.NumberFormat('es-ES', {
     maximumFractionDigits: hasDecimals ? 2 : 0,
     minimumFractionDigits: hasDecimals ? 2 : 0,
-  }).format(numericPrice)
+  }).format(formattedNumber)
 
   return `${formattedPrice}${currencySymbol}`
 }

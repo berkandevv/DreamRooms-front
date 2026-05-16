@@ -1,6 +1,12 @@
 import { formatPrice } from '../utils/formatPrice'
 
-export default function BookingSummary({ hotel }) {
+export default function BookingSummary({
+  checkIn,
+  checkOut,
+  hotel,
+  isCheckingAvailability,
+  onCheckAvailability,
+}) {
   const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
 
   return (
@@ -14,7 +20,7 @@ export default function BookingSummary({ hotel }) {
               Check-in
             </p>
             <p className="mt-1 font-semibold text-on-surface">
-              {hotel.check_in_time || 'No disponible'}
+              {checkIn || hotel.check_in_time || 'No disponible'}
             </p>
           </div>
           <div className="rounded-lg border border-outline-variant bg-surface p-3">
@@ -22,7 +28,7 @@ export default function BookingSummary({ hotel }) {
               Check-out
             </p>
             <p className="mt-1 font-semibold text-on-surface">
-              {hotel.check_out_time || 'No disponible'}
+              {checkOut || hotel.check_out_time || 'No disponible'}
             </p>
           </div>
         </div>
@@ -52,10 +58,14 @@ export default function BookingSummary({ hotel }) {
           </div>
 
           <button
-            className="mt-5 h-12 w-full rounded-lg bg-primary px-4 font-semibold uppercase tracking-wide text-on-primary transition hover:opacity-90"
+            className="mt-5 h-12 w-full rounded-lg bg-primary px-4 font-semibold uppercase tracking-wide text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isCheckingAvailability}
+            onClick={onCheckAvailability}
             type="button"
           >
-            Comprobar disponibilidad
+            {isCheckingAvailability
+              ? 'Comprobando...'
+              : 'Comprobar disponibilidad'}
           </button>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
 import HotelDetailHero from '../components/HotelDetailHero'
@@ -7,10 +7,78 @@ import ReviewsSection from '../components/ReviewsSection'
 import RoomTypeCard from '../components/RoomTypeCard'
 import ServicesList from '../components/ServicesList'
 import { getHotelBySlug, getHotelReviews } from '../services/hotelService'
+import { getRoomTypeAvailability } from '../services/roomTypeService'
+
+function getStayDates(checkIn, checkOut) {
+  if (!checkIn || !checkOut) {
+    return []
+  }
+
+  const startDate = new Date(`${checkIn}T00:00:00Z`)
+  const endDate = new Date(`${checkOut}T00:00:00Z`)
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return []
+  }
+
+  if (endDate <= startDate) {
+    return []
+  }
+
+  const dates = []
+  const currentDate = new Date(startDate)
+
+  while (currentDate < endDate) {
+    dates.push(currentDate.toISOString().slice(0, 10))
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+  }
+
+  return dates
+}
+
+function roomTypeMatchesCapacity(roomType, adults, children) {
+  return (
+    Number(roomType.capacity_adults) >= adults &&
+    Number(roomType.capacity_children) >= children
+  )
+}
+
+function isAvailabilityOpen(dayAvailability, nights) {
+  const unavailableStatuses = ['unavailable', 'blocked', 'closed']
+  const status = dayAvailability.status?.toLowerCase()
+  const minStayNights = Number(dayAvailability.min_stay_nights) || 0
+
+  return (
+    Number(dayAvailability.available_units) > 0 &&
+    !unavailableStatuses.includes(status) &&
+    minStayNights <= nights
+  )
+}
+
+function roomTypeIsAvailable(roomTypeId, availabilityByRoomType, stayDates) {
+  const roomTypeAvailability = availabilityByRoomType[roomTypeId] || []
+  const availabilityByDate = new Map(
+    roomTypeAvailability.map((dayAvailability) => [
+      dayAvailability.date,
+      dayAvailability,
+    ]),
+  )
+
+  return stayDates.every((date) => {
+    const dayAvailability = availabilityByDate.get(date)
+
+    return dayAvailability && isAvailabilityOpen(dayAvailability, stayDates.length)
+  })
+}
 
 export default function HotelDetailPage() {
   const { slug } = useParams()
   const [searchParams] = useSearchParams()
+  const roomsSectionRef = useRef(null)
+  const checkIn = searchParams.get('check_in') || ''
+  const checkOut = searchParams.get('check_out') || ''
+  const adults = Number(searchParams.get('adults')) || 0
+  const children = Number(searchParams.get('children')) || 0
   const [detail, setDetail] = useState({
     hotel: null,
     isLoading: true,
@@ -18,8 +86,68 @@ export default function HotelDetailPage() {
   })
   const [reviews, setReviews] = useState([])
   const [reviewsError, setReviewsError] = useState('')
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false)
+  const [availabilityError, setAvailabilityError] = useState('')
+  const [availabilityNotice, setAvailabilityNotice] = useState('')
+  const [availableRoomTypeIds, setAvailableRoomTypeIds] = useState(null)
 
   const { hotel, isLoading, error } = detail
+
+  function scrollToRooms() {
+    roomsSectionRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
+
+  async function handleCheckAvailability() {
+    scrollToRooms()
+    setAvailabilityError('')
+
+    const stayDates = getStayDates(checkIn, checkOut)
+
+    if (stayDates.length === 0) {
+      setAvailableRoomTypeIds(null)
+      setAvailabilityNotice(
+        'Para comprobar disponibilidad real, vuelve desde una búsqueda con fechas de entrada y salida.',
+      )
+      return
+    }
+
+    setIsCheckingAvailability(true)
+    setAvailabilityNotice('')
+
+    try {
+      const roomTypes = hotel.room_types || []
+      const availabilityEntries = await Promise.all(
+        roomTypes.map((roomType) => {
+          return getRoomTypeAvailability(roomType.id).then((availability) => [
+            roomType.id,
+            availability,
+          ])
+        }),
+      )
+      const availabilityByRoomType = Object.fromEntries(availabilityEntries)
+      const availableIds = roomTypes
+        .filter((roomType) => {
+          return (
+            roomTypeMatchesCapacity(roomType, adults, children) &&
+            roomTypeIsAvailable(roomType.id, availabilityByRoomType, stayDates)
+          )
+        })
+        .map((roomType) => roomType.id)
+
+      setAvailableRoomTypeIds(availableIds)
+      setAvailabilityNotice(
+        `${availableIds.length} tipos de habitación disponibles para las fechas seleccionadas.`,
+      )
+    } catch {
+      setAvailableRoomTypeIds(null)
+      setAvailabilityError('No se pudo comprobar la disponibilidad.')
+    } finally {
+      setIsCheckingAvailability(false)
+    }
+  }
 
   useEffect(() => {
     getHotelBySlug(slug)
@@ -96,7 +224,13 @@ export default function HotelDetailPage() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <HotelDetailHero hotel={hotel} />
-          <BookingSummary hotel={hotel} />
+          <BookingSummary
+            checkIn={checkIn}
+            checkOut={checkOut}
+            hotel={hotel}
+            isCheckingAvailability={isCheckingAvailability}
+            onCheckAvailability={handleCheckAvailability}
+          />
         </div>
 
         <section className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
@@ -129,30 +263,65 @@ export default function HotelDetailPage() {
           </div>
         </section>
 
-        <section>
+        <section ref={roomsSectionRef}>
           <div className="mb-5 flex flex-col justify-between gap-2 md:flex-row md:items-end">
             <div>
               <h2 className="text-3xl font-bold text-on-surface">Habitaciones disponibles</h2>
               <p className="mt-1 text-secondary">
-                Elige el tipo de habitación que mejor encaja con tu estancia.
+                {availableRoomTypeIds
+                  ? 'Habitaciones filtradas según disponibilidad y ocupación.'
+                  : 'Elige el tipo de habitación que mejor encaja con tu estancia.'}
               </p>
             </div>
             <p className="text-sm font-semibold text-secondary">
-              {hotel.room_types?.length || 0} tipos de habitación
+              {availableRoomTypeIds?.length ?? hotel.room_types?.length ?? 0}{' '}
+              tipos de habitación
             </p>
           </div>
 
+          {availabilityNotice && (
+            <p className="mb-5 rounded-xl border border-outline-variant bg-surface-container-lowest p-4 text-sm font-semibold text-secondary">
+              {availabilityNotice}
+            </p>
+          )}
+
+          {availabilityError && (
+            <p className="mb-5 rounded-xl border border-error bg-error-container p-4 text-sm font-semibold text-error">
+              {availabilityError}
+            </p>
+          )}
+
+          {isCheckingAvailability && (
+            <p className="mb-5 rounded-xl border border-outline-variant bg-surface-container-lowest p-4 text-sm font-semibold text-secondary">
+              Comprobando disponibilidad...
+            </p>
+          )}
+
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {hotel.room_types?.map((roomType) => (
-              <RoomTypeCard
-                currencySymbol={hotel.currency_symbol}
-                hotelSlug={hotel.slug}
-                key={roomType.id}
-                roomType={roomType}
-                searchParams={searchParams}
-              />
-            ))}
+            {hotel.room_types
+              ?.filter((roomType) => {
+                if (!availableRoomTypeIds) {
+                  return true
+                }
+
+                return availableRoomTypeIds.includes(roomType.id)
+              })
+              .map((roomType) => (
+                <RoomTypeCard
+                  currencySymbol={hotel.currency_symbol}
+                  hotelSlug={hotel.slug}
+                  key={roomType.id}
+                  roomType={roomType}
+                  searchParams={searchParams}
+                />
+              ))}
           </div>
+
+          {availableRoomTypeIds?.length === 0 && (
+            <p className="mt-5 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 text-center text-secondary">
+              No hay habitaciones disponibles para esas fechas y ocupación.
+            </p>
+          )}
         </section>
 
         <ReviewsSection error={reviewsError} reviews={reviews} />
