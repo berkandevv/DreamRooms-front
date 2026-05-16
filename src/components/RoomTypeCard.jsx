@@ -1,10 +1,9 @@
 import { FaCheck, FaUsers } from 'react-icons/fa'
-import placeholderImg from '../assets/hero.png'
 import { formatServices } from '../utils/formatServices'
 import { formatPrice } from '../utils/formatPrice'
 
 export default function RoomTypeCard({ roomType, currencySymbol }) {
-  const imageUrl = roomType.cover_image?.url || placeholderImg
+  const imageUrl = roomType.cover_image?.url
   const imageAlt = roomType.cover_image?.alt_text || roomType.name
   const price = formatPrice(roomType.base_price, currencySymbol)
   const services = formatServices(roomType.services)
@@ -13,13 +12,15 @@ export default function RoomTypeCard({ roomType, currencySymbol }) {
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.10)] transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_18px_40px_rgba(19,27,46,0.16)]">
-      <div className="h-48 overflow-hidden">
-        <img
-          alt={imageAlt}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-          src={imageUrl}
-        />
-      </div>
+      {imageUrl && (
+        <div className="h-48 overflow-hidden">
+          <img
+            alt={imageAlt}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            src={imageUrl}
+          />
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col p-5">
         <div>
