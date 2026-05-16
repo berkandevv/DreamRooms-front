@@ -43,20 +43,6 @@ export default function HotelGrid({ hotels, isLoading, error }) {
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container-low"
-            type="button"
-          >
-            Filtros
-          </button>
-          <button
-            className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container-low"
-            type="button"
-          >
-            Recomendados
-          </button>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
