@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState(initialFormData)
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
   const [error, setError] = useState('')
 
   function handleInputChange(event) {
@@ -38,8 +39,21 @@ export default function LoginPage() {
     }
   }
 
+  function handleRegisterNavigation(event) {
+    event.preventDefault()
+    setIsLeaving(true)
+
+    window.setTimeout(() => {
+      navigate('/register')
+    }, 260)
+  }
+
   return (
-    <main className="flex min-h-screen bg-surface text-on-surface">
+    <main
+      className={`flex min-h-screen bg-surface text-on-surface ${
+        isLeaving ? 'auth-exit-left' : 'auth-enter-left'
+      }`}
+    >
       <section className="flex w-full flex-col justify-center px-6 py-10 md:px-16 lg:w-1/2">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-10 lg:hidden">
@@ -126,6 +140,7 @@ export default function LoginPage() {
               ¿No tienes una cuenta?{' '}
               <Link
                 className="font-bold text-primary hover:underline"
+                onClick={handleRegisterNavigation}
                 to="/register"
               >
                 Regístrate
