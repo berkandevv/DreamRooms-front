@@ -1,6 +1,8 @@
 import { Link, NavLink } from 'react-router'
+import { getAuthToken } from '../services/authService'
 
 export default function Navbar() {
+  const isAuthenticated = Boolean(getAuthToken())
   const navLinkClass = ({ isActive }) => {
     if (isActive) {
       return 'border-b-2 border-primary pb-1 font-semibold text-primary'
@@ -34,12 +36,21 @@ export default function Navbar() {
           </a>
         </div>
 
-        <Link
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
-          to="/login"
-        >
-          Iniciar sesión / Registrarse
-        </Link>
+        {isAuthenticated ? (
+          <Link
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
+            to="/my-bookings"
+          >
+            Mi perfil
+          </Link>
+        ) : (
+          <Link
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
+            to="/login"
+          >
+            Iniciar sesión / Registrarse
+          </Link>
+        )}
       </nav>
     </header>
   )

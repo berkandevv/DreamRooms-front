@@ -205,7 +205,7 @@ export default function MyBookingsPage() {
             Hola, {customerName}
           </h1>
           <p className="mt-2 text-secondary">
-            Gestiona tus próximas estancias y comenta tus reservas completadas.
+            Gestiona tus próximas estancias y comenta tus reservas completadas
           </p>
         </header>
 
