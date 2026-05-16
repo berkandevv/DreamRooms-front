@@ -46,7 +46,7 @@ export function setAuthenticatedUser(user) {
   notifyAuthSessionChanged()
 }
 
-function saveAuthSession(result) {
+function saveAuthSession(result, fallbackUserData = {}) {
   const token = result.token || result.access_token || result.data?.token
   const user = result.user || result.data?.user
 
@@ -62,7 +62,12 @@ function saveAuthSession(result) {
   sessionStorage.setItem('token_type', result.token_type || 'Bearer')
 
   if (user) {
-    setAuthenticatedUser(user)
+    setAuthenticatedUser({
+      ...fallbackUserData,
+      ...user,
+    })
+  } else if (Object.keys(fallbackUserData).length > 0) {
+    setAuthenticatedUser(fallbackUserData)
   } else {
     notifyAuthSessionChanged()
   }
@@ -96,7 +101,11 @@ export async function registerUser(userData) {
     throw new Error(result.message || 'No se pudo crear la cuenta')
   }
 
-  saveAuthSession(result)
+  saveAuthSession(result, {
+    account_type: userData.account_type,
+    email: userData.email,
+    name: userData.name,
+  })
 
   return result
 }
@@ -117,9 +126,30 @@ export async function loginUser(credentials) {
     throw new Error(result.message || 'No se pudo iniciar sesión')
   }
 
-  saveAuthSession(result)
+  saveAuthSession(result, {
+    email: credentials.email,
+  })
 
   return result
+}
+
+export async function getAuthenticatedProfile() {
+  const response = await fetch(`${API_BASE_URL}/me`, {
+    headers: {
+      Accept: 'application/json',
+      ...getAuthHeaders(),
+    },
+  })
+
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(result.message || 'No se pudo cargar el perfil')
+  }
+
+  setAuthenticatedUser(result.data)
+
+  return result.data
 }
 
 export async function logoutUser() {

@@ -3,18 +3,23 @@ import { FaChevronDown } from 'react-icons/fa'
 import { Link, NavLink, useNavigate } from 'react-router'
 import {
   AUTH_SESSION_CHANGED_EVENT,
+  getAuthenticatedProfile,
   getAuthenticatedUser,
   getAuthToken,
   logoutUser,
-  setAuthenticatedUser,
 } from '../services/authService'
-import { getCustomerBookings } from '../services/customerBookingService'
 
 function getAuthSession() {
   return {
     isAuthenticated: Boolean(getAuthToken()),
     user: getAuthenticatedUser(),
   }
+}
+
+function getUserRole(user) {
+  const role = user?.role?.name || user?.role || user?.account_type || user?.type || ''
+
+  return String(role).toLowerCase()
 }
 
 export default function Navbar() {
@@ -24,7 +29,10 @@ export default function Navbar() {
   const [authSession, setAuthSession] = useState(getAuthSession)
   const isAuthenticated = authSession.isAuthenticated
   const user = authSession.user
-  const displayName = user?.name || user?.email || 'Mi perfil'
+  const userRole = getUserRole(user)
+  const isOwner = userRole.includes('owner')
+  const isCustomer = userRole.includes('customer')
+  const displayName = user?.name || user?.email || 'Tu cuenta'
   const navLinkClass = ({ isActive }) => {
     if (isActive) {
       return 'border-b-2 border-primary pb-1 font-semibold text-primary'
@@ -61,35 +69,29 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    if (!isAuthenticated || user?.name) {
+    if (!isAuthenticated || (user?.name && userRole)) {
       return
     }
 
     let shouldIgnoreResponse = false
 
-    getCustomerBookings()
-      .then((bookings) => {
+    getAuthenticatedProfile()
+      .then((profile) => {
         if (shouldIgnoreResponse) {
           return
         }
 
-        const customer = bookings.find((booking) => {
-          return booking.customer?.name || booking.customer?.email
-        })?.customer
-
-        if (customer) {
-          setAuthenticatedUser({
-            email: customer.email,
-            name: customer.name,
-          })
-        }
+        setAuthSession({
+          isAuthenticated: true,
+          user: profile,
+        })
       })
       .catch(() => {})
 
     return () => {
       shouldIgnoreResponse = true
     }
-  }, [isAuthenticated, user?.name])
+  }, [isAuthenticated, user?.name, userRole])
 
   return (
     <header className="fixed left-0 top-0 z-50 w-full border-b border-outline-variant bg-surface-container-low/95 shadow-[0_10px_32px_rgba(19,27,46,0.14)] backdrop-blur">
@@ -105,7 +107,7 @@ export default function Navbar() {
           <NavLink className={navLinkClass} to="/hotels">
             Hoteles
           </NavLink>
-          {isAuthenticated && (
+          {isAuthenticated && isCustomer && (
             <NavLink className={navLinkClass} to="/my-bookings">
               Mis reservas
             </NavLink>
@@ -132,13 +134,23 @@ export default function Navbar() {
 
             {isMenuOpen && (
               <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest shadow-[0_12px_30px_rgba(19,27,46,0.18)]">
-                <Link
-                  className="block px-4 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container"
-                  onClick={() => setIsMenuOpen(false)}
-                  to="/my-bookings"
-                >
-                  Mi perfil
-                </Link>
+                {isOwner ? (
+                  <Link
+                    className="block px-4 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container"
+                    onClick={() => setIsMenuOpen(false)}
+                    to="/owner"
+                  >
+                    Mi panel
+                  </Link>
+                ) : (
+                  <Link
+                    className="block px-4 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container"
+                    onClick={() => setIsMenuOpen(false)}
+                    to="/my-bookings"
+                  >
+                    Mis reservas
+                  </Link>
+                )}
                 <button
                   className="block w-full px-4 py-3 text-left text-sm font-semibold text-error transition hover:bg-error-container disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={isLoggingOut}
