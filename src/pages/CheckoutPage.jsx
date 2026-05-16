@@ -253,7 +253,7 @@ export default function CheckoutPage() {
                 </h1>
                 <p className="mt-2 text-secondary">
                   Revisa fechas, ocupación y habitaciones antes de crear la
-                  reserva.
+                  reserva
                 </p>
               </div>
 
@@ -320,8 +320,8 @@ export default function CheckoutPage() {
                   </h2>
                   <p className="mt-2 text-secondary">
                     {isAuthenticated
-                      ? 'Usaremos tu sesión actual para asignar la reserva.'
-                      : 'Crea tu cuenta de cliente para confirmar la reserva.'}
+                      ? 'Usaremos tu sesión actual para asignar la reserva'
+                      : 'Crea tu cuenta de cliente para confirmar la reserva'}
                   </p>
                 </div>
                 <span className="w-fit whitespace-nowrap rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase text-on-secondary-fixed">
@@ -436,28 +436,38 @@ export default function CheckoutPage() {
                 <SummaryRow label="Habitaciones" value={stayData.units_booked} />
                 <SummaryRow
                   label="Precio base"
-                  value={`${formatPrice(roomType.base_price, currencySymbol)}/noche`}
+                  value={`${formatPrice(roomType.base_price, currencySymbol, {
+                    decimals: true,
+                  })}/noche`}
                 />
                 <SummaryRow
                   label="Subtotal"
-                  value={formatPrice(amounts.subtotal, currencySymbol)}
+                  value={formatPrice(amounts.subtotal, currencySymbol, {
+                    decimals: true,
+                  })}
                 />
                 {amounts.discount > 0 && (
                   <SummaryRow
                     label={`Descuento (${amounts.discountRate}%)`}
-                    value={`-${formatPrice(amounts.discount, currencySymbol)}`}
+                    value={`-${formatPrice(amounts.discount, currencySymbol, {
+                      decimals: true,
+                    })}`}
                   />
                 )}
                 <SummaryRow
                   label={`Tasas (${amounts.taxRate}%)`}
-                  value={formatPrice(amounts.taxes, currencySymbol)}
+                  value={formatPrice(amounts.taxes, currencySymbol, {
+                    decimals: true,
+                  })}
                 />
               </div>
 
               <div className="flex items-end justify-between gap-4">
                 <span className="text-lg font-bold text-primary">Total</span>
                 <span className="text-3xl font-bold text-primary">
-                  {formatPrice(amounts.total, currencySymbol)}
+                  {formatPrice(amounts.total, currencySymbol, {
+                    decimals: true,
+                  })}
                 </span>
               </div>
 
