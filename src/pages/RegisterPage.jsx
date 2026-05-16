@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 import { registerUser } from '../services/authService'
 
 const initialFormData = {
@@ -11,6 +11,7 @@ const initialFormData = {
 }
 
 export default function RegisterPage() {
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const initialAccountType =
     searchParams.get('account_type') === 'owner' ? 'owner' : 'customer'
@@ -23,6 +24,7 @@ export default function RegisterPage() {
   })
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
@@ -78,8 +80,21 @@ export default function RegisterPage() {
     }
   }
 
+  function handleLoginNavigation(event) {
+    event.preventDefault()
+    setIsLeaving(true)
+
+    window.setTimeout(() => {
+      navigate('/login')
+    }, 260)
+  }
+
   return (
-    <main className="flex min-h-screen flex-col bg-surface text-on-surface md:flex-row">
+    <main
+      className={`flex min-h-screen flex-col bg-surface text-on-surface md:flex-row ${
+        isLeaving ? 'auth-exit-right' : 'auth-enter-right'
+      }`}
+    >
       <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-surface-container-low p-16 md:flex">
         <div className="relative z-10">
           <Link className="text-2xl font-bold text-primary" to="/">
@@ -265,7 +280,11 @@ export default function RegisterPage() {
           <footer className="mt-10 border-t border-outline-variant/40 pt-6 text-center">
             <p className="text-sm text-on-surface-variant">
               ¿Ya tienes cuenta?{' '}
-              <Link className="font-bold text-primary hover:underline" to="/login">
+              <Link
+                className="font-bold text-primary hover:underline"
+                onClick={handleLoginNavigation}
+                to="/login"
+              >
                 Inicia sesión
               </Link>
             </p>
