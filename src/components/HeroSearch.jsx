@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
 const heroImg =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCV1qacPl4IX-7LBCCSUJvFIuFIhdCUWMPJb1jKZhsJuHre3UCMvPS2OWx6CocE8f31IBMUwu0c-5GGR_oiJwHsOqld8orKIajB2zcqXX3_Sfz7-veA1nlkauRkQa4FylxMkj10MEe5dcjqhKBtc_SnTyWsJ0MoVO-4Cz9csSw1vvST1G4uQUS_au7RgJ5Py5gAmQSkQ0ES4eiDlqKC_o14MRegdpgEfYoGfFVK7f6uBcseJfMuPkvzVATwV_ZpeqODQwwTMdKJtXo'
+  'https://images.pexels.com/photos/20639392/pexels-photo-20639392.jpeg?auto=compress&cs=tinysrgb&w=1800'
 
 export default function HeroSearch() {
   const navigate = useNavigate()
@@ -41,10 +41,11 @@ export default function HeroSearch() {
     <section className="mx-auto max-w-7xl px-5 pb-10 md:px-8">
       <div className="relative flex min-h-[440px] items-center overflow-hidden rounded-xl bg-primary-container">
         <img
-          alt="Hotel moderno de lujo"
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
+          alt="Piscina de resort al atardecer con palmeras"
+          className="absolute inset-0 h-full w-full object-cover opacity-80"
           src={heroImg}
         />
+        <div className="absolute inset-0 bg-primary/45" />
 
         <div className="relative mx-auto w-full max-w-5xl px-5 py-12 md:px-10">
           <h1 className="mx-auto max-w-5xl text-center text-4xl font-bold leading-tight text-on-primary md:whitespace-nowrap md:text-5xl">
