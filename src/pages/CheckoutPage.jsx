@@ -5,6 +5,7 @@ import {
   getAuthenticatedUser,
   getAuthToken,
   registerUser,
+  setAuthenticatedUser,
 } from '../services/authService'
 import { createCustomerBooking } from '../services/customerBookingService'
 import { getHotelBySlug } from '../services/hotelService'
@@ -173,6 +174,13 @@ export default function CheckoutPage() {
           password: customerData.password,
           password_confirmation: customerData.password_confirmation,
           account_type: 'customer',
+        })
+      }
+
+      if (customerData.name || customerData.email) {
+        setAuthenticatedUser({
+          email: customerData.email,
+          name: customerData.name,
         })
       }
 

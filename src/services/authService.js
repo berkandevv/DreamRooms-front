@@ -1,4 +1,9 @@
 const API_BASE_URL = 'http://localhost:8000/api/auth'
+export const AUTH_SESSION_CHANGED_EVENT = 'auth-session-changed'
+
+function notifyAuthSessionChanged() {
+  window.dispatchEvent(new Event(AUTH_SESSION_CHANGED_EVENT))
+}
 
 export function getAuthToken() {
   return sessionStorage.getItem('auth_token')
@@ -22,6 +27,25 @@ export function getAuthenticatedUser() {
   }
 }
 
+export function clearAuthSession() {
+  localStorage.removeItem('auth_token')
+  localStorage.removeItem('token_type')
+  localStorage.removeItem('auth_user')
+  sessionStorage.removeItem('auth_token')
+  sessionStorage.removeItem('token_type')
+  sessionStorage.removeItem('auth_user')
+  notifyAuthSessionChanged()
+}
+
+export function setAuthenticatedUser(user) {
+  if (!user) {
+    return
+  }
+
+  sessionStorage.setItem('auth_user', JSON.stringify(user))
+  notifyAuthSessionChanged()
+}
+
 function saveAuthSession(result) {
   const token = result.token || result.access_token || result.data?.token
   const user = result.user || result.data?.user
@@ -38,7 +62,9 @@ function saveAuthSession(result) {
   sessionStorage.setItem('token_type', result.token_type || 'Bearer')
 
   if (user) {
-    sessionStorage.setItem('auth_user', JSON.stringify(user))
+    setAuthenticatedUser(user)
+  } else {
+    notifyAuthSessionChanged()
   }
 }
 
@@ -94,4 +120,22 @@ export async function loginUser(credentials) {
   saveAuthSession(result)
 
   return result
+}
+
+export async function logoutUser() {
+  const response = await fetch(`${API_BASE_URL}/logout`, {
+    headers: {
+      Accept: 'application/json',
+      ...getAuthHeaders(),
+    },
+    method: 'POST',
+  })
+
+  clearAuthSession()
+
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({}))
+
+    throw new Error(result.message || 'No se pudo cerrar sesión')
+  }
 }
