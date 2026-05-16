@@ -265,9 +265,9 @@ export default function RegisterPage() {
           <footer className="mt-10 border-t border-outline-variant/40 pt-6 text-center">
             <p className="text-sm text-on-surface-variant">
               ¿Ya tienes cuenta?{' '}
-              <a className="font-bold text-primary hover:underline" href="#">
+              <Link className="font-bold text-primary hover:underline" to="/login">
                 Inicia sesión
-              </a>
+              </Link>
             </p>
           </footer>
         </div>

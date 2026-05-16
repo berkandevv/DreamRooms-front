@@ -33,7 +33,7 @@ export default function Navbar() {
 
         <Link
           className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
-          to="/register"
+          to="/login"
         >
           Iniciar sesión / Registrarse
         </Link>
