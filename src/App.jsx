@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import CheckoutPage from './pages/CheckoutPage'
+import MyBookingsPage from './pages/MyBookingsPage'
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
       <Route element={<HotelsPage />} path="/hotels" />
       <Route element={<HotelDetailPage />} path="/hotels/:slug" />
       <Route element={<CheckoutPage />} path="/hotels/:slug/checkout" />
+      <Route element={<MyBookingsPage />} path="/my-bookings" />
       <Route element={<LoginPage />} path="/login" />
       <Route element={<RegisterPage />} path="/register" />
     </Routes>

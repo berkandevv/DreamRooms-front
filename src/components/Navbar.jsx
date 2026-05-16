@@ -23,6 +23,9 @@ export default function Navbar() {
           <NavLink className={navLinkClass} to="/hotels">
             Hoteles
           </NavLink>
+          <NavLink className={navLinkClass} to="/my-bookings">
+            Mis reservas
+          </NavLink>
           <a
             className="border-b-2 border-transparent pb-1 text-secondary transition hover:text-primary"
             href="#"

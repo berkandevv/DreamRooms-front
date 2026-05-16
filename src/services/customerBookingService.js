@@ -52,3 +52,39 @@ export async function createCustomerBooking(bookingData) {
 
   return result.data
 }
+
+export async function createCustomerBookingReview(bookingId, reviewData) {
+  const response = await fetch(`${API_URL}/${bookingId}/review`, {
+    body: JSON.stringify(reviewData),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+    },
+    method: 'POST',
+  })
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(result.message || 'No se pudo publicar el comentario')
+  }
+
+  return result.data
+}
+
+export async function cancelCustomerBooking(bookingId) {
+  const response = await fetch(`${API_URL}/${bookingId}/cancel`, {
+    headers: {
+      Accept: 'application/json',
+      ...getAuthHeaders(),
+    },
+    method: 'POST',
+  })
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(result.message || 'No se pudo cancelar la reserva')
+  }
+
+  return result.data
+}
