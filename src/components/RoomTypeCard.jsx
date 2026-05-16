@@ -81,7 +81,7 @@ export default function RoomTypeCard({
             </div>
 
             <button
-              className="h-10 shrink-0 rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary transition hover:opacity-90"
+              className="h-10 shrink-0 cursor-pointer rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary shadow-md transition hover:-translate-y-0.5 hover:bg-on-surface-variant hover:shadow-lg active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/25"
               onClick={handleSelectRoomType}
               type="button"
             >

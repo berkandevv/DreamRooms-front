@@ -58,7 +58,7 @@ export default function BookingSummary({
           </div>
 
           <button
-            className="mt-5 h-12 w-full rounded-lg bg-primary px-4 font-semibold uppercase tracking-wide text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-5 h-12 w-full cursor-pointer rounded-lg bg-primary px-4 font-semibold uppercase tracking-wide text-on-primary shadow-lg transition hover:-translate-y-0.5 hover:bg-on-surface-variant hover:shadow-xl active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none"
             disabled={isCheckingAvailability}
             onClick={onCheckAvailability}
             type="button"
