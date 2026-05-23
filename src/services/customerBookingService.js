@@ -2,6 +2,7 @@ import { getAuthHeaders } from './authService'
 
 const API_URL = 'http://localhost:8000/api/customer/bookings'
 
+// Obtiene todas las reservas del cliente autenticado
 export async function getCustomerBookings() {
   const response = await fetch(API_URL, {
     headers: {
@@ -18,6 +19,7 @@ export async function getCustomerBookings() {
   return result.data
 }
 
+// Obtiene el detalle de una reserva concreta del cliente
 export async function getCustomerBooking(bookingId) {
   const response = await fetch(`${API_URL}/${bookingId}`, {
     headers: {
@@ -34,6 +36,7 @@ export async function getCustomerBooking(bookingId) {
   return result.data
 }
 
+// Crea una nueva reserva para el cliente
 export async function createCustomerBooking(bookingData) {
   const response = await fetch(API_URL, {
     body: JSON.stringify(bookingData),
@@ -53,6 +56,7 @@ export async function createCustomerBooking(bookingData) {
   return result.data
 }
 
+// Publica una reseña de una reserva completada
 export async function createCustomerBookingReview(bookingId, reviewData) {
   const response = await fetch(`${API_URL}/${bookingId}/review`, {
     body: JSON.stringify(reviewData),
@@ -72,6 +76,7 @@ export async function createCustomerBookingReview(bookingId, reviewData) {
   return result.data
 }
 
+// Cancela una reserva del cliente autenticado
 export async function cancelCustomerBooking(bookingId) {
   const response = await fetch(`${API_URL}/${bookingId}/cancel`, {
     headers: {

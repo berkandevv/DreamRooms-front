@@ -1,5 +1,6 @@
 const API_BASE_URL = 'http://localhost:8000/api/room-types'
 
+// Obtiene la disponibilidad pública de un tipo de habitación
 export async function getRoomTypeAvailability(roomTypeId) {
   const response = await fetch(`${API_BASE_URL}/${roomTypeId}/availability`)
   const result = await response.json()

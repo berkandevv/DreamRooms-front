@@ -1,5 +1,6 @@
 const API_URL = 'http://localhost:8000/api/hotels'
 
+// Obtiene el listado público de hoteles
 export async function getHotels() {
   const response = await fetch(API_URL)
 
@@ -12,6 +13,7 @@ export async function getHotels() {
   return result.data
 }
 
+// Obtiene el detalle público de un hotel por su slug
 export async function getHotelBySlug(slug) {
   const response = await fetch(`${API_URL}/${slug}`)
 
@@ -24,6 +26,7 @@ export async function getHotelBySlug(slug) {
   return result.data
 }
 
+// Obtiene las reseñas públicas de un hotel
 export async function getHotelReviews(slug) {
   const response = await fetch(`${API_URL}/${slug}/reviews`)
 

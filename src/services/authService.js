@@ -1,18 +1,22 @@
 const API_BASE_URL = 'http://localhost:8000/api/auth'
 export const AUTH_SESSION_CHANGED_EVENT = 'auth-session-changed'
 
+// Avisa a la interfaz cuando cambia la sesión del usuario
 function notifyAuthSessionChanged() {
   window.dispatchEvent(new Event(AUTH_SESSION_CHANGED_EVENT))
 }
 
+// Devuelve el token de autenticación guardado en la sesión
 export function getAuthToken() {
   return sessionStorage.getItem('auth_token')
 }
 
+// Devuelve el tipo de token usado para autorizar peticiones
 export function getTokenType() {
   return sessionStorage.getItem('token_type') || 'Bearer'
 }
 
+// Recupera los datos del usuario autenticado guardados en sesión
 export function getAuthenticatedUser() {
   const storedUser = sessionStorage.getItem('auth_user')
 
@@ -27,6 +31,7 @@ export function getAuthenticatedUser() {
   }
 }
 
+// Borra todos los datos de autenticación guardados
 export function clearAuthSession() {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('token_type')
@@ -37,6 +42,7 @@ export function clearAuthSession() {
   notifyAuthSessionChanged()
 }
 
+// Guarda los datos básicos del usuario autenticado
 export function setAuthenticatedUser(user) {
   if (!user) {
     return
@@ -46,6 +52,7 @@ export function setAuthenticatedUser(user) {
   notifyAuthSessionChanged()
 }
 
+// Guarda el token y los datos del usuario después de iniciar sesión o registrarse
 function saveAuthSession(result, fallbackUserData = {}) {
   const token = result.token || result.access_token || result.data?.token
   const user = result.user || result.data?.user
@@ -73,6 +80,7 @@ function saveAuthSession(result, fallbackUserData = {}) {
   }
 }
 
+// Prepara las cabeceras de autorización para las peticiones privadas
 export function getAuthHeaders() {
   const token = getAuthToken()
 
@@ -85,6 +93,7 @@ export function getAuthHeaders() {
   }
 }
 
+// Registra un nuevo usuario y guarda su sesión
 export async function registerUser(userData) {
   const response = await fetch(`${API_BASE_URL}/register`, {
     body: JSON.stringify(userData),
@@ -110,6 +119,7 @@ export async function registerUser(userData) {
   return result
 }
 
+// Inicia sesión con email y contraseña
 export async function loginUser(credentials) {
   const response = await fetch(`${API_BASE_URL}/login`, {
     body: JSON.stringify(credentials),
@@ -133,6 +143,7 @@ export async function loginUser(credentials) {
   return result
 }
 
+// Pide al backend los datos actualizados del usuario autenticado
 export async function getAuthenticatedProfile() {
   const response = await fetch(`${API_BASE_URL}/me`, {
     headers: {
@@ -152,6 +163,7 @@ export async function getAuthenticatedProfile() {
   return result.data
 }
 
+// Cierra la sesión en el backend y limpia los datos locales
 export async function logoutUser() {
   const response = await fetch(`${API_BASE_URL}/logout`, {
     headers: {
