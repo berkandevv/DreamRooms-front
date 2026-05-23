@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router'
 import AboutPage from './pages/AboutPage'
+import CheckoutPage from './pages/CheckoutPage'
+import ContactPage from './pages/ContactPage'
+import HelpCenterPage from './pages/HelpCenterPage'
 import HotelDetailPage from './pages/HotelDetailPage'
 import HotelsPage from './pages/HotelsPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import CheckoutPage from './pages/CheckoutPage'
 import MyBookingsPage from './pages/MyBookingsPage'
 import OwnerPanelPage from './pages/OwnerPanelPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
+import RegisterPage from './pages/RegisterPage'
+import TermsPage from './pages/TermsPage'
 
 function getRouteLevel(pathname) {
   if (pathname === '/') {
@@ -35,16 +39,20 @@ function getRouteLevel(pathname) {
     return 5
   }
 
-  if (pathname === '/login') {
+  if (['/help', '/contact', '/privacy', '/terms'].includes(pathname)) {
     return 6
   }
 
-  if (pathname === '/register') {
+  if (pathname === '/login') {
     return 7
   }
 
-  if (pathname.startsWith('/owner')) {
+  if (pathname === '/register') {
     return 8
+  }
+
+  if (pathname.startsWith('/owner')) {
+    return 9
   }
 
   return 0
@@ -82,6 +90,10 @@ export default function App() {
           <Route element={<HotelDetailPage />} path="/hotels/:slug" />
           <Route element={<CheckoutPage />} path="/hotels/:slug/checkout" />
           <Route element={<AboutPage />} path="/about" />
+          <Route element={<HelpCenterPage />} path="/help" />
+          <Route element={<ContactPage />} path="/contact" />
+          <Route element={<PrivacyPolicyPage />} path="/privacy" />
+          <Route element={<TermsPage />} path="/terms" />
           <Route element={<MyBookingsPage />} path="/my-bookings" />
           <Route element={<OwnerPanelPage />} path="/owner" />
           <Route element={<LoginPage />} path="/login" />

@@ -115,6 +115,9 @@ export default function Navbar() {
           <NavLink className={navLinkClass} to="/about">
             Nosotros
           </NavLink>
+          <NavLink className={navLinkClass} to="/help">
+            Ayuda
+          </NavLink>
         </div>
 
         {isAuthenticated ? (

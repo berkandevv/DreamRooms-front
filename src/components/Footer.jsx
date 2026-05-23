@@ -1,3 +1,5 @@
+import { Link } from 'react-router'
+
 export default function Footer() {
   return (
     <footer className="border-t border-outline-variant bg-surface-container">
@@ -10,18 +12,18 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-5 text-sm text-secondary">
-          <a className="hover:text-primary" href="#">
+          <Link className="hover:text-primary" to="/privacy">
             Privacidad
-          </a>
-          <a className="hover:text-primary" href="#">
+          </Link>
+          <Link className="hover:text-primary" to="/terms">
             Condiciones
-          </a>
-          <a className="hover:text-primary" href="#">
+          </Link>
+          <Link className="hover:text-primary" to="/contact">
             Contacto
-          </a>
-          <a className="hover:text-primary" href="#">
+          </Link>
+          <Link className="hover:text-primary" to="/help">
             Ayuda
-          </a>
+          </Link>
         </div>
       </div>
     </footer>
