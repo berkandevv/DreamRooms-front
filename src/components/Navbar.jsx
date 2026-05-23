@@ -107,11 +107,6 @@ export default function Navbar() {
           <NavLink className={navLinkClass} to="/hotels">
             Hoteles
           </NavLink>
-          {isAuthenticated && isCustomer && (
-            <NavLink className={navLinkClass} to="/my-bookings">
-              Mis reservas
-            </NavLink>
-          )}
           <NavLink className={navLinkClass} to="/about">
             Nosotros
           </NavLink>
@@ -121,49 +116,52 @@ export default function Navbar() {
         </div>
 
         {isAuthenticated ? (
-          <div className="relative">
-            <button
-              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
-              onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
-              type="button"
-            >
-              <span>{displayName}</span>
-              <FaChevronDown
-                className={`h-3 w-3 transition-transform ${
-                  isMenuOpen ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
-
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest shadow-[0_12px_30px_rgba(19,27,46,0.18)]">
-                {isOwner ? (
-                  <Link
-                    className="block px-4 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container"
-                    onClick={() => setIsMenuOpen(false)}
-                    to="/owner"
-                  >
-                    Mi panel
-                  </Link>
-                ) : (
-                  <Link
-                    className="block px-4 py-3 text-sm font-semibold text-on-surface transition hover:bg-surface-container"
-                    onClick={() => setIsMenuOpen(false)}
-                    to="/my-bookings"
-                  >
-                    Mis reservas
-                  </Link>
-                )}
-                <button
-                  className="block w-full px-4 py-3 text-left text-sm font-semibold text-error transition hover:bg-error-container disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled={isLoggingOut}
-                  onClick={handleLogout}
-                  type="button"
-                >
-                  {isLoggingOut ? 'Cerrando...' : 'Logout'}
-                </button>
-              </div>
+          <div className="flex items-center gap-3">
+            {isOwner && (
+              <Link
+                className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-surface hover:shadow-md"
+                to="/owner"
+              >
+                Mi panel
+              </Link>
             )}
+
+            {isCustomer && (
+              <Link
+                className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-surface hover:shadow-md"
+                to="/my-bookings"
+              >
+                Mis reservas
+              </Link>
+            )}
+
+            <div className="relative">
+              <button
+                className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
+                onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
+                type="button"
+              >
+                <span>{displayName}</span>
+                <FaChevronDown
+                  className={`h-3 w-3 transition-transform ${
+                    isMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest shadow-[0_12px_30px_rgba(19,27,46,0.18)]">
+                  <button
+                    className="block w-full px-4 py-3 text-left text-sm font-semibold text-error transition hover:bg-error-container disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={isLoggingOut}
+                    onClick={handleLogout}
+                    type="button"
+                  >
+                    {isLoggingOut ? 'Saliendo...' : 'Salir'}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="flex items-center gap-3">
