@@ -1,5 +1,6 @@
 import { getStatusClass } from './ownerHelpers'
 
+// Muestra una tarjeta con una métrica del panel
 export function StatCard({ label, value }) {
   return (
     <article className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_8px_24px_rgba(19,27,46,0.06)]">
@@ -9,6 +10,7 @@ export function StatCard({ label, value }) {
   )
 }
 
+// Muestra una tarjeta contenedora del panel
 export function PanelCard({ action, children, onAction, title }) {
   return (
     <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
@@ -29,6 +31,7 @@ export function PanelCard({ action, children, onAction, title }) {
   )
 }
 
+// Muestra una etiqueta visual para estados
 export function StatusBadge({ label = '', status }) {
   return (
     <span
@@ -40,6 +43,7 @@ export function StatusBadge({ label = '', status }) {
   )
 }
 
+// Muestra una métrica pequeña dentro de una tarjeta
 export function Metric({ label, value }) {
   return (
     <div className="rounded-lg bg-surface-container p-3">
@@ -51,6 +55,7 @@ export function Metric({ label, value }) {
   )
 }
 
+// Muestra un campo de texto del panel
 export function TextInput({ label, name, onChange, value, ...props }) {
   return (
     <label className="block">
@@ -68,6 +73,7 @@ export function TextInput({ label, name, onChange, value, ...props }) {
   )
 }
 
+// Muestra un campo de texto largo del panel
 export function TextArea({ label, name, onChange, value }) {
   return (
     <label className="block">
@@ -84,6 +90,7 @@ export function TextArea({ label, name, onChange, value }) {
   )
 }
 
+// Muestra un selector del panel
 export function SelectInput({ children, label, name, onChange, value }) {
   return (
     <label className="block">
@@ -102,6 +109,7 @@ export function SelectInput({ children, label, name, onChange, value }) {
   )
 }
 
+// Muestra una casilla de verificación del panel
 export function CheckboxInput({ checked, label, name, onChange }) {
   return (
     <label className="flex items-center gap-2 text-sm font-semibold text-secondary">
@@ -117,6 +125,7 @@ export function CheckboxInput({ checked, label, name, onChange }) {
   )
 }
 
+// Muestra el botón principal de los formularios del panel
 export function PrimaryButton({ children, disabled }) {
   return (
     <button
