@@ -4,6 +4,7 @@ export default function HotelDetailHero({ hotel }) {
   const address = hotel.location?.address || hotel.contact?.address
   const city = hotel.location?.city
   const country = hotel.location?.country
+  const stars = '★'.repeat(Number(hotel.stars) || 0) || 'Sin estrellas'
 
   return (
     <section className="lg:col-span-2">
@@ -30,8 +31,7 @@ export default function HotelDetailHero({ hotel }) {
           </div>
 
           <div className="rounded-lg bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-on-surface shadow">
-            <span className="text-[#10B981]">☆</span>{' '}
-            {hotel.average_rating || 'Nuevo'}
+            <span className="text-[#10B981]">{stars}</span>
             <span className="ml-1 text-secondary">
               ({hotel.reviews_count || 0} reseñas)
             </span>

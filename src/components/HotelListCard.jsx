@@ -8,7 +8,7 @@ export default function HotelListCard({ hotel }) {
   const city = hotel.location?.city || 'Ciudad no disponible'
   const country = hotel.location?.country || 'País no disponible'
   const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
-  const rating = hotel.average_rating || 'Nuevo'
+  const stars = '★'.repeat(Number(hotel.stars) || 0) || 'Sin estrellas'
   const imageUrl = hotel.cover_image?.url
   const imageAlt = hotel.cover_image?.alt_text || hotel.name
   const services = formatServices(hotel.services).slice(0, 3)
@@ -24,7 +24,7 @@ export default function HotelListCard({ hotel }) {
           />
         )}
         <div className="absolute right-4 top-4 rounded-full bg-surface-container-lowest/90 px-3 py-1 text-sm font-semibold text-on-surface shadow">
-          <span className="text-[#10B981]">☆</span> {rating}
+          <span className="text-[#10B981]">{stars}</span>
         </div>
       </div>
 

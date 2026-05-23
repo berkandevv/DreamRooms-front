@@ -25,20 +25,21 @@ function sortHotels(hotels, sortBy) {
   return hotels
 }
 
-function getHotelZone(hotel) {
-  return [
-    hotel.location?.city,
-    hotel.location?.region,
-    hotel.location?.country,
-  ]
-    .filter(Boolean)
-    .join(', ')
+function getAvailableRegions(hotels) {
+  const regions = hotels.map((hotel) => hotel.location?.region).filter(Boolean)
+
+  return [...new Set(regions)].toSorted()
 }
 
-function getAvailableZones(hotels) {
-  const zones = hotels.map((hotel) => getHotelZone(hotel)).filter(Boolean)
+function getAvailableCities(hotels, selectedRegion) {
+  const cities = hotels
+    .filter((hotel) => {
+      return selectedRegion === 'all' || hotel.location?.region === selectedRegion
+    })
+    .map((hotel) => hotel.location?.city)
+    .filter(Boolean)
 
-  return [...new Set(zones)].toSorted()
+  return [...new Set(cities)].toSorted()
 }
 
 function getAvailableServices(hotels) {
@@ -213,7 +214,8 @@ function renderStars(rating) {
 
 function filterHotels(
   hotels,
-  selectedZone,
+  selectedRegion,
+  selectedCity,
   selectedRating,
   selectedServices,
   maxPrice,
@@ -233,10 +235,13 @@ function filterHotels(
       availabilityByRoomType,
       stayDates,
     )
-    const zoneMatches = selectedZone === 'all' || getHotelZone(hotel) === selectedZone
+    const regionMatches =
+      selectedRegion === 'all' || hotel.location?.region === selectedRegion
+    const cityMatches =
+      selectedCity === 'all' || hotel.location?.city === selectedCity
     const ratingMatches =
       selectedRating === 'all' ||
-      Number(hotel.average_rating) >= Number(selectedRating)
+      Number(hotel.stars) === Number(selectedRating)
     const hotelPrice = Number(hotel.starting_price)
     const priceMatches = !hotelPrice || hotelPrice <= maxPrice
     const hotelServices = formatServices(hotel.services).map((service) => {
@@ -252,7 +257,8 @@ function filterHotels(
       searchMatches &&
       capacityMatches &&
       availabilityMatches &&
-      zoneMatches &&
+      regionMatches &&
+      cityMatches &&
       ratingMatches &&
       priceMatches &&
       servicesMatch
@@ -276,7 +282,8 @@ export default function HotelsPage() {
   const [sortBy, setSortBy] = useState('rating')
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedZone, setSelectedZone] = useState('all')
+  const [selectedRegion, setSelectedRegion] = useState('all')
+  const [selectedCity, setSelectedCity] = useState('all')
   const [selectedRating, setSelectedRating] = useState('all')
   const [selectedServices, setSelectedServices] = useState([])
   const [maxPrice, setMaxPrice] = useState(500)
@@ -358,7 +365,8 @@ export default function HotelsPage() {
     }
   }, [checkIn, checkOut, hotels])
 
-  const availableZones = getAvailableZones(hotels)
+  const availableRegions = getAvailableRegions(hotels)
+  const availableCities = getAvailableCities(hotels, selectedRegion)
   const availableServices = getAvailableServices(hotels)
   const highestPrice = getHighestPrice(hotels)
   const stayDates = getStayDates(checkIn, checkOut)
@@ -366,7 +374,8 @@ export default function HotelsPage() {
     stayDates.length > 0 && !isAvailabilityLoading && !availabilityError
   const filteredHotels = filterHotels(
     hotels,
-    selectedZone,
+    selectedRegion,
+    selectedCity,
     selectedRating,
     selectedServices,
     maxPrice,
@@ -390,8 +399,14 @@ export default function HotelsPage() {
     setCurrentPage(1)
   }
 
-  function handleZoneChange(event) {
-    setSelectedZone(event.target.value)
+  function handleRegionChange(event) {
+    setSelectedRegion(event.target.value)
+    setSelectedCity('all')
+    setCurrentPage(1)
+  }
+
+  function handleCityChange(event) {
+    setSelectedCity(event.target.value)
     setCurrentPage(1)
   }
 
@@ -420,7 +435,8 @@ export default function HotelsPage() {
   }
 
   function clearFilters() {
-    setSelectedZone('all')
+    setSelectedRegion('all')
+    setSelectedCity('all')
     setSelectedRating('all')
     setSelectedServices([])
     setMaxPrice(highestPrice)
@@ -558,20 +574,42 @@ export default function HotelsPage() {
               <div>
                 <label
                   className="text-sm font-bold text-on-surface"
-                  htmlFor="zone-filter"
+                  htmlFor="region-filter"
                 >
-                  Zona
+                  Comunidad autónoma
                 </label>
                 <select
                   className="mt-3 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-on-surface outline-none focus:border-primary"
-                  id="zone-filter"
-                  onChange={handleZoneChange}
-                  value={selectedZone}
+                  id="region-filter"
+                  onChange={handleRegionChange}
+                  value={selectedRegion}
                 >
-                  <option value="all">Todas las zonas</option>
-                  {availableZones.map((zone) => (
-                    <option key={zone} value={zone}>
-                      {zone}
+                  <option value="all">Todas las comunidades</option>
+                  {availableRegions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label
+                  className="text-sm font-bold text-on-surface"
+                  htmlFor="city-filter"
+                >
+                  Ciudad
+                </label>
+                <select
+                  className="mt-3 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-on-surface outline-none focus:border-primary"
+                  id="city-filter"
+                  onChange={handleCityChange}
+                  value={selectedCity}
+                >
+                  <option value="all">Todas las ciudades</option>
+                  {availableCities.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
                     </option>
                   ))}
                 </select>
@@ -579,7 +617,7 @@ export default function HotelsPage() {
 
               <div>
                 <p className="text-sm font-bold text-on-surface">
-                  Valoración mínima
+                  Estrellas del hotel
                 </p>
                 <div className="mt-3 space-y-3">
                   {['5', '4', '3', '2', '1'].map((rating) => (
