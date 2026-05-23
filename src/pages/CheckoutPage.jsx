@@ -9,7 +9,10 @@ import {
 } from '../services/authService'
 import { createCustomerBooking } from '../services/customerBookingService'
 import { getHotelBySlug } from '../services/hotelService'
+import { getBookingAmounts } from '../utils/bookingUtils'
+import { getIsoDate, getNights } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
+import { pluralize } from '../utils/textUtils'
 
 const initialCustomerData = {
   name: '',
@@ -18,66 +21,6 @@ const initialCustomerData = {
   password: '',
   password_confirmation: '',
   notes: '',
-}
-
-function getNights(checkIn, checkOut) {
-  if (!checkIn || !checkOut) {
-    return 0
-  }
-
-  const startDate = new Date(`${checkIn}T00:00:00Z`)
-  const endDate = new Date(`${checkOut}T00:00:00Z`)
-  const difference = endDate.getTime() - startDate.getTime()
-
-  if (Number.isNaN(difference) || difference <= 0) {
-    return 0
-  }
-
-  return Math.ceil(difference / 86400000)
-}
-
-function pluralize(count, singular, plural) {
-  return Number(count) === 1 ? singular : plural
-}
-
-function getIsoDate(date) {
-  if (!date) {
-    return ''
-  }
-
-  return new Date(`${date}T00:00:00Z`).toISOString()
-}
-
-function getBookingAmounts(roomType, hotel, nights, unitsBooked) {
-  const basePrice = Number(roomType?.base_price)
-  const taxRate = Number(hotel?.pricing?.tax_rate_percent) || 0
-  const discountRate = Number(hotel?.pricing?.discount_rate_percent) || 0
-
-  if (!basePrice || !nights) {
-    return {
-      discount: 0,
-      discountRate,
-      subtotal: 0,
-      taxes: 0,
-      taxRate,
-      total: 0,
-    }
-  }
-
-  const subtotal = basePrice * nights * unitsBooked
-  const discount = subtotal * (discountRate / 100)
-  const taxableAmount = subtotal - discount
-  const taxes = taxableAmount * (taxRate / 100)
-  const total = taxableAmount + taxes
-
-  return {
-    discount,
-    discountRate,
-    subtotal,
-    taxes,
-    taxRate,
-    total,
-  }
 }
 
 export default function CheckoutPage() {

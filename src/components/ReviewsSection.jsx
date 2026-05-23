@@ -1,10 +1,4 @@
-function formatDate(date) {
-  if (!date) {
-    return 'Fecha no disponible'
-  }
-
-  return new Date(date).toLocaleDateString('es-ES')
-}
+import { formatDate } from '../utils/dateUtils'
 
 export default function ReviewsSection({ reviews, error }) {
   return (
@@ -32,7 +26,7 @@ export default function ReviewsSection({ reviews, error }) {
                     {review.user?.name || 'Usuario'}
                   </h3>
                   <p className="mt-1 text-sm text-secondary">
-                    {formatDate(review.created_at)}
+                    {formatDate(review.created_at, 'Fecha no disponible')}
                   </p>
                 </div>
                 <p className="font-semibold text-on-surface">
