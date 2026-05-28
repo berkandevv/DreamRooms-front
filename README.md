@@ -1,16 +1,91 @@
-# React + Vite
+# Dream Rooms Front
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend de Dream Rooms, una aplicación web para buscar hoteles, consultar habitaciones, crear reservas y gestionar alojamientos desde un panel de propietario.
 
-Currently, two official plugins are available:
+El proyecto está hecho con React, Vite, React Router y Tailwind CSS.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Funcionalidades principales
 
-## React Compiler
+- Listado de hoteles con filtros por comunidad autónoma, ciudad, estrellas, precio y servicios
+- Detalle de hotel con habitaciones, servicios, reseñas y comprobación de disponibilidad
+- Checkout para crear reservas
+- Registro e inicio de sesión de clientes y propietarios
+- Página de reservas del cliente
+- Panel de propietario para gestionar hoteles, habitaciones, disponibilidad, reservas y pagos
+- Páginas informativas: contacto, ayuda, privacidad, condiciones y sobre nosotros
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Requisitos
 
-## Expanding the ESLint configuration
+- Node.js
+- npm
+- Backend/API de Dream Rooms levantado en `http://localhost:8000/api`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Instalación
+
+```bash
+npm install
+```
+
+## Ejecutar en desarrollo
+
+```bash
+npm run dev
+```
+
+La aplicación se abrirá normalmente en:
+
+```txt
+http://localhost:5173
+```
+
+## Scripts disponibles
+
+```bash
+npm run dev
+```
+
+Arranca el servidor de desarrollo con Vite
+
+```bash
+npm run build
+```
+
+Genera la versión de producción
+
+```bash
+npm run preview
+```
+
+Previsualiza la versión generada para producción
+
+```bash
+npm run lint
+```
+
+Revisa el código con ESLint
+
+## Estructura del proyecto
+
+```txt
+src/
+  components/       Componentes reutilizables de la interfaz
+  pages/            Páginas principales de la aplicación
+  pages/bookings/   Componentes y helpers de reservas del cliente
+  pages/owner/      Componentes, formularios y helpers del panel de propietario
+  services/         Funciones que se comunican con la API
+  utils/            Funciones pequeñas para formatear, calcular o reutilizar lógica
+```
+
+## Servicios
+
+Los archivos de `src/services` centralizan las llamadas al backend:
+
+- `authService.js`: autenticación, sesión y usuario actual
+- `hotelService.js`: hoteles y reseñas públicas
+- `roomTypeService.js`: disponibilidad de habitaciones
+- `customerBookingService.js`: reservas del cliente
+- `ownerService.js`: panel de propietario
+
+## Notas
+
+Las URLs de la API están configuradas directamente en los servicios usando `localhost:8000`. Si el backend cambia de puerto o dominio, hay que actualizar esas constantes.
