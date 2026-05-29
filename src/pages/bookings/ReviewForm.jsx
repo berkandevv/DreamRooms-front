@@ -37,7 +37,7 @@ export default function ReviewForm({ booking, onCreated }) {
       <div className="mt-3 flex gap-1">
         {[1, 2, 3, 4, 5].map((value) => (
           <button
-            className="text-primary"
+            className="text-[#10B981]"
             key={value}
             onClick={() => setRating(value)}
             type="button"

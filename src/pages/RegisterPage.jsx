@@ -85,7 +85,7 @@ export default function RegisterPage() {
     setIsLeaving(true)
 
     window.setTimeout(() => {
-      navigate('/login')
+      navigate('/login', { state: { fromAuth: 'register' } })
     }, 260)
   }
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { loginUser } from '../services/authService'
 
 const initialFormData = {
@@ -8,12 +8,15 @@ const initialFormData = {
 }
 
 export default function LoginPage() {
+  const location = useLocation()
   const navigate = useNavigate()
   const [formData, setFormData] = useState(initialFormData)
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLeaving, setIsLeaving] = useState(false)
   const [error, setError] = useState('')
+  const comesFromRegister = location.state?.fromAuth === 'register'
+  const enterAnimation = comesFromRegister ? 'auth-enter-left' : 'auth-enter-right'
 
   function handleInputChange(event) {
     const { name, value } = event.target
@@ -51,7 +54,7 @@ export default function LoginPage() {
   return (
     <main
       className={`flex min-h-screen bg-surface text-on-surface ${
-        isLeaving ? 'auth-exit-left' : 'auth-enter-left'
+        isLeaving ? 'auth-exit-left' : enterAnimation
       }`}
     >
       <section className="flex w-full flex-col justify-center px-6 py-10 md:px-16 lg:w-1/2">
