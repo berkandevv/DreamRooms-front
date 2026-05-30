@@ -3,10 +3,10 @@ import {
   FaCalendarAlt,
   FaChartLine,
   FaCog,
-  FaHotel,
   FaPlus,
 } from 'react-icons/fa'
 import { Link } from 'react-router'
+import BrandLogo from '../../components/BrandLogo'
 
 export default function OwnerShell({ activeView, children, setActiveView }) {
   const navigationItems = [
@@ -21,9 +21,7 @@ export default function OwnerShell({ activeView, children, setActiveView }) {
     <div className="min-h-screen bg-background text-on-surface">
       <aside className="fixed left-0 top-0 z-40 hidden h-full w-64 border-r border-outline-variant bg-surface-container-low p-4 lg:flex lg:flex-col">
         <Link className="mb-8 flex items-center gap-3 px-3 py-4" to="/">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-on-primary">
-            <FaHotel />
-          </span>
+          <BrandLogo compact />
           <span>
             <span className="block text-lg font-bold text-primary">
               Dream Rooms

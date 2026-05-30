@@ -441,7 +441,7 @@ function BookingReviewSummary({ booking }) {
   return (
     <div className="rounded-lg border border-outline-variant bg-surface p-4">
       <div className="flex items-center gap-2 text-sm font-semibold text-secondary">
-        <FaStar className="h-4 w-4 text-[#D4AF37]" />
+        <FaStar className="h-4 w-4 text-[#10B981]" />
         <span>
           {review?.rating ? `${review.rating}/5` : 'Nota no disponible'}
         </span>

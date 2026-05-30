@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
+import BrandLogo from '../components/BrandLogo'
 import { loginUser } from '../services/authService'
 
 const initialFormData = {
@@ -60,8 +61,8 @@ export default function LoginPage() {
       <section className="flex w-full flex-col justify-center px-6 py-10 md:px-16 lg:w-1/2">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-10 lg:hidden">
-            <Link className="text-2xl font-bold text-primary" to="/">
-              Dream Rooms
+            <Link aria-label="Dream Rooms" to="/">
+              <BrandLogo />
             </Link>
           </div>
 
@@ -153,22 +154,25 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <section className="relative hidden w-1/2 overflow-hidden bg-primary-container lg:flex">
-        <img
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-45 mix-blend-overlay"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyV4mLzwCrs5mZ8AFOlmqIUmKNfvZz0QJE4M-sq_hHk5zSFkA4Qw5l1mlKUkRlSfWXgovkZXJPteiDvdrNK77vJPPhaREtzX-ccDq1ty4-crYfiAjl5xZLpXBHJXuWuXoNCrqFEVq9lam2JypdxY5AWBnkYQfLtD9cO5zJ3OT5r3vWtkWXYxboekrXG67o15kOUJvrL9cXCMWQdHBNVRqoK_OQAIxtlAVuhtyRq2NajVUfOkXbjpuN7OuRBDnDfW835Kkf8WmpgcE"
-        />
-        <div className="relative z-10 flex h-full w-full flex-col justify-between bg-gradient-to-t from-black/70 via-black/20 to-transparent p-16 text-white">
-          <Link className="text-2xl font-bold text-white" to="/">
-            Dream Rooms
+      <section className="relative hidden w-1/2 overflow-hidden bg-white lg:flex">
+        <div className="relative z-10 flex h-full w-full flex-col justify-between p-16 text-on-surface">
+          <Link aria-label="Dream Rooms" to="/">
+            <BrandLogo />
           </Link>
+
+          <div className="mx-auto flex h-80 w-80 items-center justify-center rounded-[2rem] bg-white shadow-[0_24px_70px_rgba(19,27,46,0.12)]">
+            <img
+              alt="Dream Rooms"
+              className="h-64 w-64 object-contain"
+              src="/brand/logo.png"
+            />
+          </div>
 
           <div className="max-w-lg">
             <h2 className="mb-4 text-5xl font-bold leading-tight">
               Bienvenido de nuevo
             </h2>
-            <p className="text-lg leading-8 text-white/90">
+            <p className="text-lg leading-8 text-secondary">
               Tu próximo refugio te espera. Accede para gestionar tus reservas
               y preferencias.
             </p>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { Link, NavLink, useNavigate } from 'react-router'
+import BrandLogo from './BrandLogo'
 import {
   AUTH_SESSION_CHANGED_EVENT,
   getAuthenticatedProfile,
@@ -96,8 +97,8 @@ export default function Navbar() {
   return (
     <header className="fixed left-0 top-0 z-50 w-full border-b border-outline-variant bg-surface-container-low/95 shadow-[0_10px_32px_rgba(19,27,46,0.14)] backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 md:px-8">
-        <Link className="text-xl font-bold text-primary" to="/">
-          Dream Rooms
+        <Link aria-label="Dream Rooms" to="/">
+          <BrandLogo />
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

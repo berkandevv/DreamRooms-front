@@ -204,9 +204,9 @@ function renderStars(rating) {
 
   for (let index = 0; index < 5; index += 1) {
     if (index < Number(rating)) {
-      stars.push(<FaStar className="h-4 w-4 text-[#D4AF37]" key={index} />)
+      stars.push(<FaStar className="h-4 w-4 text-[#10B981]" key={index} />)
     } else {
-      stars.push(<FaRegStar className="h-4 w-4 text-[#D4AF37]" key={index} />)
+      stars.push(<FaRegStar className="h-4 w-4 text-[#10B981]" key={index} />)
     }
   }
 

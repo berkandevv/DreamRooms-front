@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
+import BrandLogo from '../components/BrandLogo'
 import { registerUser } from '../services/authService'
 
 const initialFormData = {
@@ -97,8 +98,8 @@ export default function RegisterPage() {
     >
       <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-surface-container-low p-16 md:flex">
         <div className="relative z-10">
-          <Link className="text-2xl font-bold text-primary" to="/">
-            Dream Rooms
+          <Link aria-label="Dream Rooms" to="/">
+            <BrandLogo />
           </Link>
         </div>
 
@@ -141,17 +142,17 @@ export default function RegisterPage() {
         </p>
 
         <img
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-10"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn_IB-fM554WFwwqEw3ij89i0scKwUlSuQAFSRWyzEMwR2GKw3hiZHIDZ76hbwViQyB4p9h4GWpRckjhDh7wlv5iCFsPt2USxDi4sg71Orh5ww5vUn20GsQ4patjBUL7OUFKQZ0_vrgfuNv0FnIBBNNQ6DUOsu8mAXAzWyUwG_i_610vyXVzJlkTbmDtWFikebuxZzx6IWA-lu6ZdXUbS-SYqFhGBebXAhTVZMLJt4HcuZG7tDXudR1SdNofz9lAU6nXWbqbxSoFk"
+          alt="Dream Rooms"
+          className="absolute bottom-10 right-10 h-64 w-64 object-contain opacity-10"
+          src="/brand/logo.png"
         />
       </section>
 
       <section className="flex flex-1 items-center justify-center p-6 md:p-16">
         <div className="w-full max-w-md">
           <div className="mb-10 text-center md:hidden">
-            <Link className="text-2xl font-bold text-primary" to="/">
-              Dream Rooms
+            <Link aria-label="Dream Rooms" to="/">
+              <BrandLogo className="justify-center" />
             </Link>
           </div>
 

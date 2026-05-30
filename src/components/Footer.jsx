@@ -1,11 +1,12 @@
 import { Link } from 'react-router'
+import BrandLogo from './BrandLogo'
 
 export default function Footer() {
   return (
     <footer className="border-t border-outline-variant bg-surface-container">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-5 py-8 md:flex-row md:px-8">
         <div className="text-center md:text-left">
-          <p className="text-xl font-bold text-primary">Dream Rooms</p>
+          <BrandLogo className="justify-center md:justify-start" />
           <p className="mt-1 text-sm text-secondary">
             © 2026 Dream Rooms. Todos los derechos reservados.
           </p>
