@@ -160,7 +160,7 @@ export default function LoginPage() {
             <BrandLogo />
           </Link>
 
-          <div className="mx-auto flex h-80 w-80 items-center justify-center rounded-[2rem] bg-white shadow-[0_24px_70px_rgba(19,27,46,0.12)]">
+          <div className="mx-auto flex h-80 w-80 items-center justify-center rounded-2rem bg-white shadow-[0_24px_70px_rgba(19,27,46,0.12)]">
             <img
               alt="Dream Rooms"
               className="h-64 w-64 object-contain"

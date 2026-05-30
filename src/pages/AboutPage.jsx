@@ -69,7 +69,7 @@ export default function AboutPage() {
 
   return (
     <Layout>
-      <section className="relative -mt-20 flex min-h-[620px] items-center overflow-hidden pt-20">
+      <section className="relative -mt-20 flex min-h-155 items-center overflow-hidden pt-20">
         <img
           alt="Piscina de resort al atardecer con palmeras"
           className="absolute inset-0 h-full w-full object-cover opacity-85"
@@ -116,7 +116,7 @@ export default function AboutPage() {
           </div>
 
           <div className="relative">
-            <div className="aspect-[4/5] overflow-hidden rounded-xl bg-surface-container shadow-[0_14px_40px_rgba(19,27,46,0.14)]">
+            <div className="aspect-4/5 overflow-hidden rounded-xl bg-surface-container shadow-[0_14px_40px_rgba(19,27,46,0.14)]">
               <img
                 alt="Interior de suite moderna"
                 className="h-full w-full object-cover"
