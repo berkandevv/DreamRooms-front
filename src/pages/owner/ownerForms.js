@@ -1,3 +1,5 @@
+import { getIntegerSquareMeters } from '../../utils/formatSquareMeters'
+
 export const bookingStatuses = ['pending', 'confirmed', 'completed', 'cancelled']
 export const paymentStatuses = ['pending', 'paid', 'failed', 'refunded']
 
@@ -104,6 +106,7 @@ export function buildRoomTypePayload(formData) {
     capacity_adults: Number(roomTypeData.capacity_adults),
     capacity_children: Number(roomTypeData.capacity_children),
     service_ids: roomTypeData.service_ids.map((serviceId) => Number(serviceId)),
+    size_m2: getIntegerSquareMeters(roomTypeData.size_m2),
     total_units: Number(roomTypeData.total_units),
   }
 }
@@ -171,7 +174,7 @@ export function mapRoomTypeToForm(roomType) {
     image_is_cover: true,
     name: roomType.name || '',
     service_ids: (roomType.services || []).map((service) => service.id),
-    size_m2: roomType.size_m2 || '',
+    size_m2: getIntegerSquareMeters(roomType.size_m2),
     status: roomType.status || 'active',
     total_units: roomType.total_units || 1,
   }

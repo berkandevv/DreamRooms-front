@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { formatServices } from '../utils/formatServices'
 import { formatPrice } from '../utils/formatPrice'
 import { formatDate } from '../utils/dateUtils'
+import { formatSquareMeters } from '../utils/formatSquareMeters'
 
 export default function RoomTypeCard({
   roomType,
@@ -55,7 +56,7 @@ export default function RoomTypeCard({
               {roomType.name}
             </h3>
             <div className="mt-1 flex flex-wrap gap-2 text-sm font-semibold text-secondary">
-              <span>{roomType.size_m2 || '-'} m²</span>
+              <span>{formatSquareMeters(roomType.size_m2)} m²</span>
               <span>•</span>
               <span>{roomType.bed_type || 'Cama no disponible'}</span>
             </div>

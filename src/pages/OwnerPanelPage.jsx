@@ -22,6 +22,7 @@ import {
 } from '../services/ownerService'
 import { formatDate } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
+import { formatSquareMeters } from '../utils/formatSquareMeters'
 import {
   bookingStatuses,
   buildAvailabilityItems,
@@ -956,7 +957,7 @@ function InventoryView({
                     </h3>
                     <p className="text-sm text-secondary">
                       {roomType.bed_type || 'Cama sin definir'} ·{' '}
-                      {roomType.size_m2 || '-'} m²
+                      {formatSquareMeters(roomType.size_m2)} m²
                     </p>
                   </div>
                   <StatusBadge status={roomType.status} />
@@ -1026,8 +1027,11 @@ function InventoryView({
               />
               <TextInput
                 label="m²"
+                min="0"
                 name="size_m2"
                 onChange={updateRoomTypeForm}
+                step="1"
+                type="number"
                 value={roomTypeForm.size_m2}
               />
               <TextInput
@@ -1919,8 +1923,11 @@ function SettingsView({
               />
               <TextInput
                 label="m²"
+                min="0"
                 name="size_m2"
                 onChange={updateEditRoomTypeForm}
+                step="1"
+                type="number"
                 value={editRoomTypeForm.size_m2}
               />
               <TextInput
