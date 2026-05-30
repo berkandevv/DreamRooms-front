@@ -82,7 +82,7 @@ export default function App() {
   }, [location.pathname])
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-clip">
       <div className={routeAnimation} key={location.pathname}>
         <Routes location={location}>
           <Route element={<HomePage />} path="/" />

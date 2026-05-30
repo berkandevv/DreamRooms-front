@@ -534,8 +534,8 @@ export default function HotelsPage() {
         </div>
 
         <div className="flex flex-col gap-8 md:flex-row">
-          <aside className="w-full shrink-0 md:w-72">
-            <div className="sticky top-32 space-y-8 rounded-xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
+          <aside className="w-full shrink-0 md:sticky md:top-28 md:max-h-[calc(100vh-8rem)] md:w-72 md:self-start md:overflow-y-auto">
+            <div className="space-y-8 rounded-xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
               <div className="flex items-center justify-between gap-4">
                 <h2 className="whitespace-nowrap text-xl font-bold text-on-surface">
                   Filtrar resultados
@@ -727,36 +727,40 @@ export default function HotelsPage() {
                   {currentHotels.map((hotel) => (
                     <HotelListCard hotel={hotel} key={hotel.id} />
                   ))}
-
-                  {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-3 pt-4">
-                      <button
-                        className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
-                        disabled={currentPage === 1}
-                        onClick={goToPreviousPage}
-                        type="button"
-                      >
-                        Anterior
-                      </button>
-
-                      <span className="text-sm font-semibold text-secondary">
-                        {currentPage} / {totalPages}
-                      </span>
-
-                      <button
-                        className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
-                        disabled={currentPage === totalPages}
-                        onClick={goToNextPage}
-                        type="button"
-                      >
-                        Siguiente
-                      </button>
-                    </div>
-                  )}
                 </div>
               )}
           </div>
         </div>
+
+        {!isLoading &&
+          !error &&
+          hotels.length > 0 &&
+          sortedHotels.length > 0 &&
+          totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-3 md:ml-80">
+              <button
+                className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={currentPage === 1}
+                onClick={goToPreviousPage}
+                type="button"
+              >
+                Anterior
+              </button>
+
+              <span className="text-sm font-semibold text-secondary">
+                {currentPage} / {totalPages}
+              </span>
+
+              <button
+                className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={currentPage === totalPages}
+                onClick={goToNextPage}
+                type="button"
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
       </section>
     </Layout>
   )
