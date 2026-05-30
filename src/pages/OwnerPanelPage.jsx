@@ -54,6 +54,21 @@ import {
   TextInput,
 } from './owner/OwnerUi'
 
+const OWNER_ACTIVE_VIEW_STORAGE_KEY = 'owner_active_view'
+const ownerViews = new Set([
+  'dashboard',
+  'inventory',
+  'bookings',
+  'new-property',
+  'settings',
+])
+
+function getInitialOwnerView() {
+  const storedView = sessionStorage.getItem(OWNER_ACTIVE_VIEW_STORAGE_KEY)
+
+  return ownerViews.has(storedView) ? storedView : 'dashboard'
+}
+
 function toggleSelectedId(selectedIds, id, isSelected) {
   const normalizedId = Number(id)
 
@@ -79,7 +94,15 @@ function addDays(date, days) {
 }
 
 function formatDateInput(date) {
-  return date.toISOString().slice(0, 10)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+function getMinStayNights(dayAvailability) {
+  return Number(dayAvailability.min_stay_nights) || 1
 }
 
 function getAvailabilityPreviewRange() {
@@ -97,7 +120,7 @@ function isSameAvailabilityPattern(firstDay, secondDay) {
     firstDay.status === secondDay.status &&
     Number(firstDay.available_units) === Number(secondDay.available_units) &&
     Number(firstDay.price) === Number(secondDay.price) &&
-    Number(firstDay.min_stay_nights) === Number(secondDay.min_stay_nights)
+    getMinStayNights(firstDay) === getMinStayNights(secondDay)
   )
 }
 
@@ -136,38 +159,6 @@ function getAvailabilityRanges(availabilityDays) {
   return ranges
 }
 
-function getAvailabilityPatternKey(availabilityRange) {
-  const { sample } = availabilityRange
-
-  return [
-    sample.status,
-    Number(sample.available_units),
-    Number(sample.price),
-    Number(sample.min_stay_nights),
-  ].join('|')
-}
-
-function getGroupedAvailabilityRanges(availabilityRanges) {
-  const groupsByPattern = new Map()
-
-  availabilityRanges.forEach((availabilityRange) => {
-    const patternKey = getAvailabilityPatternKey(availabilityRange)
-    const currentGroup = groupsByPattern.get(patternKey)
-
-    if (currentGroup) {
-      currentGroup.ranges.push(availabilityRange)
-      return
-    }
-
-    groupsByPattern.set(patternKey, {
-      ranges: [availabilityRange],
-      sample: availabilityRange.sample,
-    })
-  })
-
-  return [...groupsByPattern.values()]
-}
-
 function isSpecialAvailabilityDay(dayAvailability, roomType) {
   const basePrice = Number(roomType?.base_price)
   const totalUnits = Number(roomType?.total_units)
@@ -188,7 +179,7 @@ function getSpecialAvailabilityDays(availabilityDays, roomType) {
 }
 
 export default function OwnerPanelPage() {
-  const [activeView, setActiveView] = useState('dashboard')
+  const [activeView, setActiveView] = useState(getInitialOwnerView)
   const [hotels, setHotels] = useState([])
   const [bookings, setBookings] = useState([])
   const [roomTypes, setRoomTypes] = useState([])
@@ -231,6 +222,10 @@ export default function OwnerPanelPage() {
 
     return { activeHotels, confirmedBookings, pendingBookings, revenue }
   }, [bookings, hotels])
+
+  useEffect(() => {
+    sessionStorage.setItem(OWNER_ACTIVE_VIEW_STORAGE_KEY, activeView)
+  }, [activeView])
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -1208,21 +1203,18 @@ function AvailabilityPreview({
       isSpecialAvailabilityDay(availabilityRange.sample, selectedRoomType)
     )
   })
-  const regularGroups = getGroupedAvailabilityRanges(regularRanges)
-  const closedGroups = getGroupedAvailabilityRanges(closedRanges)
-  const specialGroups = getGroupedAvailabilityRanges(specialRanges)
   const [showAllRegularRanges, setShowAllRegularRanges] = useState(false)
   const [showAllClosedRanges, setShowAllClosedRanges] = useState(false)
   const [showAllSpecialRanges, setShowAllSpecialRanges] = useState(false)
   const visibleRegularRanges = showAllRegularRanges
-    ? regularGroups
-    : regularGroups.slice(0, 4)
+    ? regularRanges
+    : regularRanges.slice(0, 4)
   const visibleClosedRanges = showAllClosedRanges
-    ? closedGroups
-    : closedGroups.slice(0, 4)
+    ? closedRanges
+    : closedRanges.slice(0, 4)
   const visibleSpecialRanges = showAllSpecialRanges
-    ? specialGroups
-    : specialGroups.slice(0, 4)
+    ? specialRanges
+    : specialRanges.slice(0, 4)
 
   return (
     <PanelCard title="Disponibilidad próxima">
@@ -1266,7 +1258,7 @@ function AvailabilityPreview({
             title="Rangos / temporadas"
           />
 
-          {regularGroups.length > 4 && (
+          {regularRanges.length > 4 && (
             <button
               className="text-sm font-semibold text-secondary underline transition hover:text-primary"
               onClick={() => setShowAllRegularRanges((isVisible) => !isVisible)}
@@ -1274,7 +1266,7 @@ function AvailabilityPreview({
             >
               {showAllRegularRanges
                 ? 'Ver menos rangos'
-                : `Ver ${regularGroups.length - 4} grupos más`}
+                : `Ver ${regularRanges.length - 4} rangos más`}
             </button>
           )}
 
@@ -1285,7 +1277,7 @@ function AvailabilityPreview({
             title="Fechas cerradas"
           />
 
-          {closedGroups.length > 4 && (
+          {closedRanges.length > 4 && (
             <button
               className="text-sm font-semibold text-secondary underline transition hover:text-primary"
               onClick={() => setShowAllClosedRanges((isVisible) => !isVisible)}
@@ -1293,7 +1285,7 @@ function AvailabilityPreview({
             >
               {showAllClosedRanges
                 ? 'Ver menos fechas cerradas'
-                : `Ver ${closedGroups.length - 4} grupos cerrados más`}
+                : `Ver ${closedRanges.length - 4} rangos cerrados más`}
             </button>
           )}
 
@@ -1304,7 +1296,7 @@ function AvailabilityPreview({
             title="Cambios especiales"
           />
 
-          {specialGroups.length > 4 && (
+          {specialRanges.length > 4 && (
             <button
               className="text-sm font-semibold text-secondary underline transition hover:text-primary"
               onClick={() => setShowAllSpecialRanges((isVisible) => !isVisible)}
@@ -1312,7 +1304,7 @@ function AvailabilityPreview({
             >
               {showAllSpecialRanges
                 ? 'Ver menos cambios especiales'
-                : `Ver ${specialGroups.length - 4} grupos especiales más`}
+                : `Ver ${specialRanges.length - 4} cambios especiales más`}
             </button>
           )}
         </div>
@@ -1329,10 +1321,10 @@ function AvailabilityRangeSection({ emptyText, ranges, roomType, title }) {
         <p className="mt-2 text-sm text-secondary">{emptyText}</p>
       ) : (
         <div className="mt-3 space-y-2">
-          {ranges.map((availabilityGroup) => (
+          {ranges.map((availabilityRange) => (
             <AvailabilityRangeRow
-              availabilityGroup={availabilityGroup}
-              key={getAvailabilityPatternKey(availabilityGroup.ranges[0])}
+              availabilityRange={availabilityRange}
+              key={`${availabilityRange.from}-${availabilityRange.to}`}
               roomType={roomType}
             />
           ))}
@@ -1350,34 +1342,21 @@ function formatAvailabilityRangeDate(availabilityRange) {
   return `${formatDate(availabilityRange.from)} - ${formatDate(availabilityRange.to)}`
 }
 
-function AvailabilityRangeRow({ availabilityGroup, roomType }) {
-  const { ranges, sample } = availabilityGroup
-  const visibleRanges = ranges.slice(0, 3)
+function AvailabilityRangeRow({ availabilityRange, roomType }) {
+  const { sample } = availabilityRange
+  const minStayNights = getMinStayNights(sample)
 
   return (
     <article className="rounded-lg border border-outline-variant bg-surface p-3">
       <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div>
-          <div className="space-y-1">
-            {visibleRanges.map((availabilityRange) => (
-              <p
-                className="font-bold text-primary"
-                key={`${availabilityRange.from}-${availabilityRange.to}`}
-              >
-                {formatAvailabilityRangeDate(availabilityRange)}
-              </p>
-            ))}
-            {ranges.length > visibleRanges.length && (
-              <p className="text-sm font-semibold text-secondary">
-                +{ranges.length - visibleRanges.length} tramos más con estas
-                condiciones
-              </p>
-            )}
-          </div>
+          <p className="font-bold text-primary">
+            {formatAvailabilityRangeDate(availabilityRange)}
+          </p>
           <p className="mt-1 text-sm text-secondary">
             {sample.available_units} unidades ·{' '}
             {formatPrice(sample.price, roomType.currency_symbol)} · mínimo{' '}
-            {sample.min_stay_nights || 1} noche
+            {minStayNights} {Number(minStayNights) === 1 ? 'noche' : 'noches'}
           </p>
         </div>
         <StatusBadge status={sample.status} />
