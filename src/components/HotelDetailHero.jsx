@@ -1,10 +1,13 @@
+import {
+  getHotelImage,
+  getHotelLocation,
+  getHotelStars,
+} from '../utils/hotelUtils'
+
 export default function HotelDetailHero({ hotel }) {
-  const imageUrl = hotel.cover_image?.url
-  const imageAlt = hotel.cover_image?.alt_text || hotel.name
-  const address = hotel.location?.address || hotel.contact?.address
-  const city = hotel.location?.city
-  const country = hotel.location?.country
-  const stars = '★'.repeat(Number(hotel.stars) || 0) || 'Sin estrellas'
+  const { alt: imageAlt, url: imageUrl } = getHotelImage(hotel)
+  const { address, city, country } = getHotelLocation(hotel)
+  const stars = getHotelStars(hotel.stars)
 
   return (
     <section className="lg:col-span-2">
@@ -26,7 +29,7 @@ export default function HotelDetailHero({ hotel }) {
             </h1>
             <p className="mt-3 text-secondary">
               {address ? `${address}, ` : ''}
-              {city || 'Ciudad no disponible'}, {country || 'País no disponible'}
+              {city}, {country}
             </p>
           </div>
 

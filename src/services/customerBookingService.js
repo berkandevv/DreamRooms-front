@@ -1,7 +1,9 @@
 import { getAuthHeaders } from './authService'
+import { API_BASE_URL } from '../config/api'
 
-const API_URL = 'http://localhost:8000/api/customer/bookings'
+const API_URL = `${API_BASE_URL}/customer/bookings`
 
+// Obtiene el mensaje más útil de una respuesta con error
 function getErrorMessage(result, fallbackMessage) {
   const validationMessage = Object.values(result.errors || {})
     .flat()

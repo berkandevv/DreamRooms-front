@@ -9,13 +9,9 @@ import {
   getCustomerFavorites,
   removeCustomerFavorite,
 } from '../services/customerFavoriteService'
+import { getUserRole } from '../utils/userUtils'
 
-function getUserRole(user) {
-  const role = user?.role?.name || user?.role || user?.account_type || user?.type || ''
-
-  return String(role).toLowerCase()
-}
-
+// Obtiene los datos de sesión necesarios para gestionar favoritos
 function getAuthSession() {
   const user = getAuthenticatedUser()
   const userRole = getUserRole(user)
@@ -26,6 +22,7 @@ function getAuthSession() {
   }
 }
 
+// Gestiona la carga y actualización de favoritos del cliente
 export function useCustomerFavorites() {
   const [authSession, setAuthSession] = useState(getAuthSession)
   const [favoriteHotels, setFavoriteHotels] = useState([])
@@ -33,10 +30,12 @@ export function useCustomerFavorites() {
   const [favoritesError, setFavoritesError] = useState('')
   const canUseFavorites = authSession.isAuthenticated && authSession.isCustomer
 
+  // Obtiene los identificadores de los hoteles favoritos
   const favoriteIds = useMemo(() => {
     return new Set(favoriteHotels.map((hotel) => Number(hotel.id)))
   }, [favoriteHotels])
 
+  // Carga los favoritos disponibles para la sesión actual
   const loadFavorites = useCallback(() => {
     if (!canUseFavorites) {
       setFavoriteHotels([])
@@ -64,6 +63,7 @@ export function useCustomerFavorites() {
       })
   }, [canUseFavorites])
 
+  // Añade o elimina un hotel de los favoritos
   const toggleFavorite = useCallback(
     async (hotel) => {
       if (!canUseFavorites) {
@@ -102,6 +102,7 @@ export function useCustomerFavorites() {
   )
 
   useEffect(() => {
+    // Actualiza los favoritos cuando cambia la sesión
     function handleAuthSessionChanged() {
       const nextAuthSession = getAuthSession()
 

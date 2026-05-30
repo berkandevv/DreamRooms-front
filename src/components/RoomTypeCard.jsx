@@ -1,9 +1,9 @@
 import { FaCheck, FaUsers } from 'react-icons/fa'
 import { useNavigate } from 'react-router'
 import { formatServices } from '../utils/formatServices'
-import { formatPrice } from '../utils/formatPrice'
 import { formatDate } from '../utils/dateUtils'
 import { formatSquareMeters } from '../utils/formatSquareMeters'
+import PricePerNight from './PricePerNight'
 
 export default function RoomTypeCard({
   roomType,
@@ -16,7 +16,6 @@ export default function RoomTypeCard({
   const navigate = useNavigate()
   const imageUrl = roomType.cover_image?.url
   const imageAlt = roomType.cover_image?.alt_text || roomType.name
-  const price = formatPrice(roomType.base_price, currencySymbol)
   const services = formatServices(roomType.services)
   const availableUnits =
     selectedAvailableUnits === null || selectedAvailableUnits === undefined
@@ -29,6 +28,7 @@ export default function RoomTypeCard({
   const servicesText =
     services.length > 0 ? services.join(', ') : 'Servicios no disponibles'
 
+  // Abre el checkout con la habitación seleccionada
   function handleSelectRoomType() {
     const checkoutParams = new URLSearchParams(searchParams)
 
@@ -100,12 +100,10 @@ export default function RoomTypeCard({
             <p className="text-xs font-semibold uppercase text-secondary">
               Desde
             </p>
-            <p className="mt-1 text-2xl font-bold text-primary">
-              {price}
-              <span className="text-base font-normal text-secondary">
-                /noche
-              </span>
-            </p>
+            <PricePerNight
+              currencySymbol={currencySymbol}
+              price={roomType.base_price}
+            />
             <p className="mt-1 text-xs font-semibold text-on-tertiary-container">
               {availableUnits} {availableUnitsLabel}
             </p>

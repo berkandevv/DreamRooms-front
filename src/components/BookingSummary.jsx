@@ -1,4 +1,4 @@
-import { formatPrice } from '../utils/formatPrice'
+import PricePerNight from './PricePerNight'
 
 export default function BookingSummary({
   checkIn,
@@ -7,8 +7,6 @@ export default function BookingSummary({
   isCheckingAvailability,
   onCheckAvailability,
 }) {
-  const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
-
   return (
     <aside className="h-fit rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(19,27,46,0.10)] lg:sticky lg:top-24">
       <h2 className="text-2xl font-bold text-on-surface">Resumen</h2>
@@ -48,12 +46,11 @@ export default function BookingSummary({
               <p className="text-sm font-semibold uppercase text-secondary">
                 Desde
               </p>
-              <p className="mt-1 text-3xl font-bold text-primary">
-                {price}
-                <span className="text-base font-normal text-secondary">
-                  /noche
-                </span>
-              </p>
+              <PricePerNight
+                className="text-3xl"
+                currencySymbol={hotel.currency_symbol}
+                price={hotel.starting_price}
+              />
             </div>
           </div>
 

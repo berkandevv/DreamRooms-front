@@ -64,12 +64,14 @@ const ownerViews = new Set([
   'settings',
 ])
 
+// Obtiene la vista inicial guardada del panel
 function getInitialOwnerView() {
   const storedView = sessionStorage.getItem(OWNER_ACTIVE_VIEW_STORAGE_KEY)
 
   return ownerViews.has(storedView) ? storedView : 'dashboard'
 }
 
+// Añade o elimina un identificador de una selección
 function toggleSelectedId(selectedIds, id, isSelected) {
   const normalizedId = Number(id)
 
@@ -80,12 +82,14 @@ function toggleSelectedId(selectedIds, id, isSelected) {
   return selectedIds.filter((selectedId) => Number(selectedId) !== normalizedId)
 }
 
+// Filtra los servicios disponibles para una sección
 function getServicesForScope(services, scope) {
   return services.filter((service) => {
     return service.scope === scope || service.scope === 'both'
   })
 }
 
+// Añade días a una fecha
 function addDays(date, days) {
   const nextDate = new Date(date)
 
@@ -94,6 +98,7 @@ function addDays(date, days) {
   return nextDate
 }
 
+// Convierte una fecha al formato usado por los campos date
 function formatDateInput(date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -102,10 +107,12 @@ function formatDateInput(date) {
   return `${year}-${month}-${day}`
 }
 
+// Obtiene la estancia mínima configurada para una fecha
 function getMinStayNights(dayAvailability) {
   return Number(dayAvailability.min_stay_nights) || 1
 }
 
+// Obtiene el rango usado en la vista previa de disponibilidad
 function getAvailabilityPreviewRange() {
   const today = new Date()
   const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -116,6 +123,7 @@ function getAvailabilityPreviewRange() {
   }
 }
 
+// Comprueba si dos fechas comparten la misma configuración
 function isSameAvailabilityPattern(firstDay, secondDay) {
   return (
     firstDay.status === secondDay.status &&
@@ -125,6 +133,7 @@ function isSameAvailabilityPattern(firstDay, secondDay) {
   )
 }
 
+// Agrupa fechas consecutivas con la misma configuración
 function getAvailabilityRanges(availabilityDays) {
   if (availabilityDays.length === 0) {
     return []
@@ -160,6 +169,7 @@ function getAvailabilityRanges(availabilityDays) {
   return ranges
 }
 
+// Comprueba si una fecha modifica la configuración habitual
 function isSpecialAvailabilityDay(dayAvailability, roomType) {
   const basePrice = Number(roomType?.base_price)
   const totalUnits = Number(roomType?.total_units)
@@ -173,6 +183,7 @@ function isSpecialAvailabilityDay(dayAvailability, roomType) {
   )
 }
 
+// Obtiene las fechas que modifican la configuración habitual
 function getSpecialAvailabilityDays(availabilityDays, roomType) {
   return availabilityDays.filter((dayAvailability) => {
     return isSpecialAvailabilityDay(dayAvailability, roomType)
@@ -209,6 +220,7 @@ export default function OwnerPanelPage() {
   const [message, setMessage] = useState('')
   const isAuthenticated = Boolean(getAuthToken())
 
+  // Calcula las métricas principales del panel
   const stats = useMemo(() => {
     const activeHotels = hotels.filter((hotel) => hotel.status === 'published').length
     const pendingBookings = bookings.filter(
@@ -337,6 +349,7 @@ export default function OwnerPanelPage() {
     }
   }, [selectedRoomTypeId])
 
+  // Actualiza el formulario de creación de hoteles
   function updateHotelForm(event) {
     const { checked, files, name, type, value } = event.target
     setHotelForm((currentForm) => ({
@@ -352,6 +365,7 @@ export default function OwnerPanelPage() {
     }))
   }
 
+  // Actualiza el formulario de creación de habitaciones
   function updateRoomTypeForm(event) {
     const { checked, files, name, type, value } = event.target
     setRoomTypeForm((currentForm) => ({
@@ -367,15 +381,18 @@ export default function OwnerPanelPage() {
     }))
   }
 
+  // Actualiza el formulario de disponibilidad
   function updateAvailabilityForm(event) {
     const { name, value } = event.target
     setAvailabilityForm((currentForm) => ({ ...currentForm, [name]: value }))
   }
 
+  // Actualiza la fecha que se va a cerrar
   function updateCloseDate(event) {
     setCloseDate(event.target.value)
   }
 
+  // Actualiza el formulario de edición del hotel
   function updateEditHotelForm(event) {
     const { checked, files, name, type, value } = event.target
     setEditHotelForm((currentForm) => ({
@@ -391,6 +408,7 @@ export default function OwnerPanelPage() {
     }))
   }
 
+  // Actualiza el formulario de edición de la habitación
   function updateEditRoomTypeForm(event) {
     const { checked, files, name, type, value } = event.target
     setEditRoomTypeForm((currentForm) => ({
@@ -406,6 +424,7 @@ export default function OwnerPanelPage() {
     }))
   }
 
+  // Cambia el hotel seleccionado en el panel
   function handleSelectedHotelChange(hotelId) {
     const hotel = hotels.find((currentHotel) => {
       return String(currentHotel.id) === String(hotelId)
@@ -415,6 +434,7 @@ export default function OwnerPanelPage() {
     setEditHotelForm(mapHotelToForm(hotel))
   }
 
+  // Cambia la habitación seleccionada en el panel
   function handleSelectedRoomTypeChange(roomTypeId) {
     const roomType = roomTypes.find((currentRoomType) => {
       return String(currentRoomType.id) === String(roomTypeId)
@@ -424,6 +444,7 @@ export default function OwnerPanelPage() {
     setEditRoomTypeForm(mapRoomTypeToForm(roomType))
   }
 
+  // Crea un hotel y sube su imagen si existe
   async function handleCreateHotel(event) {
     event.preventDefault()
     setIsSaving(true)
@@ -449,6 +470,7 @@ export default function OwnerPanelPage() {
     }
   }
 
+  // Crea una habitación y sube su imagen si existe
   async function handleCreateRoomType(event) {
     event.preventDefault()
 
@@ -483,6 +505,7 @@ export default function OwnerPanelPage() {
     }
   }
 
+  // Guarda los cambios realizados en un hotel
   async function handleUpdateHotel(event) {
     event.preventDefault()
 
@@ -513,6 +536,7 @@ export default function OwnerPanelPage() {
     }
   }
 
+  // Guarda los cambios realizados en una habitación
   async function handleUpdateRoomType(event) {
     event.preventDefault()
 
@@ -545,6 +569,7 @@ export default function OwnerPanelPage() {
     }
   }
 
+  // Guarda la disponibilidad de un rango de fechas
   async function handleBulkAvailability(event) {
     event.preventDefault()
 
@@ -581,6 +606,7 @@ export default function OwnerPanelPage() {
     }
   }
 
+  // Cierra una fecha concreta para nuevas reservas
   async function handleCloseDate(event) {
     event.preventDefault()
 
@@ -632,6 +658,7 @@ export default function OwnerPanelPage() {
     }
   }
 
+  // Actualiza el estado de una reserva
   async function handleStatusChange(bookingId, status) {
     setIsSaving(true)
     setMessage('')
@@ -651,6 +678,7 @@ export default function OwnerPanelPage() {
     }
   }
 
+  // Registra un pago manual para una reserva
   async function handleCreatePayment(booking) {
     const amount = getTotalBookingAmount(booking)
 
@@ -1338,6 +1366,7 @@ function AvailabilityRangeSection({ emptyText, ranges, roomType, title }) {
   )
 }
 
+// Formatea las fechas visibles de un rango de disponibilidad
 function formatAvailabilityRangeDate(availabilityRange) {
   if (availabilityRange.from === availabilityRange.to) {
     return formatDate(availabilityRange.from)

@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fa'
 import { MdFreeBreakfast } from "react-icons/md"
 
+// Obtiene el icono asociado a un servicio
 export function getServiceIcon(service, className) {
   const name = service.toLowerCase()
 

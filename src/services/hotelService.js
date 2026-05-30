@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:8000/api/hotels'
+import { API_BASE_URL } from '../config/api'
+
+const API_URL = `${API_BASE_URL}/hotels`
 
 // Obtiene el listado público de hoteles
 export async function getHotels() {

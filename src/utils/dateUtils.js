@@ -1,3 +1,4 @@
+// Formatea una fecha para mostrarla en castellano
 export function formatDate(date, fallback = '-') {
   if (!date) {
     return fallback
@@ -10,6 +11,7 @@ export function formatDate(date, fallback = '-') {
   })
 }
 
+// Convierte una fecha de formulario al formato ISO
 export function getIsoDate(date) {
   if (!date) {
     return ''
@@ -18,6 +20,7 @@ export function getIsoDate(date) {
   return new Date(`${date}T00:00:00Z`).toISOString()
 }
 
+// Obtiene todas las noches incluidas en una estancia
 export function getStayDates(checkIn, checkOut) {
   if (!checkIn || !checkOut) {
     return []

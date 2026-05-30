@@ -7,153 +7,19 @@ import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotelBySlug, getHotels } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
 import { getStayDates } from '../utils/dateUtils'
-import { formatServices } from '../utils/formatServices'
+import {
+  filterHotels,
+  getAvailableCities,
+  getAvailableRegions,
+  getAvailableServices,
+  getHighestPrice,
+  getRoomTypes,
+  sortHotels,
+} from './hotels/hotelFilters'
 
 const HOTELS_PER_PAGE = 6
 
-function sortHotels(hotels, sortBy) {
-  if (sortBy === 'price') {
-    return hotels.toSorted((firstHotel, secondHotel) => {
-      return Number(firstHotel.starting_price) - Number(secondHotel.starting_price)
-    })
-  }
-
-  if (sortBy === 'rating') {
-    return hotels.toSorted((firstHotel, secondHotel) => {
-      return secondHotel.average_rating - firstHotel.average_rating
-    })
-  }
-
-  return hotels
-}
-
-function getAvailableRegions(hotels) {
-  const regions = hotels.map((hotel) => hotel.location?.region).filter(Boolean)
-
-  return [...new Set(regions)].toSorted()
-}
-
-function getAvailableCities(hotels, selectedRegion) {
-  const cities = hotels
-    .filter((hotel) => {
-      return selectedRegion === 'all' || hotel.location?.region === selectedRegion
-    })
-    .map((hotel) => hotel.location?.city)
-    .filter(Boolean)
-
-  return [...new Set(cities)].toSorted()
-}
-
-function getAvailableServices(hotels) {
-  const services = hotels.flatMap((hotel) => formatServices(hotel.services))
-  const servicesByName = new Map()
-
-  services.forEach((service) => {
-    servicesByName.set(normalizeText(service), service)
-  })
-
-  return [...servicesByName.values()].toSorted()
-}
-
-function getHighestPrice(hotels) {
-  const prices = hotels.map((hotel) => Number(hotel.starting_price)).filter(Boolean)
-
-  if (prices.length === 0) {
-    return 500
-  }
-
-  return Math.ceil(Math.max(...prices))
-}
-
-function normalizeText(text) {
-  return text
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-}
-
-function getNumericValue(value, fallback = 0) {
-  const numberValue = Number(value)
-
-  return Number.isFinite(numberValue) ? numberValue : fallback
-}
-
-function hotelMatchesSearch(hotel, searchText) {
-  if (!searchText) {
-    return true
-  }
-
-  const normalizedSearch = normalizeText(searchText)
-  const searchableText = [
-    hotel.name,
-    hotel.location?.city,
-    hotel.location?.region,
-    hotel.location?.country,
-  ]
-    .filter(Boolean)
-    .map((value) => normalizeText(value))
-    .join(' ')
-
-  return searchableText.includes(normalizedSearch)
-}
-
-function getRoomTypes(hotel, roomTypesByHotelId = {}) {
-  return hotel.room_types || roomTypesByHotelId[hotel.id] || []
-}
-
-function hotelMatchesCapacity(hotel, adults, children, roomTypesByHotelId) {
-  if (!adults && !children) {
-    return true
-  }
-
-  const roomTypes = getRoomTypes(hotel, roomTypesByHotelId)
-
-  if (roomTypes.length === 0) {
-    return true
-  }
-
-  return roomTypes.some((roomType) => {
-    const adultCapacity = getNumericValue(roomType.capacity_adults)
-    const childrenCapacity = getNumericValue(roomType.capacity_children)
-
-    return adultCapacity >= adults && childrenCapacity >= children
-  })
-}
-
-function roomTypeMatchesCapacity(roomType, adults, children) {
-  const adultCapacity = getNumericValue(roomType.capacity_adults)
-  const childrenCapacity = getNumericValue(roomType.capacity_children)
-
-  return adultCapacity >= adults && childrenCapacity >= children
-}
-
-function hotelMatchesAvailability(
-  hotel,
-  adults,
-  children,
-  availabilityQuoteByRoomType,
-  stayDates,
-  roomTypesByHotelId,
-) {
-  if (stayDates.length === 0) {
-    return true
-  }
-
-  const roomTypes = getRoomTypes(hotel, roomTypesByHotelId)
-
-  if (roomTypes.length === 0) {
-    return false
-  }
-
-  return roomTypes.some((roomType) => {
-    return (
-      roomTypeMatchesCapacity(roomType, adults, children) &&
-      availabilityQuoteByRoomType[roomType.id]?.is_available === true
-    )
-  })
-}
-
+// Crea las estrellas visibles para un filtro de categoría
 function renderStars(rating) {
   const stars = []
 
@@ -166,67 +32,6 @@ function renderStars(rating) {
   }
 
   return stars
-}
-
-function filterHotels(
-  hotels,
-  selectedRegion,
-  selectedCity,
-  selectedRating,
-  selectedServices,
-  maxPrice,
-  searchText,
-  adults,
-  children,
-  availabilityQuoteByRoomType,
-  stayDates,
-  roomTypesByHotelId,
-) {
-  return hotels.filter((hotel) => {
-    const searchMatches = hotelMatchesSearch(hotel, searchText)
-    const capacityMatches = hotelMatchesCapacity(
-      hotel,
-      adults,
-      children,
-      roomTypesByHotelId,
-    )
-    const availabilityMatches = hotelMatchesAvailability(
-      hotel,
-      adults,
-      children,
-      availabilityQuoteByRoomType,
-      stayDates,
-      roomTypesByHotelId,
-    )
-    const regionMatches =
-      selectedRegion === 'all' || hotel.location?.region === selectedRegion
-    const cityMatches =
-      selectedCity === 'all' || hotel.location?.city === selectedCity
-    const ratingMatches =
-      selectedRating === 'all' ||
-      Number(hotel.stars) === Number(selectedRating)
-    const hotelPrice = Number(hotel.starting_price)
-    const priceMatches = !hotelPrice || hotelPrice <= maxPrice
-    const hotelServices = formatServices(hotel.services).map((service) => {
-      return normalizeText(service)
-    })
-    const servicesMatch =
-      selectedServices.length === 0 ||
-      selectedServices.every((service) => {
-        return hotelServices.includes(normalizeText(service))
-      })
-
-    return (
-      searchMatches &&
-      capacityMatches &&
-      availabilityMatches &&
-      regionMatches &&
-      cityMatches &&
-      ratingMatches &&
-      priceMatches &&
-      servicesMatch
-    )
-  })
 }
 
 export default function HotelsPage() {
@@ -373,20 +178,22 @@ export default function HotelsPage() {
   const stayDates = getStayDates(checkIn, checkOut)
   const shouldFilterByAvailability =
     stayDates.length > 0 && !isAvailabilityLoading && !availabilityError
-  const filteredHotels = filterHotels(
+  const filteredHotels = filterHotels({
+    adults,
+    availabilityQuoteByRoomType: shouldFilterByAvailability
+      ? availabilityQuoteByRoomType
+      : {},
+    children,
     hotels,
-    selectedRegion,
+    maxPrice,
+    roomTypesByHotelId,
+    searchText: filterSearchText,
     selectedCity,
     selectedRating,
+    selectedRegion,
     selectedServices,
-    maxPrice,
-    filterSearchText,
-    adults,
-    children,
-    shouldFilterByAvailability ? availabilityQuoteByRoomType : {},
-    shouldFilterByAvailability ? stayDates : [],
-    roomTypesByHotelId,
-  )
+    stayDates: shouldFilterByAvailability ? stayDates : [],
+  })
   const sortedHotels = sortHotels(filteredHotels, sortBy)
   const totalPages = Math.ceil(sortedHotels.length / HOTELS_PER_PAGE)
   const firstHotelIndex = (currentPage - 1) * HOTELS_PER_PAGE
@@ -395,38 +202,45 @@ export default function HotelsPage() {
     firstHotelIndex + HOTELS_PER_PAGE,
   )
 
+  // Cambia el criterio de ordenación
   function handleSortChange(value) {
     setSortBy(value)
     setIsSortMenuOpen(false)
     setCurrentPage(1)
   }
 
+  // Actualiza la región seleccionada y reinicia la ciudad
   function handleRegionChange(event) {
     setSelectedRegion(event.target.value)
     setSelectedCity('all')
     setCurrentPage(1)
   }
 
+  // Actualiza la ciudad seleccionada
   function handleCityChange(event) {
     setSelectedCity(event.target.value)
     setCurrentPage(1)
   }
 
+  // Actualiza el texto de búsqueda del filtro
   function handleFilterSearchChange(event) {
     setFilterSearchText(event.target.value)
     setCurrentPage(1)
   }
 
+  // Actualiza la categoría seleccionada
   function handleRatingChange(event) {
     setSelectedRating(event.target.value)
     setCurrentPage(1)
   }
 
+  // Actualiza el precio máximo seleccionado
   function handleMaxPriceChange(event) {
     setMaxPrice(Number(event.target.value))
     setCurrentPage(1)
   }
 
+  // Añade o elimina un servicio de los filtros
   function handleServiceChange(event) {
     const service = event.target.value
 
@@ -441,6 +255,7 @@ export default function HotelsPage() {
     setCurrentPage(1)
   }
 
+  // Restablece todos los filtros del catálogo
   function clearFilters() {
     setSelectedRegion('all')
     setSelectedCity('all')
@@ -451,17 +266,20 @@ export default function HotelsPage() {
     setCurrentPage(1)
   }
 
+  // Desplaza la vista al inicio de la página
   function scrollToPageTop() {
     window.requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     })
   }
 
+  // Muestra la página anterior de resultados
   function goToPreviousPage() {
     setCurrentPage((page) => page - 1)
     scrollToPageTop()
   }
 
+  // Muestra la página siguiente de resultados
   function goToNextPage() {
     setCurrentPage((page) => page + 1)
     scrollToPageTop()

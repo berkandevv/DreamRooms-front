@@ -1,24 +1,6 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import PartnerRegistrationForm from './PartnerRegistrationForm'
 
 export default function PartnerCTA() {
-  const [email, setEmail] = useState('')
-  const navigate = useNavigate()
-
-  function handleSubmit(event) {
-    event.preventDefault()
-
-    const params = new URLSearchParams({
-      account_type: 'owner',
-    })
-
-    if (email) {
-      params.set('email', email)
-    }
-
-    navigate(`/register?${params.toString()}`)
-  }
-
   return (
     <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
       <div className="flex flex-col items-center justify-between gap-6 rounded-xl border border-outline-variant bg-surface-container p-8 md:flex-row">
@@ -32,24 +14,10 @@ export default function PartnerCTA() {
           </p>
         </div>
 
-        <form
+        <PartnerRegistrationForm
           className="flex w-full flex-col gap-3 sm:flex-row md:w-auto"
-          onSubmit={handleSubmit}
-        >
-          <input
-            className="min-w-0 rounded-lg border border-outline bg-surface-container-lowest px-4 py-3 text-on-surface outline-none focus:border-primary sm:min-w-72"
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Email de empresa"
-            type="email"
-            value={email}
-          />
-          <button
-            className="rounded-lg bg-primary px-6 py-3 font-semibold text-on-primary transition hover:opacity-90"
-            type="submit"
-          >
-            Empezar
-          </button>
-        </form>
+          inputClassName="min-w-0 rounded-lg border border-outline bg-surface-container-lowest px-4 py-3 text-on-surface outline-none focus:border-primary sm:min-w-72"
+        />
       </div>
     </section>
   )

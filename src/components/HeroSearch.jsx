@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import HeroSearchField from './HeroSearchField'
 
 const heroImg =
   'https://images.pexels.com/photos/20639392/pexels-photo-20639392.jpeg?auto=compress&cs=tinysrgb&w=1800'
@@ -14,6 +15,7 @@ export default function HeroSearch() {
     children: '',
   })
 
+  // Actualiza el valor de un campo de búsqueda
   function handleInputChange(event) {
     const { name, value } = event.target
 
@@ -23,6 +25,7 @@ export default function HeroSearch() {
     }))
   }
 
+  // Envía los filtros seleccionados al catálogo
   function handleSubmit(event) {
     event.preventDefault()
 
@@ -59,75 +62,45 @@ export default function HeroSearch() {
             className="mt-8 grid gap-3 rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-[0_18px_45px_rgba(19,27,46,0.22)] md:grid-cols-[1.3fr_1fr_1fr_0.8fr_0.8fr_auto] md:rounded-full"
             onSubmit={handleSubmit}
           >
-            <label className="px-4 py-2 md:border-r md:border-outline-variant">
-              <span className="block text-xs font-bold uppercase text-secondary">
-                Dónde vas
-              </span>
-              <input
-                className="mt-1 w-full border-0 p-0 text-on-surface outline-none placeholder:text-outline"
-                name="destination"
-                onChange={handleInputChange}
-                placeholder="Destino o hotel"
-                type="text"
-                value={searchData.destination}
-              />
-            </label>
-
-            <label className="px-4 py-2 md:border-r md:border-outline-variant">
-              <span className="block text-xs font-bold uppercase text-secondary">
-                Check-in
-              </span>
-              <input
-                className="mt-1 w-full cursor-pointer rounded-md border-0 bg-surface-container-low px-2 py-1 text-sm text-on-surface outline-none [color-scheme:light]"
-                name="check_in"
-                onChange={handleInputChange}
-                type="date"
-                value={searchData.check_in}
-              />
-            </label>
-
-            <label className="px-4 py-2 md:border-r md:border-outline-variant">
-              <span className="block text-xs font-bold uppercase text-secondary">
-                Check-out
-              </span>
-              <input
-                className="mt-1 w-full cursor-pointer rounded-md border-0 bg-surface-container-low px-2 py-1 text-sm text-on-surface outline-none [color-scheme:light]"
-                name="check_out"
-                onChange={handleInputChange}
-                type="date"
-                value={searchData.check_out}
-              />
-            </label>
-
-            <label className="px-4 py-2 md:border-r md:border-outline-variant">
-              <span className="block text-xs font-bold uppercase text-secondary">
-                Adultos
-              </span>
-              <input
-                className="mt-1 w-full border-0 p-0 text-on-surface outline-none placeholder:text-outline"
-                min="1"
-                name="adults"
-                onChange={handleInputChange}
-                placeholder="2"
-                type="number"
-                value={searchData.adults}
-              />
-            </label>
-
-            <label className="px-4 py-2 md:border-r md:border-outline-variant">
-              <span className="block text-xs font-bold uppercase text-secondary">
-                Niños
-              </span>
-              <input
-                className="mt-1 w-full border-0 p-0 text-on-surface outline-none placeholder:text-outline"
-                min="0"
-                name="children"
-                onChange={handleInputChange}
-                placeholder="0"
-                type="number"
-                value={searchData.children}
-              />
-            </label>
+            <HeroSearchField
+              label="Dónde vas"
+              name="destination"
+              onChange={handleInputChange}
+              placeholder="Destino o hotel"
+              value={searchData.destination}
+            />
+            <HeroSearchField
+              label="Check-in"
+              name="check_in"
+              onChange={handleInputChange}
+              type="date"
+              value={searchData.check_in}
+            />
+            <HeroSearchField
+              label="Check-out"
+              name="check_out"
+              onChange={handleInputChange}
+              type="date"
+              value={searchData.check_out}
+            />
+            <HeroSearchField
+              label="Adultos"
+              min="1"
+              name="adults"
+              onChange={handleInputChange}
+              placeholder="2"
+              type="number"
+              value={searchData.adults}
+            />
+            <HeroSearchField
+              label="Niños"
+              min="0"
+              name="children"
+              onChange={handleInputChange}
+              placeholder="0"
+              type="number"
+              value={searchData.children}
+            />
 
             <button
               className="rounded-full bg-primary px-7 py-3 font-semibold text-on-primary transition hover:opacity-90"

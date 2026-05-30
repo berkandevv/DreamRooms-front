@@ -6,9 +6,8 @@ import {
   FaRocket,
   FaShieldAlt,
 } from 'react-icons/fa'
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
 import Layout from '../components/Layout'
+import PartnerRegistrationForm from '../components/PartnerRegistrationForm'
 
 const heroImage =
   'https://images.pexels.com/photos/20639392/pexels-photo-20639392.jpeg?auto=compress&cs=tinysrgb&w=1800'
@@ -50,23 +49,6 @@ const stats = [
 ]
 
 export default function AboutPage() {
-  const [companyEmail, setCompanyEmail] = useState('')
-  const navigate = useNavigate()
-
-  function handlePartnerSubmit(event) {
-    event.preventDefault()
-
-    const params = new URLSearchParams({
-      account_type: 'owner',
-    })
-
-    if (companyEmail) {
-      params.set('email', companyEmail)
-    }
-
-    navigate(`/register?${params.toString()}`)
-  }
-
   return (
     <Layout>
       <section className="relative -mt-20 flex min-h-155 items-center overflow-hidden pt-20">
@@ -194,24 +176,11 @@ export default function AboutPage() {
             Únete a nuestra colección de propiedades exclusivas y experimenta el
             futuro de la gestión de la hospitalidad.
           </p>
-          <form
+          <PartnerRegistrationForm
+            buttonLabel="Comenzar"
             className="mx-auto flex w-full max-w-xl flex-col gap-3 sm:flex-row"
-            onSubmit={handlePartnerSubmit}
-          >
-            <input
-              className="min-w-0 flex-1 rounded-lg border border-outline bg-surface-container-lowest px-4 py-3 text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              onChange={(event) => setCompanyEmail(event.target.value)}
-              placeholder="Email de empresa"
-              type="email"
-              value={companyEmail}
-            />
-            <button
-              className="h-12 rounded-lg bg-primary px-8 font-semibold text-on-primary shadow-lg transition hover:opacity-90 active:scale-[0.98]"
-              type="submit"
-            >
-              Comenzar
-            </button>
-          </form>
+            inputClassName="min-w-0 flex-1 rounded-lg border border-outline bg-surface-container-lowest px-4 py-3 text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
         </div>
       </section>
     </Layout>

@@ -6,6 +6,7 @@ import PartnerCTA from '../components/PartnerCTA'
 import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotels } from '../services/hotelService'
 
+// Obtiene los hoteles mejor valorados para la portada
 function getTopRatedHotels(hotels) {
   return hotels
     .toSorted((firstHotel, secondHotel) => {

@@ -56,6 +56,7 @@ export const initialAvailabilityForm = {
   min_stay_nights: 1,
 }
 
+// Prepara los datos de un hotel para enviarlos a la API
 export function buildHotelPayload(formData) {
   return {
     name: formData.name,
@@ -88,6 +89,7 @@ export function buildHotelPayload(formData) {
   }
 }
 
+// Prepara los datos de una habitación para enviarlos a la API
 export function buildRoomTypePayload(formData) {
   const {
     image,
@@ -111,6 +113,7 @@ export function buildRoomTypePayload(formData) {
   }
 }
 
+// Prepara una imagen para subirla a la API
 export function buildImageFormData(formData, fallbackAltText) {
   if (!formData.image) {
     return null
@@ -125,6 +128,7 @@ export function buildImageFormData(formData, fallbackAltText) {
   return imageFormData
 }
 
+// Convierte los datos de un hotel al formato del formulario
 export function mapHotelToForm(hotel) {
   if (!hotel) {
     return initialHotelForm
@@ -157,6 +161,7 @@ export function mapHotelToForm(hotel) {
   }
 }
 
+// Convierte los datos de una habitación al formato del formulario
 export function mapRoomTypeToForm(roomType) {
   if (!roomType) {
     return initialRoomTypeForm
@@ -180,6 +185,7 @@ export function mapRoomTypeToForm(roomType) {
   }
 }
 
+// Crea los registros de disponibilidad para un rango de fechas
 export function buildAvailabilityItems(formData) {
   const startDate = new Date(`${formData.from}T00:00:00`)
   const endDate = new Date(`${formData.to}T00:00:00`)

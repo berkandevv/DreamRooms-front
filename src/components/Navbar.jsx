@@ -9,18 +9,14 @@ import {
   getAuthToken,
   logoutUser,
 } from '../services/authService'
+import { getUserRole } from '../utils/userUtils'
 
+// Obtiene la sesión necesaria para mostrar la navegación
 function getAuthSession() {
   return {
     isAuthenticated: Boolean(getAuthToken()),
     user: getAuthenticatedUser(),
   }
-}
-
-function getUserRole(user) {
-  const role = user?.role?.name || user?.role || user?.account_type || user?.type || ''
-
-  return String(role).toLowerCase()
 }
 
 export default function Navbar() {
@@ -34,6 +30,7 @@ export default function Navbar() {
   const isOwner = userRole.includes('owner')
   const isCustomer = userRole.includes('customer')
   const displayName = user?.name || user?.email || 'Tu cuenta'
+  // Obtiene las clases visuales de un enlace de navegación
   const navLinkClass = ({ isActive }) => {
     if (isActive) {
       return 'border-b-2 border-primary pb-1 font-semibold text-primary'
@@ -42,6 +39,7 @@ export default function Navbar() {
     return 'border-b-2 border-transparent pb-1 text-secondary transition hover:text-primary'
   }
 
+  // Cierra la sesión y vuelve al acceso
   async function handleLogout() {
     setIsLoggingOut(true)
 
@@ -55,6 +53,7 @@ export default function Navbar() {
   }
 
   useEffect(() => {
+    // Actualiza la navegación cuando cambia la sesión
     function handleAuthSessionChanged() {
       setAuthSession(getAuthSession())
     }

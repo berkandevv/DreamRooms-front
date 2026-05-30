@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Route, Routes, useLocation } from 'react-router'
+import { matchPath, Route, Routes, useLocation } from 'react-router'
 import AboutPage from './pages/AboutPage'
 import CheckoutPage from './pages/CheckoutPage'
 import ContactPage from './pages/ContactPage'
@@ -15,60 +15,37 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import RegisterPage from './pages/RegisterPage'
 import TermsPage from './pages/TermsPage'
 
-function getRouteLevel(pathname) {
-  if (pathname === '/') {
-    return 0
-  }
+const routeAnimationLevels = [
+  { level: 0, paths: ['/'] },
+  { level: 1, paths: ['/hotels'] },
+  { level: 2, paths: ['/hotels/:slug'] },
+  { level: 3, paths: ['/hotels/:slug/checkout'] },
+  { level: 4, paths: ['/favorites'] },
+  { level: 5, paths: ['/my-bookings'] },
+  { level: 6, paths: ['/about'] },
+  { level: 7, paths: ['/help', '/contact', '/privacy', '/terms'] },
+  { level: 8, paths: ['/login'] },
+  { level: 9, paths: ['/register'] },
+  { level: 10, paths: ['/owner'] },
+]
 
-  if (pathname === '/hotels') {
-    return 1
-  }
+// Obtiene el nivel visual asociado a una ruta
+function getRouteAnimationLevel(pathname) {
+  const matchingRoute = routeAnimationLevels.find(({ paths }) => {
+    return paths.some((path) => matchPath({ end: true, path }, pathname))
+  })
 
-  if (pathname.startsWith('/hotels/') && !pathname.includes('/checkout')) {
-    return 2
-  }
-
-  if (pathname.includes('/checkout')) {
-    return 3
-  }
-
-  if (pathname === '/favorites') {
-    return 4
-  }
-
-  if (pathname === '/my-bookings') {
-    return 5
-  }
-
-  if (pathname === '/about') {
-    return 6
-  }
-
-  if (['/help', '/contact', '/privacy', '/terms'].includes(pathname)) {
-    return 7
-  }
-
-  if (pathname === '/login') {
-    return 8
-  }
-
-  if (pathname === '/register') {
-    return 9
-  }
-
-  if (pathname.startsWith('/owner')) {
-    return 10
-  }
-
-  return 0
+  return matchingRoute?.level ?? 0
 }
 
+// Decide la dirección de la animación entre dos rutas
 function getRouteAnimation(previousPathname, currentPathname) {
   if (previousPathname === currentPathname) {
     return ''
   }
 
-  return getRouteLevel(currentPathname) >= getRouteLevel(previousPathname)
+  return getRouteAnimationLevel(currentPathname) >=
+    getRouteAnimationLevel(previousPathname)
     ? 'route-slide-in-right'
     : 'route-slide-in-left'
 }

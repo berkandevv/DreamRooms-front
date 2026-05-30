@@ -69,8 +69,10 @@ Revisa el código con ESLint
 ```txt
 src/
   components/       Componentes reutilizables de la interfaz
+  config/           Configuración compartida, como la URL base de la API
   pages/            Páginas principales de la aplicación
   pages/bookings/   Componentes y helpers de reservas del cliente
+  pages/hotels/     Lógica reutilizable del catálogo de hoteles
   pages/owner/      Componentes, formularios y helpers del panel de propietario
   services/         Funciones que se comunican con la API
   utils/            Funciones pequeñas para formatear, calcular o reutilizar lógica
@@ -88,4 +90,4 @@ Los archivos de `src/services` centralizan las llamadas al backend:
 
 ## Notas
 
-Las URLs de la API están configuradas directamente en los servicios usando `localhost:8000`. Si el backend cambia de puerto o dominio, hay que actualizar esas constantes.
+La URL base de la API está centralizada en `src/config/api.js`. Si el backend cambia de puerto o dominio, solo hay que actualizar esa constante.

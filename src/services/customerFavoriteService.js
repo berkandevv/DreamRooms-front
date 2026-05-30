@@ -1,7 +1,9 @@
 import { getAuthHeaders } from './authService'
+import { API_BASE_URL } from '../config/api'
 
-const API_BASE_URL = 'http://localhost:8000/api/customer'
+const CUSTOMER_API_URL = `${API_BASE_URL}/customer`
 
+// Valida y transforma una respuesta de favoritos
 async function parseResponse(response) {
   const result = await response.json().catch(() => ({}))
 
@@ -12,8 +14,9 @@ async function parseResponse(response) {
   return result
 }
 
+// Obtiene los hoteles favoritos del cliente autenticado
 export async function getCustomerFavorites() {
-  const response = await fetch(`${API_BASE_URL}/favorites`, {
+  const response = await fetch(`${CUSTOMER_API_URL}/favorites`, {
     headers: {
       Accept: 'application/json',
       ...getAuthHeaders(),
@@ -24,8 +27,9 @@ export async function getCustomerFavorites() {
   return result.data || []
 }
 
+// Añade un hotel a los favoritos del cliente
 export async function addCustomerFavorite(hotelId) {
-  const response = await fetch(`${API_BASE_URL}/hotels/${hotelId}/favorite`, {
+  const response = await fetch(`${CUSTOMER_API_URL}/hotels/${hotelId}/favorite`, {
     headers: {
       Accept: 'application/json',
       ...getAuthHeaders(),
@@ -36,8 +40,9 @@ export async function addCustomerFavorite(hotelId) {
   return parseResponse(response)
 }
 
+// Elimina un hotel de los favoritos del cliente
 export async function removeCustomerFavorite(hotelId) {
-  const response = await fetch(`${API_BASE_URL}/hotels/${hotelId}/favorite`, {
+  const response = await fetch(`${CUSTOMER_API_URL}/hotels/${hotelId}/favorite`, {
     headers: {
       Accept: 'application/json',
       ...getAuthHeaders(),

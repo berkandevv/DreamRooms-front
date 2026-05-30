@@ -11,6 +11,7 @@ export default function FavoriteButton({
   const buttonLabel =
     label || (isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos')
 
+  // Evita la navegación de la tarjeta y cambia el favorito
   function handleClick(event) {
     event.preventDefault()
     event.stopPropagation()

@@ -1,11 +1,13 @@
 import { getAuthHeaders } from './authService'
+import { API_BASE_URL } from '../config/api'
+import { buildQuery } from '../utils/buildQuery'
 
-const API_BASE_URL = 'http://localhost:8000/api/owner'
+const OWNER_API_URL = `${API_BASE_URL}/owner`
 
 // Centraliza las peticiones privadas del panel de propietario
 async function requestOwner(path, options = {}) {
   const isFormData = options.body instanceof FormData
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${OWNER_API_URL}${path}`, {
     ...options,
     headers: {
       Accept: 'application/json',
@@ -21,21 +23,6 @@ async function requestOwner(path, options = {}) {
   }
 
   return result.data
-}
-
-// Convierte un objeto de filtros en una query string
-function buildQuery(params) {
-  const searchParams = new URLSearchParams()
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value) {
-      searchParams.set(key, value)
-    }
-  })
-
-  const queryString = searchParams.toString()
-
-  return queryString ? `?${queryString}` : ''
 }
 
 // Obtiene los hoteles gestionados por el propietario
@@ -56,6 +43,7 @@ export function createOwnerHotel(hotelData) {
   })
 }
 
+// Sube una imagen para un hotel
 export function uploadOwnerHotelImage(hotelId, imageData) {
   return requestOwner(`/hotels/${hotelId}/images`, {
     body: imageData,
@@ -115,6 +103,7 @@ export function createOwnerRoomType(hotelId, roomTypeData) {
   })
 }
 
+// Sube una imagen para un tipo de habitación
 export function uploadOwnerRoomTypeImage(roomTypeId, imageData) {
   return requestOwner(`/room-types/${roomTypeId}/images`, {
     body: imageData,

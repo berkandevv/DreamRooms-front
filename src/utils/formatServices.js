@@ -1,3 +1,4 @@
+// Normaliza los servicios recibidos desde la API
 export function formatServices(services) {
   if (!services) {
     return []

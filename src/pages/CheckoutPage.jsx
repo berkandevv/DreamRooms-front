@@ -23,6 +23,7 @@ const initialCustomerData = {
   notes: '',
 }
 
+// Obtiene el desglose de precios de una estancia
 function getPriceQuote(availabilityQuote, hotel) {
   return {
     discount: availabilityQuote?.discount_amount,
@@ -87,6 +88,7 @@ export default function CheckoutPage() {
       })
   }, [slug])
 
+  // Obtiene la habitación seleccionada desde la URL
   const roomType = useMemo(() => {
     return hotel?.room_types?.find((item) => Number(item.id) === roomTypeId)
   }, [hotel, roomTypeId])
@@ -171,6 +173,7 @@ export default function CheckoutPage() {
     unitsBooked,
   ])
 
+  // Actualiza los datos de la estancia
   function handleStayChange(event) {
     const { name, value } = event.target
 
@@ -180,6 +183,7 @@ export default function CheckoutPage() {
     }))
   }
 
+  // Actualiza los datos personales del cliente
   function handleCustomerChange(event) {
     const { name, value } = event.target
 
@@ -189,6 +193,7 @@ export default function CheckoutPage() {
     }))
   }
 
+  // Comprueba que la reserva se puede enviar
   function validateBookingData() {
     if (!roomType) {
       throw new Error('Selecciona un tipo de habitación válido.')
@@ -217,6 +222,7 @@ export default function CheckoutPage() {
     }
   }
 
+  // Prepara los datos que necesita la API de reservas
   function buildBookingPayload(selectedPaymentMethod) {
     return {
       room_type_id: roomType.id,
@@ -239,6 +245,7 @@ export default function CheckoutPage() {
     }
   }
 
+  // Registra al cliente si es necesario y crea la reserva
   async function submitBooking(selectedPaymentMethod) {
     if (!isAuthenticated) {
       await registerUser({
@@ -265,6 +272,7 @@ export default function CheckoutPage() {
     setBooking(createdBooking)
   }
 
+  // Inicia el proceso de confirmación de la reserva
   async function handleSubmit(event) {
     event.preventDefault()
     setSubmitError('')
@@ -287,6 +295,7 @@ export default function CheckoutPage() {
     }
   }
 
+  // Simula el pago con tarjeta y crea la reserva
   async function handleGatewayPayment() {
     setIsProcessingPayment(true)
     setSubmitError('')

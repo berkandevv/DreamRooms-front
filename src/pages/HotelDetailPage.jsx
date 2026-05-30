@@ -15,6 +15,7 @@ import {
 } from '../services/roomTypeService'
 import { getStayDates } from '../utils/dateUtils'
 
+// Añade días a una fecha
 function addDays(date, days) {
   const nextDate = new Date(date)
 
@@ -23,10 +24,12 @@ function addDays(date, days) {
   return nextDate
 }
 
+// Convierte una fecha al formato usado por los campos date
 function formatDateInput(date) {
   return date.toISOString().slice(0, 10)
 }
 
+// Obtiene el rango próximo usado para mostrar disponibilidad
 function getNextAvailabilityRange() {
   const today = new Date()
   const startDate = new Date(
@@ -40,12 +43,14 @@ function getNextAvailabilityRange() {
   }
 }
 
+// Convierte un valor a número usando un valor alternativo
 function getNumericValue(value, fallback = 0) {
   const numberValue = Number(value)
 
   return Number.isFinite(numberValue) ? numberValue : fallback
 }
 
+// Comprueba si una habitación tiene capacidad para los huéspedes
 function roomTypeMatchesCapacity(roomType, adults, children) {
   return (
     getNumericValue(roomType.capacity_adults) >= adults &&
@@ -53,6 +58,7 @@ function roomTypeMatchesCapacity(roomType, adults, children) {
   )
 }
 
+// Obtiene las próximas fechas que tienen unidades disponibles
 function getOpenAvailabilityDays(availabilityDays) {
   return availabilityDays
     .filter((dayAvailability) => {
@@ -91,6 +97,7 @@ export default function HotelDetailPage() {
 
   const { hotel, isLoading, error } = detail
 
+  // Desplaza la vista hasta la sección de habitaciones
   function scrollToRooms() {
     roomsSectionRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -98,6 +105,7 @@ export default function HotelDetailPage() {
     })
   }
 
+  // Comprueba la disponibilidad real de las habitaciones
   const checkRoomTypeAvailability = useCallback(async ({ shouldScroll = false } = {}) => {
     if (shouldScroll) {
       scrollToRooms()
@@ -168,6 +176,7 @@ export default function HotelDetailPage() {
     }
   }, [adults, checkIn, checkOut, children, hotel, unitsBooked])
 
+  // Comprueba la disponibilidad y muestra las habitaciones
   function handleCheckAvailability() {
     checkRoomTypeAvailability({ shouldScroll: true })
   }

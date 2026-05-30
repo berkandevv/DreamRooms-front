@@ -31,6 +31,7 @@ export default function RegisterPage() {
 
   const isOwner = accountType === 'owner'
 
+  // Actualiza el valor de un campo del formulario
   function handleInputChange(event) {
     const { name, value } = event.target
 
@@ -44,6 +45,7 @@ export default function RegisterPage() {
     }))
   }
 
+  // Cambia el tipo de cuenta que se va a registrar
   function handleAccountTypeChange(type) {
     setAccountType(type)
     setFormData((currentData) => ({
@@ -54,6 +56,7 @@ export default function RegisterPage() {
     setSuccessMessage('')
   }
 
+  // Registra una cuenta con los datos introducidos
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -81,6 +84,7 @@ export default function RegisterPage() {
     }
   }
 
+  // Abre el acceso con una transición visual
   function handleLoginNavigation(event) {
     event.preventDefault()
     setIsLeaving(true)

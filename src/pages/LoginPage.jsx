@@ -19,6 +19,7 @@ export default function LoginPage() {
   const comesFromRegister = location.state?.fromAuth === 'register'
   const enterAnimation = comesFromRegister ? 'auth-enter-left' : 'auth-enter-right'
 
+  // Actualiza el valor de un campo del formulario
   function handleInputChange(event) {
     const { name, value } = event.target
 
@@ -28,6 +29,7 @@ export default function LoginPage() {
     }))
   }
 
+  // Inicia sesión con los datos introducidos
   async function handleSubmit(event) {
     event.preventDefault()
     setIsSubmitting(true)
@@ -43,6 +45,7 @@ export default function LoginPage() {
     }
   }
 
+  // Abre el registro con una transición visual
   function handleRegisterNavigation(event) {
     event.preventDefault()
     setIsLeaving(true)

@@ -12,6 +12,7 @@ import StatusBadge from './StatusBadge'
 export default function BookingCard({ booking, isCancelling, onCancel }) {
   const imageUrl = getBookingImage(booking)
 
+  // Solicita la cancelación de la reserva
   function handleCancelClick() {
     const hotelName = booking.hotel?.name || 'este hotel'
     const reference = booking.booking_reference || booking.id

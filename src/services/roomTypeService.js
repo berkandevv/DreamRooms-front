@@ -1,23 +1,12 @@
-const API_BASE_URL = 'http://localhost:8000/api/room-types'
+import { API_BASE_URL } from '../config/api'
+import { buildQuery } from '../utils/buildQuery'
 
-function buildQuery(params = {}) {
-  const searchParams = new URLSearchParams()
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value) {
-      searchParams.set(key, value)
-    }
-  })
-
-  const queryString = searchParams.toString()
-
-  return queryString ? `?${queryString}` : ''
-}
+const ROOM_TYPES_API_URL = `${API_BASE_URL}/room-types`
 
 // Obtiene la disponibilidad pública de un tipo de habitación
 export async function getRoomTypeAvailability(roomTypeId, params = {}) {
   const response = await fetch(
-    `${API_BASE_URL}/${roomTypeId}/availability${buildQuery(params)}`,
+    `${ROOM_TYPES_API_URL}/${roomTypeId}/availability${buildQuery(params)}`,
   )
   const result = await response.json()
 
@@ -28,9 +17,10 @@ export async function getRoomTypeAvailability(roomTypeId, params = {}) {
   return result.data
 }
 
+// Obtiene el presupuesto de una estancia para un tipo de habitación
 export async function getRoomTypeAvailabilityQuote(roomTypeId, params = {}) {
   const response = await fetch(
-    `${API_BASE_URL}/${roomTypeId}/availability/quote${buildQuery(params)}`,
+    `${ROOM_TYPES_API_URL}/${roomTypeId}/availability/quote${buildQuery(params)}`,
   )
   const result = await response.json()
 

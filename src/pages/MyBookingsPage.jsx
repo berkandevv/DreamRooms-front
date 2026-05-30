@@ -25,6 +25,7 @@ import {
 import { formatDate } from '../utils/dateUtils'
 import { pluralize } from '../utils/textUtils'
 
+// Obtiene la reseña asociada a una reserva
 function getReview(booking) {
   return typeof booking.review === 'object' && booking.review !== null
     ? booking.review
@@ -85,6 +86,7 @@ export default function MyBookingsPage() {
     bookings.find((booking) => booking.user?.name)?.user?.name ||
     'cliente'
 
+  // Marca una reserva como reseñada
   function markBookingAsReviewed(bookingId) {
     setReviewedBookings((currentBookings) => {
       if (currentBookings.includes(bookingId)) {
@@ -96,6 +98,7 @@ export default function MyBookingsPage() {
     setExpandedReviewId(null)
   }
 
+  // Guarda localmente una reseña recién creada
   function handleReviewCreated(bookingId, review) {
     markBookingAsReviewed(bookingId)
     setBookings((currentBookings) => {
@@ -109,6 +112,7 @@ export default function MyBookingsPage() {
     })
   }
 
+  // Abre o cierra el formulario de reseña de una reserva
   function handleReviewToggle(booking) {
     if (expandedReviewId === booking.id) {
       setExpandedReviewId(null)
@@ -123,6 +127,7 @@ export default function MyBookingsPage() {
     setExpandedReviewId(booking.id)
   }
 
+  // Cancela una reserva después de confirmarlo
   async function handleCancelBooking(bookingId) {
     setCancellingBookingId(bookingId)
     setCancelError('')

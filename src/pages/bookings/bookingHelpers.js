@@ -1,5 +1,6 @@
 import { getHotelBySlug } from '../../services/hotelService'
 
+// Obtiene la etiqueta visible de un estado de reserva
 export function getStatusLabel(status) {
   const labels = {
     cancelled: 'Cancelada',
@@ -11,6 +12,7 @@ export function getStatusLabel(status) {
   return labels[status?.toLowerCase()] || status || 'Sin estado'
 }
 
+// Obtiene la etiqueta visible de un método de pago
 export function getPaymentMethodLabel(paymentMethod) {
   const labels = {
     card: 'Pago con tarjeta',
@@ -21,20 +23,24 @@ export function getPaymentMethodLabel(paymentMethod) {
   return labels[paymentMethod?.toLowerCase()] || 'No indicado'
 }
 
+// Obtiene el número de unidades incluidas en una reserva
 export function getBookedUnits(booking) {
   return Number(booking.stay?.units_booked || booking.units_booked) || 1
 }
 
+// Comprueba si una reserva ya ha finalizado
 export function isPastBooking(booking) {
   const status = booking.status?.toLowerCase()
 
   return ['cancelled', 'completed'].includes(status)
 }
 
+// Comprueba si una reserva ya tiene reseña
 export function bookingHasReview(booking) {
   return Boolean(booking.review || booking.has_review)
 }
 
+// Comprueba si una reserva admite una nueva reseña
 export function canReviewBooking(booking, reviewedBookings) {
   return (
     [true, 'true', 1, '1'].includes(booking.can_review) &&
@@ -42,6 +48,7 @@ export function canReviewBooking(booking, reviewedBookings) {
   )
 }
 
+// Obtiene la imagen principal de una reserva
 export function getBookingImage(booking) {
   return (
     booking.hotel?.cover_image?.url ||
@@ -52,6 +59,7 @@ export function getBookingImage(booking) {
   )
 }
 
+// Obtiene el texto alternativo de la imagen de una reserva
 export function getBookingImageAlt(booking) {
   return (
     booking.hotel?.cover_image?.alt_text ||
@@ -62,6 +70,7 @@ export function getBookingImageAlt(booking) {
   )
 }
 
+// Completa las reservas con las imágenes de sus hoteles
 export async function enrichBookingsWithHotelImages(bookings) {
   const hotelSlugs = [
     ...new Set(bookings.map((booking) => booking.hotel?.slug).filter(Boolean)),

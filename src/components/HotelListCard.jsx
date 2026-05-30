@@ -1,8 +1,13 @@
 import { Link, useLocation } from 'react-router'
 import { formatServices } from '../utils/formatServices'
-import { formatPrice } from '../utils/formatPrice'
 import { getServiceIcon } from '../utils/getServiceIcon'
+import {
+  getHotelImage,
+  getHotelLocation,
+  getHotelStars,
+} from '../utils/hotelUtils'
 import FavoriteButton from './FavoriteButton'
+import PricePerNight from './PricePerNight'
 
 export default function HotelListCard({
   hotel,
@@ -10,12 +15,9 @@ export default function HotelListCard({
   onFavoriteToggle,
 }) {
   const location = useLocation()
-  const city = hotel.location?.city || 'Ciudad no disponible'
-  const country = hotel.location?.country || 'País no disponible'
-  const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
-  const stars = '★'.repeat(Number(hotel.stars) || 0) || 'Sin estrellas'
-  const imageUrl = hotel.cover_image?.url
-  const imageAlt = hotel.cover_image?.alt_text || hotel.name
+  const { city, country } = getHotelLocation(hotel)
+  const { alt: imageAlt, url: imageUrl } = getHotelImage(hotel)
+  const stars = getHotelStars(hotel.stars)
   const services = formatServices(hotel.services).slice(0, 3)
 
   return (
@@ -75,12 +77,10 @@ export default function HotelListCard({
             <p className="text-xs font-semibold uppercase text-secondary">
               Desde
             </p>
-            <p className="mt-1 text-2xl font-bold text-primary">
-              {price}
-              <span className="text-base font-normal text-secondary">
-                /noche
-              </span>
-            </p>
+            <PricePerNight
+              currencySymbol={hotel.currency_symbol}
+              price={hotel.starting_price}
+            />
           </div>
 
           <Link

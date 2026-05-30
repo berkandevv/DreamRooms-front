@@ -14,6 +14,7 @@ export default function ContactPage() {
     subject: '',
   })
 
+  // Prepara el enlace de correo con los datos del formulario
   const mailtoHref = useMemo(() => {
     const subject = formData.subject || 'Consulta sobre Dream Rooms'
     const body = [
@@ -30,6 +31,7 @@ export default function ContactPage() {
     )}&body=${encodeURIComponent(body)}`
   }, [formData])
 
+  // Actualiza el valor de un campo del formulario
   function handleChange(event) {
     const { name, value } = event.target
     setFormData((currentData) => ({

@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:8000/api/auth'
+import { API_BASE_URL } from '../config/api'
+
+const AUTH_API_URL = `${API_BASE_URL}/auth`
 export const AUTH_SESSION_CHANGED_EVENT = 'auth-session-changed'
 
 // Avisa a la interfaz cuando cambia la sesión del usuario
@@ -95,7 +97,7 @@ export function getAuthHeaders() {
 
 // Registra un nuevo usuario y guarda su sesión
 export async function registerUser(userData) {
-  const response = await fetch(`${API_BASE_URL}/register`, {
+  const response = await fetch(`${AUTH_API_URL}/register`, {
     body: JSON.stringify(userData),
     headers: {
       Accept: 'application/json',
@@ -121,7 +123,7 @@ export async function registerUser(userData) {
 
 // Inicia sesión con email y contraseña
 export async function loginUser(credentials) {
-  const response = await fetch(`${API_BASE_URL}/login`, {
+  const response = await fetch(`${AUTH_API_URL}/login`, {
     body: JSON.stringify(credentials),
     headers: {
       Accept: 'application/json',
@@ -145,7 +147,7 @@ export async function loginUser(credentials) {
 
 // Pide al backend los datos actualizados del usuario autenticado
 export async function getAuthenticatedProfile() {
-  const response = await fetch(`${API_BASE_URL}/me`, {
+  const response = await fetch(`${AUTH_API_URL}/me`, {
     headers: {
       Accept: 'application/json',
       ...getAuthHeaders(),
@@ -165,7 +167,7 @@ export async function getAuthenticatedProfile() {
 
 // Cierra la sesión en el backend y limpia los datos locales
 export async function logoutUser() {
-  const response = await fetch(`${API_BASE_URL}/logout`, {
+  const response = await fetch(`${AUTH_API_URL}/logout`, {
     headers: {
       Accept: 'application/json',
       ...getAuthHeaders(),

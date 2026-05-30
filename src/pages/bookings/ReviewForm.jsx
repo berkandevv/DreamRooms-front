@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import { createCustomerBookingReview } from '../../services/customerBookingService'
 
+// Comprueba si el error indica que la reserva ya tiene reseña
 function isAlreadyReviewedError(error) {
   return error.message.toLowerCase().includes('already has a review')
 }
@@ -12,6 +13,7 @@ export default function ReviewForm({ booking, onAlreadyReviewed, onCreated }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
+  // Publica la reseña introducida por el cliente
   async function handleSubmit(event) {
     event.preventDefault()
     setIsSubmitting(true)

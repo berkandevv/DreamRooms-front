@@ -1,3 +1,4 @@
+// Formatea un importe con su símbolo de moneda
 export function formatPrice(price, currencySymbol = '€', options = {}) {
   if (price === null || price === undefined || price === '') {
     return 'Consultar'
