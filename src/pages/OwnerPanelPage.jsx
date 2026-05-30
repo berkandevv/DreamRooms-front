@@ -506,9 +506,7 @@ export default function OwnerPanelPage() {
         <>
           {activeView === 'dashboard' && (
             <DashboardView
-              bookings={bookings}
               hotels={hotels}
-              onStatusChange={handleStatusChange}
               setActiveView={setActiveView}
               stats={stats}
             />
@@ -582,10 +580,10 @@ export default function OwnerPanelPage() {
   )
 }
 
-function DashboardView({ bookings, hotels, onStatusChange, setActiveView, stats }) {
+function DashboardView({ hotels, setActiveView, stats }) {
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-      <section className="space-y-6 lg:col-span-8">
+    <div className="space-y-6">
+      <section className="space-y-6">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           <StatCard label="Hoteles" value={hotels.length} />
           <StatCard label="Publicados" value={stats.activeHotels} />
@@ -642,28 +640,6 @@ function DashboardView({ bookings, hotels, onStatusChange, setActiveView, stats 
           </div>
         </PanelCard>
       </section>
-
-      <aside className="space-y-6 lg:col-span-4">
-        <PanelCard
-          action="Ver reservas"
-          onAction={() => setActiveView('bookings')}
-          title="Reservas recientes"
-        >
-          <div className="space-y-3">
-            {bookings.slice(0, 5).map((booking) => (
-              <BookingRow
-                booking={booking}
-                compact
-                key={booking.id}
-                onStatusChange={onStatusChange}
-              />
-            ))}
-            {bookings.length === 0 && (
-              <p className="text-sm text-secondary">No hay reservas todavía.</p>
-            )}
-          </div>
-        </PanelCard>
-      </aside>
     </div>
   )
 }
