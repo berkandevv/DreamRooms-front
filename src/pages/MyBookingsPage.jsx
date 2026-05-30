@@ -10,7 +10,6 @@ import {
   canReviewBooking,
   enrichBookingsWithHotelImages,
   getBookedUnits,
-  getPaymentMethodLabel,
   isPastBooking,
 } from './bookings/bookingHelpers'
 import {
@@ -23,6 +22,7 @@ import {
   getCustomerBookings,
 } from '../services/customerBookingService'
 import { formatDate } from '../utils/dateUtils'
+import { getPaymentMethodLabel } from '../utils/paymentUtils'
 import { pluralize } from '../utils/textUtils'
 
 // Obtiene la reseña asociada a una reserva

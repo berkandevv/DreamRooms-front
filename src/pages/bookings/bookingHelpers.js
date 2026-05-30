@@ -12,17 +12,6 @@ export function getStatusLabel(status) {
   return labels[status?.toLowerCase()] || status || 'Sin estado'
 }
 
-// Obtiene la etiqueta visible de un método de pago
-export function getPaymentMethodLabel(paymentMethod) {
-  const labels = {
-    card: 'Pago con tarjeta',
-    hotel: 'Pago en hotel',
-    manual: 'Manual',
-  }
-
-  return labels[paymentMethod?.toLowerCase()] || 'No indicado'
-}
-
 // Obtiene el número de unidades incluidas en una reserva
 export function getBookedUnits(booking) {
   return Number(booking.stay?.units_booked || booking.units_booked) || 1

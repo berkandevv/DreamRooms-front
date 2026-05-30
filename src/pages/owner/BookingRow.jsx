@@ -1,4 +1,5 @@
 import { FaCreditCard } from 'react-icons/fa'
+import PaymentMethodBadge from '../../components/PaymentMethodBadge'
 import { formatPrice } from '../../utils/formatPrice'
 import { bookingStatuses } from './ownerForms'
 import {
@@ -131,24 +132,6 @@ export default function BookingRow({
         </div>
       </div>
     </article>
-  )
-}
-
-function PaymentMethodBadge({ paymentMethod }) {
-  const normalizedPaymentMethod = paymentMethod?.toLowerCase()
-  const toneClassName =
-    normalizedPaymentMethod === 'card'
-      ? 'bg-[#DBEAFE] text-[#1D4ED8]'
-      : normalizedPaymentMethod === 'hotel'
-        ? 'bg-[#FEF3C7] text-[#92400E]'
-        : 'bg-surface-container text-secondary'
-
-  return (
-    <span
-      className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase ${toneClassName}`}
-    >
-      {getStatusLabel(paymentMethod)}
-    </span>
   )
 }
 

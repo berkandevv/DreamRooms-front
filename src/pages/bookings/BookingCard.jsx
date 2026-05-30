@@ -1,11 +1,11 @@
 import { Link } from 'react-router'
+import PaymentMethodBadge from '../../components/PaymentMethodBadge'
 import { formatDate } from '../../utils/dateUtils'
 import { pluralize } from '../../utils/textUtils'
 import {
   getBookingImage,
   getBookingImageAlt,
   getBookedUnits,
-  getPaymentMethodLabel,
 } from './bookingHelpers'
 import StatusBadge from './StatusBadge'
 
@@ -98,22 +98,6 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
         </div>
       </div>
     </article>
-  )
-}
-
-function PaymentMethodBadge({ paymentMethod }) {
-  const normalizedPaymentMethod = paymentMethod?.toLowerCase()
-  const toneClassName =
-    normalizedPaymentMethod === 'card'
-      ? 'bg-[#DBEAFE] text-[#1D4ED8]'
-      : normalizedPaymentMethod === 'hotel'
-        ? 'bg-[#FEF3C7] text-[#92400E]'
-        : 'bg-surface-container text-secondary'
-
-  return (
-    <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase ${toneClassName}`}>
-      {getPaymentMethodLabel(paymentMethod)}
-    </span>
   )
 }
 

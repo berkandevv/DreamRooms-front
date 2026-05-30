@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
+import AuthFormField from '../components/AuthFormField'
 import BrandLogo from '../components/BrandLogo'
 import { registerUser } from '../services/authService'
 
@@ -197,7 +198,7 @@ export default function RegisterPage() {
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
-            <FormField
+            <AuthFormField
               label="Nombre completo"
               name="name"
               onChange={handleInputChange}
@@ -205,7 +206,7 @@ export default function RegisterPage() {
               required
               value={formData.name}
             />
-            <FormField
+            <AuthFormField
               label="Email"
               name="email"
               onChange={handleInputChange}
@@ -214,7 +215,7 @@ export default function RegisterPage() {
               type="email"
               value={formData.email}
             />
-            <FormField
+            <AuthFormField
               label="Teléfono"
               name="phone"
               onChange={handleInputChange}
@@ -225,7 +226,7 @@ export default function RegisterPage() {
             />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
+              <AuthFormField
                 label="Contraseña"
                 name="password"
                 onChange={handleInputChange}
@@ -233,7 +234,7 @@ export default function RegisterPage() {
                 type="password"
                 value={formData.password}
               />
-              <FormField
+              <AuthFormField
                 label="Confirmar"
                 name="password_confirmation"
                 onChange={handleInputChange}
@@ -310,37 +311,6 @@ function FeatureItem({ icon, title, description }) {
         <h3 className="mb-1 text-xl font-bold text-on-surface">{title}</h3>
         <p className="leading-relaxed text-on-surface-variant">{description}</p>
       </div>
-    </div>
-  )
-}
-
-function FormField({
-  label,
-  name,
-  onChange,
-  placeholder = '',
-  required = false,
-  type = 'text',
-  value,
-}) {
-  return (
-    <div className="space-y-2">
-      <label
-        className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant"
-        htmlFor={name}
-      >
-        {label}
-      </label>
-      <input
-        className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        id={name}
-        name={name}
-        onChange={onChange}
-        placeholder={placeholder}
-        required={required}
-        type={type}
-        value={value}
-      />
     </div>
   )
 }

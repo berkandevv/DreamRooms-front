@@ -360,7 +360,7 @@ export default function HotelsPage() {
         </div>
 
         <div className="flex flex-col gap-8 md:flex-row">
-          <aside className="w-full shrink-0 md:sticky md:top-28 md:max-h-[calc(100vh-8rem)] md:w-72 md:self-start md:overflow-y-auto">
+          <aside className="w-full shrink-0 md:sticky md:bottom-4 md:w-72 md:self-end">
             <div className="space-y-8 rounded-xl border border-outline-variant bg-surface-container-lowest p-5 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
               <div className="flex items-center justify-between gap-4">
                 <h2 className="whitespace-nowrap text-xl font-bold text-on-surface">
