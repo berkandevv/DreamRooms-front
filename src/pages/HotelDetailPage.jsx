@@ -413,7 +413,7 @@ export default function HotelDetailPage() {
             </p>
           )}
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-5">
             {hotel.room_types
               ?.filter((roomType) => {
                 if (!availableRoomTypeIds) {

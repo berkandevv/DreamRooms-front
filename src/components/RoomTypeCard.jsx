@@ -37,9 +37,9 @@ export default function RoomTypeCard({
   }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.10)] transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_18px_40px_rgba(19,27,46,0.16)]">
+    <article className="group flex flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.10)] transition duration-300 hover:border-primary hover:shadow-[0_18px_40px_rgba(19,27,46,0.16)] md:flex-row">
       {imageUrl && (
-        <div className="h-48 overflow-hidden">
+        <div className="h-56 overflow-hidden md:h-auto md:w-72 md:shrink-0 lg:w-80">
           <img
             alt={imageAlt}
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
@@ -48,75 +48,75 @@ export default function RoomTypeCard({
         </div>
       )}
 
-      <div className="flex flex-1 flex-col p-5">
-        <div>
-          <h3 className="text-2xl font-bold text-on-surface">
-            {roomType.name}
-          </h3>
-          <div className="mt-1 flex flex-wrap gap-2 text-sm font-semibold text-secondary">
-            <span>{roomType.size_m2 || '-'} m²</span>
-            <span>•</span>
-            <span>{roomType.bed_type || 'Cama no disponible'}</span>
+      <div className="flex flex-1 flex-col gap-5 p-5 md:flex-row md:items-stretch md:justify-between">
+        <div className="min-w-0 flex-1">
+          <div>
+            <h3 className="text-2xl font-bold text-on-surface">
+              {roomType.name}
+            </h3>
+            <div className="mt-1 flex flex-wrap gap-2 text-sm font-semibold text-secondary">
+              <span>{roomType.size_m2 || '-'} m²</span>
+              <span>•</span>
+              <span>{roomType.bed_type || 'Cama no disponible'}</span>
+            </div>
           </div>
+
+          <div className="mt-5 space-y-2 text-sm text-on-surface-variant">
+            <div className="flex items-center gap-3">
+              <FaUsers className="h-4 w-4 shrink-0 text-secondary" />
+              <span>
+                {roomType.capacity_adults || 0} adultos,{' '}
+                {roomType.capacity_children || 0} niños
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
+              <span>{servicesText}</span>
+            </div>
+          </div>
+
+          {nextAvailabilityDays.length > 0 && (
+            <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-secondary">
+                Próximas fechas disponibles
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {nextAvailabilityDays.map((dayAvailability) => (
+                  <span
+                    className="rounded-full bg-[#D1FAE5] px-2.5 py-1 text-xs font-bold text-[#047857]"
+                    key={dayAvailability.date}
+                  >
+                    {formatDate(dayAvailability.date)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="mt-5 space-y-2 text-sm text-on-surface-variant">
-          <div className="flex items-center gap-3">
-            <FaUsers className="h-4 w-4 text-secondary" />
-            <span>
-              {roomType.capacity_adults || 0} adultos,{' '}
-              {roomType.capacity_children || 0} niños
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <FaCheck className="h-4 w-4 text-secondary" />
-            <span>{servicesText}</span>
-          </div>
-        </div>
-
-        {nextAvailabilityDays.length > 0 && (
-          <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-3">
-            <p className="text-xs font-bold uppercase tracking-wider text-secondary">
-              Próximas fechas disponibles
+        <div className="flex shrink-0 flex-col justify-between border-t border-outline-variant pt-5 md:w-56 md:border-l md:border-t-0 md:pl-5 md:pt-0">
+          <div>
+            <p className="text-xs font-semibold uppercase text-secondary">
+              Desde
             </p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {nextAvailabilityDays.map((dayAvailability) => (
-                <span
-                  className="rounded-full bg-[#D1FAE5] px-2.5 py-1 text-xs font-bold text-[#047857]"
-                  key={dayAvailability.date}
-                >
-                  {formatDate(dayAvailability.date)}
-                </span>
-              ))}
-            </div>
+            <p className="mt-1 text-2xl font-bold text-primary">
+              {price}
+              <span className="text-base font-normal text-secondary">
+                /noche
+              </span>
+            </p>
+            <p className="mt-1 text-xs font-semibold text-on-tertiary-container">
+              {availableUnits} {availableUnitsLabel}
+            </p>
           </div>
-        )}
 
-        <div className="mt-auto pt-6">
-          <div className="flex items-end justify-between gap-4 border-t border-outline-variant pt-5">
-            <div>
-              <p className="text-xs font-semibold uppercase text-secondary">
-                Desde
-              </p>
-              <p className="mt-1 text-2xl font-bold text-primary">
-                {price}
-                <span className="text-base font-normal text-secondary">
-                  /noche
-                </span>
-              </p>
-              <p className="mt-1 text-xs font-semibold text-on-tertiary-container">
-                {availableUnits} {availableUnitsLabel}
-              </p>
-            </div>
-
-            <button
-              className="h-10 shrink-0 cursor-pointer rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary shadow-md transition hover:-translate-y-0.5 hover:bg-on-surface-variant hover:shadow-lg active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/25"
-              onClick={handleSelectRoomType}
-              type="button"
-            >
-              Seleccionar
-            </button>
-          </div>
+          <button
+            className="mt-5 h-10 w-full cursor-pointer rounded-lg bg-primary px-4 text-sm font-semibold text-on-primary shadow-md transition hover:-translate-y-0.5 hover:bg-on-surface-variant hover:shadow-lg active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/25"
+            onClick={handleSelectRoomType}
+            type="button"
+          >
+            Seleccionar
+          </button>
         </div>
       </div>
     </article>

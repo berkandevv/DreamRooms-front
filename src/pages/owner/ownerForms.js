@@ -23,6 +23,7 @@ export const initialHotelForm = {
   image_alt_text: '',
   image_is_cover: true,
   pets_allowed: false,
+  service_ids: [],
   smoking_allowed: false,
 }
 
@@ -38,6 +39,7 @@ export const initialRoomTypeForm = {
   image: null,
   image_alt_text: '',
   image_is_cover: true,
+  service_ids: [],
   total_units: 1,
   status: 'active',
 }
@@ -79,6 +81,7 @@ export function buildHotelPayload(formData) {
       tax_rate_percent: Number(formData.tax_rate_percent),
     },
     pets_allowed: formData.pets_allowed,
+    service_ids: formData.service_ids.map((serviceId) => Number(serviceId)),
     smoking_allowed: formData.smoking_allowed,
   }
 }
@@ -100,6 +103,7 @@ export function buildRoomTypePayload(formData) {
     base_price: Number(roomTypeData.base_price),
     capacity_adults: Number(roomTypeData.capacity_adults),
     capacity_children: Number(roomTypeData.capacity_children),
+    service_ids: roomTypeData.service_ids.map((serviceId) => Number(serviceId)),
     total_units: Number(roomTypeData.total_units),
   }
 }
@@ -142,6 +146,7 @@ export function mapHotelToForm(hotel) {
     phone: hotel.contact?.phone || '',
     postal_code: hotel.location?.postal_code || '',
     region: hotel.location?.region || '',
+    service_ids: (hotel.services || []).map((service) => service.id),
     smoking_allowed: Boolean(hotel.smoking_allowed),
     stars: hotel.stars || 3,
     status: hotel.status || 'draft',
@@ -165,6 +170,7 @@ export function mapRoomTypeToForm(roomType) {
     image_alt_text: '',
     image_is_cover: true,
     name: roomType.name || '',
+    service_ids: (roomType.services || []).map((service) => service.id),
     size_m2: roomType.size_m2 || '',
     status: roomType.status || 'active',
     total_units: roomType.total_units || 1,

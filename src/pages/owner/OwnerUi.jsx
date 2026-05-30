@@ -110,7 +110,7 @@ export function SelectInput({ children, label, name, onChange, value }) {
 }
 
 // Muestra una casilla de verificación del panel
-export function CheckboxInput({ checked, label, name, onChange }) {
+export function CheckboxInput({ checked, label, name, onChange, value }) {
   return (
     <label className="flex items-center gap-2 text-sm font-semibold text-secondary">
       <input
@@ -119,6 +119,7 @@ export function CheckboxInput({ checked, label, name, onChange }) {
         name={name}
         onChange={onChange}
         type="checkbox"
+        value={value}
       />
       {label}
     </label>

@@ -12,6 +12,7 @@ import {
   getOwnerHotels,
   getOwnerRoomType,
   getOwnerRoomTypes,
+  getOwnerServices,
   updateOwnerBookingStatus,
   updateOwnerHotel,
   updateOwnerRoomType,
@@ -51,11 +52,29 @@ import {
   TextInput,
 } from './owner/OwnerUi'
 
+function toggleSelectedId(selectedIds, id, isSelected) {
+  const normalizedId = Number(id)
+
+  if (isSelected) {
+    return [...new Set([...selectedIds, normalizedId])]
+  }
+
+  return selectedIds.filter((selectedId) => Number(selectedId) !== normalizedId)
+}
+
+function getServicesForScope(services, scope) {
+  return services.filter((service) => {
+    return service.scope === scope || service.scope === 'both'
+  })
+}
+
 export default function OwnerPanelPage() {
   const [activeView, setActiveView] = useState('dashboard')
   const [hotels, setHotels] = useState([])
   const [bookings, setBookings] = useState([])
   const [roomTypes, setRoomTypes] = useState([])
+  const [hotelServices, setHotelServices] = useState([])
+  const [roomTypeServices, setRoomTypeServices] = useState([])
   const [selectedHotelId, setSelectedHotelId] = useState('')
   const [selectedRoomTypeId, setSelectedRoomTypeId] = useState('')
   const [bookingHotelFilter, setBookingHotelFilter] = useState('')
@@ -94,10 +113,16 @@ export default function OwnerPanelPage() {
       return
     }
 
-    Promise.all([getOwnerHotels(), getOwnerBookings()])
-      .then(([hotelData, bookingData]) => {
+    Promise.all([
+      getOwnerHotels(),
+      getOwnerBookings(),
+      getOwnerServices(),
+    ])
+      .then(([hotelData, bookingData, serviceData]) => {
         setHotels(hotelData)
         setBookings(bookingData)
+        setHotelServices(getServicesForScope(serviceData, 'hotel'))
+        setRoomTypeServices(getServicesForScope(serviceData, 'room_type'))
         setSelectedHotelId(hotelData[0]?.id || '')
         setEditHotelForm(mapHotelToForm(hotelData[0]))
         setError('')
@@ -147,7 +172,14 @@ export default function OwnerPanelPage() {
     const { checked, files, name, type, value } = event.target
     setHotelForm((currentForm) => ({
       ...currentForm,
-      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
+      [name]:
+        name === 'service_ids'
+          ? toggleSelectedId(currentForm.service_ids, value, checked)
+          : type === 'file'
+            ? files[0] || null
+            : type === 'checkbox'
+              ? checked
+              : value,
     }))
   }
 
@@ -155,7 +187,14 @@ export default function OwnerPanelPage() {
     const { checked, files, name, type, value } = event.target
     setRoomTypeForm((currentForm) => ({
       ...currentForm,
-      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
+      [name]:
+        name === 'service_ids'
+          ? toggleSelectedId(currentForm.service_ids, value, checked)
+          : type === 'file'
+            ? files[0] || null
+            : type === 'checkbox'
+              ? checked
+              : value,
     }))
   }
 
@@ -168,7 +207,14 @@ export default function OwnerPanelPage() {
     const { checked, files, name, type, value } = event.target
     setEditHotelForm((currentForm) => ({
       ...currentForm,
-      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
+      [name]:
+        name === 'service_ids'
+          ? toggleSelectedId(currentForm.service_ids, value, checked)
+          : type === 'file'
+            ? files[0] || null
+            : type === 'checkbox'
+              ? checked
+              : value,
     }))
   }
 
@@ -176,7 +222,14 @@ export default function OwnerPanelPage() {
     const { checked, files, name, type, value } = event.target
     setEditRoomTypeForm((currentForm) => ({
       ...currentForm,
-      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
+      [name]:
+        name === 'service_ids'
+          ? toggleSelectedId(currentForm.service_ids, value, checked)
+          : type === 'file'
+            ? files[0] || null
+            : type === 'checkbox'
+              ? checked
+              : value,
     }))
   }
 
@@ -470,6 +523,7 @@ export default function OwnerPanelPage() {
               onCreateRoomType={handleCreateRoomType}
               onHotelChange={handleSelectedHotelChange}
               onRoomTypeChange={handleSelectedRoomTypeChange}
+              roomTypeServices={roomTypeServices}
               roomTypeForm={roomTypeForm}
               roomTypes={roomTypes}
               selectedHotelId={selectedHotelId}
@@ -496,6 +550,7 @@ export default function OwnerPanelPage() {
           {activeView === 'new-property' && (
             <NewPropertyView
               hotelForm={hotelForm}
+              hotelServices={hotelServices}
               isSaving={isSaving}
               onSubmit={handleCreateHotel}
               updateHotelForm={updateHotelForm}
@@ -507,12 +562,14 @@ export default function OwnerPanelPage() {
               editHotelForm={editHotelForm}
               editRoomTypeForm={editRoomTypeForm}
               hotels={hotels}
+              hotelServices={hotelServices}
               isSaving={isSaving}
               onHotelChange={handleSelectedHotelChange}
               onRoomTypeChange={handleSelectedRoomTypeChange}
               onUpdateHotel={handleUpdateHotel}
               onUpdateRoomType={handleUpdateRoomType}
               roomTypes={roomTypes}
+              roomTypeServices={roomTypeServices}
               selectedHotelId={selectedHotelId}
               selectedRoomTypeId={selectedRoomTypeId}
               updateEditHotelForm={updateEditHotelForm}
@@ -620,6 +677,7 @@ function InventoryView({
   onHotelChange,
   onRoomTypeChange,
   roomTypeForm,
+  roomTypeServices,
   roomTypes,
   selectedHotelId,
   selectedRoomTypeId,
@@ -764,6 +822,12 @@ function InventoryView({
               formData={roomTypeForm}
               label="Foto de la habitación"
               onChange={updateRoomTypeForm}
+            />
+            <ServiceCheckboxGroup
+              label="Servicios de la habitación"
+              onChange={updateRoomTypeForm}
+              selectedIds={roomTypeForm.service_ids}
+              services={roomTypeServices}
             />
             <PrimaryButton disabled={isSaving}>Crear habitación</PrimaryButton>
           </form>
@@ -947,8 +1011,13 @@ function ImageUploadFields({ formData, label, onChange }) {
         label="Texto alternativo"
         name="image_alt_text"
         onChange={onChange}
+        placeholder="Ej. Fachada del hotel al atardecer"
         value={formData.image_alt_text}
       />
+      <p className="mt-2 text-xs leading-5 text-secondary">
+        Describe brevemente lo que aparece en la imagen. Ayuda a personas que usan
+        lectores de pantalla y se muestra si la foto no carga.
+      </p>
       <div className="mt-3">
         <CheckboxInput
           checked={formData.image_is_cover}
@@ -961,7 +1030,39 @@ function ImageUploadFields({ formData, label, onChange }) {
   )
 }
 
-function NewPropertyView({ hotelForm, isSaving, onSubmit, updateHotelForm }) {
+function ServiceCheckboxGroup({ label, onChange, selectedIds, services }) {
+  if (services.length === 0) {
+    return null
+  }
+
+  return (
+    <fieldset className="rounded-lg border border-outline-variant bg-surface p-4">
+      <legend className="px-1 text-xs font-bold uppercase tracking-wider text-secondary">
+        {label}
+      </legend>
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {services.map((service) => (
+          <CheckboxInput
+            checked={selectedIds.some((serviceId) => Number(serviceId) === Number(service.id))}
+            key={service.id}
+            label={service.name}
+            name="service_ids"
+            onChange={onChange}
+            value={service.id}
+          />
+        ))}
+      </div>
+    </fieldset>
+  )
+}
+
+function NewPropertyView({
+  hotelForm,
+  hotelServices,
+  isSaving,
+  onSubmit,
+  updateHotelForm,
+}) {
   return (
     <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
       <div className="lg:col-span-8">
@@ -1097,6 +1198,12 @@ function NewPropertyView({ hotelForm, isSaving, onSubmit, updateHotelForm }) {
               label="Foto del hotel"
               onChange={updateHotelForm}
             />
+            <ServiceCheckboxGroup
+              label="Servicios del hotel"
+              onChange={updateHotelForm}
+              selectedIds={hotelForm.service_ids}
+              services={hotelServices}
+            />
             <PrimaryButton disabled={isSaving}>Crear hotel</PrimaryButton>
           </form>
         </PanelCard>
@@ -1119,12 +1226,14 @@ function SettingsView({
   editHotelForm,
   editRoomTypeForm,
   hotels,
+  hotelServices,
   isSaving,
   onHotelChange,
   onRoomTypeChange,
   onUpdateHotel,
   onUpdateRoomType,
   roomTypes,
+  roomTypeServices,
   selectedHotelId,
   selectedRoomTypeId,
   updateEditHotelForm,
@@ -1284,6 +1393,13 @@ function SettingsView({
               />
             </div>
 
+            <ServiceCheckboxGroup
+              label="Servicios del hotel"
+              onChange={updateEditHotelForm}
+              selectedIds={editHotelForm.service_ids}
+              services={hotelServices}
+            />
+
             <PrimaryButton disabled={isSaving || !selectedHotelId}>
               Guardar hotel
             </PrimaryButton>
@@ -1382,6 +1498,13 @@ function SettingsView({
                 value={editRoomTypeForm.currency}
               />
             </div>
+
+            <ServiceCheckboxGroup
+              label="Servicios de la habitación"
+              onChange={updateEditRoomTypeForm}
+              selectedIds={editRoomTypeForm.service_ids}
+              services={roomTypeServices}
+            />
 
             <PrimaryButton disabled={isSaving || !selectedRoomTypeId}>
               Guardar habitación
