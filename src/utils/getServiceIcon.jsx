@@ -1,5 +1,6 @@
 import {
   FaCheck,
+  FaConciergeBell,
   FaDumbbell,
   FaEye,
   FaHome,
@@ -48,6 +49,10 @@ export function getServiceIcon(service, className) {
 
   if (name.includes('restaurant') || name.includes('restaurante')) {
     return <FaCocktail className={className} />
+  }
+
+  if (name.includes('recepción') || name.includes('recepcion') || name.includes('reception')) {
+    return <FaConciergeBell className={className} />
   }
 
   if (name.includes('breakfast') || name.includes('desayuno')) {

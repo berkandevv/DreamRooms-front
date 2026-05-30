@@ -19,6 +19,9 @@ export const initialHotelForm = {
   discount_rate_percent: 0,
   currency: 'EUR',
   currency_symbol: '€',
+  image: null,
+  image_alt_text: '',
+  image_is_cover: true,
   pets_allowed: false,
   smoking_allowed: false,
 }
@@ -32,6 +35,9 @@ export const initialRoomTypeForm = {
   bed_type: '',
   base_price: '',
   currency: 'EUR',
+  image: null,
+  image_alt_text: '',
+  image_is_cover: true,
   total_units: 1,
   status: 'active',
 }
@@ -78,13 +84,38 @@ export function buildHotelPayload(formData) {
 }
 
 export function buildRoomTypePayload(formData) {
+  const {
+    image,
+    image_alt_text,
+    image_is_cover,
+    ...roomTypeData
+  } = formData
+
+  void image
+  void image_alt_text
+  void image_is_cover
+
   return {
-    ...formData,
-    base_price: Number(formData.base_price),
-    capacity_adults: Number(formData.capacity_adults),
-    capacity_children: Number(formData.capacity_children),
-    total_units: Number(formData.total_units),
+    ...roomTypeData,
+    base_price: Number(roomTypeData.base_price),
+    capacity_adults: Number(roomTypeData.capacity_adults),
+    capacity_children: Number(roomTypeData.capacity_children),
+    total_units: Number(roomTypeData.total_units),
   }
+}
+
+export function buildImageFormData(formData, fallbackAltText) {
+  if (!formData.image) {
+    return null
+  }
+
+  const imageFormData = new FormData()
+
+  imageFormData.append('image', formData.image)
+  imageFormData.append('alt_text', formData.image_alt_text || fallbackAltText)
+  imageFormData.append('is_cover', formData.image_is_cover ? 'true' : 'false')
+
+  return imageFormData
 }
 
 export function mapHotelToForm(hotel) {
@@ -103,6 +134,9 @@ export function mapHotelToForm(hotel) {
     description: hotel.description || '',
     discount_rate_percent: hotel.pricing?.discount_rate_percent || 0,
     email: hotel.contact?.email || '',
+    image: null,
+    image_alt_text: '',
+    image_is_cover: true,
     name: hotel.name || '',
     pets_allowed: Boolean(hotel.pets_allowed),
     phone: hotel.contact?.phone || '',
@@ -127,6 +161,9 @@ export function mapRoomTypeToForm(roomType) {
     capacity_children: roomType.capacity_children || 0,
     currency: roomType.currency || 'EUR',
     description: roomType.description || '',
+    image: null,
+    image_alt_text: '',
+    image_is_cover: true,
     name: roomType.name || '',
     size_m2: roomType.size_m2 || '',
     status: roomType.status || 'active',

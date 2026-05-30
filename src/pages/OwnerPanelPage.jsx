@@ -8,17 +8,22 @@ import {
   createOwnerHotel,
   createOwnerRoomType,
   getOwnerBookings,
+  getOwnerHotel,
   getOwnerHotels,
+  getOwnerRoomType,
   getOwnerRoomTypes,
   updateOwnerBookingStatus,
   updateOwnerHotel,
   updateOwnerRoomType,
+  uploadOwnerHotelImage,
+  uploadOwnerRoomTypeImage,
 } from '../services/ownerService'
 import { formatPrice } from '../utils/formatPrice'
 import {
   bookingStatuses,
   buildAvailabilityItems,
   buildHotelPayload,
+  buildImageFormData,
   buildRoomTypePayload,
   initialAvailabilityForm,
   initialHotelForm,
@@ -140,16 +145,19 @@ export default function OwnerPanelPage() {
   }, [bookingFilters, bookingHotelFilter, isAuthenticated])
 
   function updateHotelForm(event) {
-    const { checked, name, type, value } = event.target
+    const { checked, files, name, type, value } = event.target
     setHotelForm((currentForm) => ({
       ...currentForm,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
     }))
   }
 
   function updateRoomTypeForm(event) {
-    const { name, value } = event.target
-    setRoomTypeForm((currentForm) => ({ ...currentForm, [name]: value }))
+    const { checked, files, name, type, value } = event.target
+    setRoomTypeForm((currentForm) => ({
+      ...currentForm,
+      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
+    }))
   }
 
   function updateAvailabilityForm(event) {
@@ -158,16 +166,19 @@ export default function OwnerPanelPage() {
   }
 
   function updateEditHotelForm(event) {
-    const { checked, name, type, value } = event.target
+    const { checked, files, name, type, value } = event.target
     setEditHotelForm((currentForm) => ({
       ...currentForm,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
     }))
   }
 
   function updateEditRoomTypeForm(event) {
-    const { name, value } = event.target
-    setEditRoomTypeForm((currentForm) => ({ ...currentForm, [name]: value }))
+    const { checked, files, name, type, value } = event.target
+    setEditRoomTypeForm((currentForm) => ({
+      ...currentForm,
+      [name]: type === 'file' ? files[0] || null : type === 'checkbox' ? checked : value,
+    }))
   }
 
   function handleSelectedHotelChange(hotelId) {
@@ -194,7 +205,14 @@ export default function OwnerPanelPage() {
     setMessage('')
 
     try {
-      const hotel = await createOwnerHotel(buildHotelPayload(hotelForm))
+      const createdHotel = await createOwnerHotel(buildHotelPayload(hotelForm))
+      const imageFormData = buildImageFormData(hotelForm, createdHotel.name)
+      const hotel = imageFormData
+        ? await uploadOwnerHotelImage(createdHotel.id, imageFormData).then(() =>
+            getOwnerHotel(createdHotel.id),
+          )
+        : createdHotel
+
       setHotels((currentHotels) => [hotel, ...currentHotels])
       setSelectedHotelId(hotel.id)
       setHotelForm(initialHotelForm)
@@ -218,10 +236,17 @@ export default function OwnerPanelPage() {
     setMessage('')
 
     try {
-      const roomType = await createOwnerRoomType(
+      const createdRoomType = await createOwnerRoomType(
         selectedHotelId,
         buildRoomTypePayload(roomTypeForm),
       )
+      const imageFormData = buildImageFormData(roomTypeForm, createdRoomType.name)
+      const roomType = imageFormData
+        ? await uploadOwnerRoomTypeImage(createdRoomType.id, imageFormData).then(() =>
+            getOwnerRoomType(createdRoomType.id),
+          )
+        : createdRoomType
+
       setRoomTypes((currentRoomTypes) => [roomType, ...currentRoomTypes])
       setSelectedRoomTypeId(roomType.id)
       setRoomTypeForm(initialRoomTypeForm)
@@ -739,6 +764,11 @@ function InventoryView({
               type="number"
               value={roomTypeForm.base_price}
             />
+            <ImageUploadFields
+              formData={roomTypeForm}
+              label="Foto de la habitación"
+              onChange={updateRoomTypeForm}
+            />
             <PrimaryButton disabled={isSaving}>Crear habitación</PrimaryButton>
           </form>
         </PanelCard>
@@ -906,6 +936,39 @@ function BookingsView({
   )
 }
 
+function ImageUploadFields({ formData, label, onChange }) {
+  return (
+    <div className="rounded-lg border border-outline-variant bg-surface p-4">
+      <label className="block">
+        <span className="text-xs font-bold uppercase tracking-wider text-secondary">
+          {label}
+        </span>
+        <input
+          accept="image/*"
+          className="mt-2 block w-full text-sm text-secondary file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-on-primary"
+          name="image"
+          onChange={onChange}
+          type="file"
+        />
+      </label>
+      <TextInput
+        label="Texto alternativo"
+        name="image_alt_text"
+        onChange={onChange}
+        value={formData.image_alt_text}
+      />
+      <div className="mt-3">
+        <CheckboxInput
+          checked={formData.image_is_cover}
+          label="Usar como portada"
+          name="image_is_cover"
+          onChange={onChange}
+        />
+      </div>
+    </div>
+  )
+}
+
 function NewPropertyView({ hotelForm, isSaving, onSubmit, updateHotelForm }) {
   return (
     <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -1037,6 +1100,11 @@ function NewPropertyView({ hotelForm, isSaving, onSubmit, updateHotelForm }) {
                 onChange={updateHotelForm}
               />
             </div>
+            <ImageUploadFields
+              formData={hotelForm}
+              label="Foto del hotel"
+              onChange={updateHotelForm}
+            />
             <PrimaryButton disabled={isSaving}>Crear hotel</PrimaryButton>
           </form>
         </PanelCard>

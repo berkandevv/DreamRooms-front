@@ -4,11 +4,12 @@ const API_BASE_URL = 'http://localhost:8000/api/owner'
 
 // Centraliza las peticiones privadas del panel de propietario
 async function requestOwner(path, options = {}) {
+  const isFormData = options.body instanceof FormData
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers: {
       Accept: 'application/json',
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(options.body && !isFormData ? { 'Content-Type': 'application/json' } : {}),
       ...getAuthHeaders(),
       ...options.headers,
     },
@@ -51,6 +52,13 @@ export function getOwnerHotel(hotelId) {
 export function createOwnerHotel(hotelData) {
   return requestOwner('/hotels', {
     body: JSON.stringify(hotelData),
+    method: 'POST',
+  })
+}
+
+export function uploadOwnerHotelImage(hotelId, imageData) {
+  return requestOwner(`/hotels/${hotelId}/images`, {
+    body: imageData,
     method: 'POST',
   })
 }
@@ -103,6 +111,13 @@ export function getOwnerRoomType(roomTypeId) {
 export function createOwnerRoomType(hotelId, roomTypeData) {
   return requestOwner(`/hotels/${hotelId}/room-types`, {
     body: JSON.stringify(roomTypeData),
+    method: 'POST',
+  })
+}
+
+export function uploadOwnerRoomTypeImage(roomTypeId, imageData) {
+  return requestOwner(`/room-types/${roomTypeId}/images`, {
+    body: imageData,
     method: 'POST',
   })
 }
