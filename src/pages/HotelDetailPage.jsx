@@ -124,10 +124,10 @@ export default function HotelDetailPage() {
       const roomTypes = hotel.room_types || []
       const availabilityEntries = await Promise.all(
         roomTypes.map((roomType) => {
-          return getRoomTypeAvailability(roomType.id).then((availability) => [
-            roomType.id,
-            availability,
-          ])
+          return getRoomTypeAvailability(roomType.id, {
+            from: checkIn,
+            to: checkOut,
+          }).then((availability) => [roomType.id, availability])
         }),
       )
       const availabilityByRoomType = Object.fromEntries(availabilityEntries)

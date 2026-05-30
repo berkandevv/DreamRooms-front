@@ -40,9 +40,9 @@ export default function BookingRow({
             {booking.booking_reference} · {booking.hotel?.name} ·{' '}
             {booking.room_type?.name}
           </p>
-          <p className="mt-1 text-sm font-semibold text-secondary">
-            Método de pago: {getStatusLabel(booking.payment_method)}
-          </p>
+          <div className="mt-2">
+            <PaymentMethodBadge paymentMethod={booking.payment_method} />
+          </div>
           <p className="mt-1 text-sm text-secondary">
             {getDateLabel(booking.stay?.check_in)} -{' '}
             {getDateLabel(booking.stay?.check_out)} ·{' '}
@@ -131,6 +131,24 @@ export default function BookingRow({
         </div>
       </div>
     </article>
+  )
+}
+
+function PaymentMethodBadge({ paymentMethod }) {
+  const normalizedPaymentMethod = paymentMethod?.toLowerCase()
+  const toneClassName =
+    normalizedPaymentMethod === 'card'
+      ? 'bg-[#DBEAFE] text-[#1D4ED8]'
+      : normalizedPaymentMethod === 'hotel'
+        ? 'bg-[#FEF3C7] text-[#92400E]'
+        : 'bg-surface-container text-secondary'
+
+  return (
+    <span
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase ${toneClassName}`}
+    >
+      {getStatusLabel(paymentMethod)}
+    </span>
   )
 }
 

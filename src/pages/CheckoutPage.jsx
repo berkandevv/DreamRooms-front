@@ -9,8 +9,9 @@ import {
 } from '../services/authService'
 import { createCustomerBooking } from '../services/customerBookingService'
 import { getHotelBySlug } from '../services/hotelService'
+import { getRoomTypeAvailability } from '../services/roomTypeService'
 import { getBookingAmounts } from '../utils/bookingUtils'
-import { getIsoDate, getNights } from '../utils/dateUtils'
+import { formatDate, getIsoDate, getNights } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
 import { pluralize } from '../utils/textUtils'
 
@@ -21,6 +22,84 @@ const initialCustomerData = {
   password: '',
   password_confirmation: '',
   notes: '',
+}
+
+function getStayDates(checkIn, checkOut) {
+  if (!checkIn || !checkOut) {
+    return []
+  }
+
+  const startDate = new Date(`${checkIn}T00:00:00Z`)
+  const endDate = new Date(`${checkOut}T00:00:00Z`)
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return []
+  }
+
+  if (endDate <= startDate) {
+    return []
+  }
+
+  const dates = []
+  const currentDate = new Date(startDate)
+
+  while (currentDate < endDate) {
+    dates.push(currentDate.toISOString().slice(0, 10))
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+  }
+
+  return dates
+}
+
+function getAvailabilityIssue(dayAvailability, nights, unitsBooked) {
+  if (!dayAvailability) {
+    return 'Sin disponibilidad cargada'
+  }
+
+  if (dayAvailability.status !== 'open') {
+    return 'Cerrado'
+  }
+
+  if (Number(dayAvailability.available_units) < unitsBooked) {
+    return 'Sin unidades suficientes'
+  }
+
+  if ((Number(dayAvailability.min_stay_nights) || 0) > nights) {
+    return `Mínimo ${dayAvailability.min_stay_nights} noches`
+  }
+
+  return ''
+}
+
+function getAvailabilitySummary(availabilityDays, stayDates, nights, unitsBooked) {
+  const availabilityByDate = new Map(
+    availabilityDays.map((dayAvailability) => [
+      dayAvailability.date,
+      dayAvailability,
+    ]),
+  )
+  const checkedNights = stayDates.map((date) => {
+    const dayAvailability = availabilityByDate.get(date)
+
+    return {
+      date,
+      availability: dayAvailability,
+      issue: getAvailabilityIssue(dayAvailability, nights, unitsBooked),
+    }
+  })
+
+  return {
+    checkedNights,
+    isAvailable:
+      checkedNights.length > 0 &&
+      checkedNights.every((checkedNight) => !checkedNight.issue),
+    minStayNights: Math.max(
+      0,
+      ...checkedNights.map((checkedNight) => {
+        return Number(checkedNight.availability?.min_stay_nights) || 0
+      }),
+    ),
+  }
 }
 
 export default function CheckoutPage() {
@@ -41,6 +120,12 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPaymentGatewayOpen, setIsPaymentGatewayOpen] = useState(false)
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  const [availabilityCheck, setAvailabilityCheck] = useState({
+    days: [],
+    error: '',
+    key: '',
+  })
+  const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [stayData, setStayData] = useState({
     check_in: initialCheckIn,
@@ -78,6 +163,85 @@ export default function CheckoutPage() {
   const currencySymbol =
     hotel?.pricing?.currency_symbol || hotel?.currency_symbol || '€'
   const amounts = getBookingAmounts(roomType, hotel, nights, unitsBooked)
+  const stayDates = getStayDates(stayData.check_in, stayData.check_out)
+  const availabilityKey = roomType
+    ? `${roomType.id}-${stayData.check_in}-${stayData.check_out}`
+    : ''
+  const availabilityDays =
+    availabilityCheck.key === availabilityKey ? availabilityCheck.days : []
+  const availabilityError =
+    availabilityCheck.key === availabilityKey ? availabilityCheck.error : ''
+  const availabilitySummary = getAvailabilitySummary(
+    availabilityDays,
+    stayDates,
+    nights,
+    unitsBooked,
+  )
+  const shouldBlockReservation =
+    stayDates.length > 0 &&
+    !isAvailabilityLoading &&
+    !availabilityError &&
+    availabilityCheck.key === availabilityKey &&
+    !availabilitySummary.isAvailable
+
+  useEffect(() => {
+    if (!roomType?.id || stayDates.length === 0) {
+      return undefined
+    }
+
+    let shouldIgnoreResponse = false
+
+    Promise.resolve()
+      .then(() => {
+        if (shouldIgnoreResponse) {
+          return []
+        }
+
+        setIsAvailabilityLoading(true)
+
+        return getRoomTypeAvailability(roomType.id, {
+          from: stayData.check_in,
+          to: stayData.check_out,
+        })
+      })
+      .then((days) => {
+        if (shouldIgnoreResponse) {
+          return
+        }
+
+        setAvailabilityCheck({
+          days,
+          error: '',
+          key: availabilityKey,
+        })
+      })
+      .catch(() => {
+        if (shouldIgnoreResponse) {
+          return
+        }
+
+        setAvailabilityCheck({
+          days: [],
+          error: 'No se pudo comprobar la disponibilidad para esas fechas.',
+          key: availabilityKey,
+        })
+      })
+      .finally(() => {
+        if (!shouldIgnoreResponse) {
+          setIsAvailabilityLoading(false)
+        }
+      })
+
+    return () => {
+      shouldIgnoreResponse = true
+    }
+  }, [
+    availabilityKey,
+    roomType?.id,
+    stayData.check_in,
+    stayData.check_out,
+    stayDates.length,
+  ])
 
   function handleStayChange(event) {
     const { name, value } = event.target
@@ -104,6 +268,20 @@ export default function CheckoutPage() {
 
     if (nights <= 0) {
       throw new Error('Selecciona fechas válidas para confirmar la reserva.')
+    }
+
+    if (isAvailabilityLoading) {
+      throw new Error('Espera a que termine la comprobación de disponibilidad.')
+    }
+
+    if (availabilityError) {
+      throw new Error(availabilityError)
+    }
+
+    if (shouldBlockReservation) {
+      throw new Error(
+        'La habitación no está disponible para todas las noches seleccionadas.',
+      )
     }
   }
 
@@ -303,6 +481,15 @@ export default function CheckoutPage() {
                 Duración total: {nights || 0}{' '}
                 {pluralize(nights, 'noche', 'noches')}
               </div>
+
+              <AvailabilityPanel
+                checkedNights={availabilitySummary.checkedNights}
+                error={availabilityError}
+                isAvailable={availabilitySummary.isAvailable}
+                isLoading={isAvailabilityLoading}
+                stayDates={stayDates}
+                unitsBooked={unitsBooked}
+              />
             </section>
 
             <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
@@ -458,8 +645,14 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-3 border-y border-outline-variant py-5 text-sm">
-                <SummaryRow label="Check-in" value={stayData.check_in || '-'} />
-                <SummaryRow label="Check-out" value={stayData.check_out || '-'} />
+                <SummaryRow
+                  label="Check-in"
+                  value={formatDate(stayData.check_in)}
+                />
+                <SummaryRow
+                  label="Check-out"
+                  value={formatDate(stayData.check_out)}
+                />
                 <SummaryRow label="Noches" value={nights || '-'} />
                 <SummaryRow
                   label="Ocupación"
@@ -510,11 +703,13 @@ export default function CheckoutPage() {
 
               <button
                 className="h-12 w-full cursor-pointer rounded-lg bg-primary px-4 font-semibold text-on-primary shadow-lg transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isAvailabilityLoading || shouldBlockReservation}
                 type="submit"
               >
                 {isSubmitting
                   ? 'Confirmando reserva...'
+                  : isAvailabilityLoading
+                    ? 'Comprobando disponibilidad...'
                   : paymentMethod === 'card'
                     ? 'Ir al pago'
                     : 'Confirmar reserva'}
@@ -548,6 +743,120 @@ export default function CheckoutPage() {
         )}
       </section>
     </Layout>
+  )
+}
+
+function AvailabilityPanel({
+  checkedNights,
+  error,
+  isAvailable,
+  isLoading,
+  stayDates,
+  unitsBooked,
+}) {
+  if (stayDates.length === 0) {
+    return (
+      <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-4 text-sm font-semibold text-secondary">
+        Selecciona check-in y check-out para comprobar la disponibilidad diaria.
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-4 text-sm font-semibold text-secondary">
+        Comprobando disponibilidad para {stayDates.length}{' '}
+        {pluralize(stayDates.length, 'noche', 'noches')}...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="mt-5 rounded-lg border border-error bg-error-container p-4 text-sm font-semibold text-error">
+        {error}
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className={`mt-5 rounded-lg border p-4 ${
+        isAvailable
+          ? 'border-[#A7F3D0] bg-[#ECFDF5]'
+          : 'border-error bg-error-container'
+      }`}
+    >
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+        <div>
+          <p
+            className={`text-base font-bold ${
+              isAvailable ? 'text-[#047857]' : 'text-error'
+            }`}
+          >
+            {isAvailable
+              ? 'Disponible para las fechas seleccionadas'
+              : 'No disponible para toda la estancia'}
+          </p>
+          <p className="mt-1 text-sm font-semibold text-secondary">
+            Se comprueban las noches del {formatDate(stayDates[0])} al{' '}
+            {formatDate(stayDates[stayDates.length - 1])}. El día de salida no
+            cuenta como noche.
+          </p>
+        </div>
+        <span
+          className={`w-fit whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold ${
+            isAvailable
+              ? 'bg-[#D1FAE5] text-[#047857]'
+              : 'bg-error text-on-primary'
+          }`}
+        >
+          {checkedNights.length} {pluralize(checkedNights.length, 'noche', 'noches')} ·{' '}
+          {unitsBooked} {pluralize(unitsBooked, 'habitación', 'habitaciones')}
+        </span>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        {checkedNights.map((checkedNight) => (
+          <div
+            className="grid grid-cols-1 gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 text-sm sm:grid-cols-[1fr_auto] sm:items-center"
+            key={checkedNight.date}
+          >
+            <div>
+              <p className="font-semibold text-on-surface">
+                Noche del {formatDate(checkedNight.date)}
+              </p>
+              <p className="mt-0.5 text-xs font-semibold text-secondary">
+                {checkedNight.availability
+                  ? `${checkedNight.availability.available_units || 0} habitaciones libres`
+                  : 'No existe disponibilidad para esa noche'}
+              </p>
+              {checkedNight.date === stayDates[0] &&
+                checkedNight.availability?.min_stay_nights && (
+                  <p className="mt-1 text-xs font-bold text-secondary">
+                    Mínimo desde check-in:{' '}
+                    {checkedNight.availability.min_stay_nights}{' '}
+                    {pluralize(
+                      Number(checkedNight.availability.min_stay_nights),
+                      'noche',
+                      'noches',
+                    )}
+                  </p>
+                )}
+            </div>
+            <span
+              className={`w-fit rounded-full px-2.5 py-1 text-xs font-bold ${
+                checkedNight.issue
+                  ? 'bg-error-container text-error'
+                  : 'bg-[#D1FAE5] text-[#047857]'
+              }`}
+            >
+              {checkedNight.issue || 'Disponible'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 

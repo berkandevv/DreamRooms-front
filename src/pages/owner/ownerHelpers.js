@@ -41,7 +41,7 @@ export function getStatusLabel(status) {
     pending: 'Pendiente',
     published: 'Publicado',
     refunded: 'Reembolsado',
-    card: 'Tarjeta',
+    card: 'Pago con tarjeta',
   }
 
   return labels[status] || status || 'Desconocido'

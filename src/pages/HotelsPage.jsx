@@ -335,10 +335,10 @@ export default function HotelsPage() {
 
         return Promise.all(
           roomTypeIds.map((roomTypeId) => {
-            return getRoomTypeAvailability(roomTypeId).then((availability) => [
-              roomTypeId,
-              availability,
-            ])
+            return getRoomTypeAvailability(roomTypeId, {
+              from: checkIn,
+              to: checkOut,
+            }).then((availability) => [roomTypeId, availability])
           }),
         )
       })
