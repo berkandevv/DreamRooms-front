@@ -21,3 +21,27 @@ export function getStatusClass(status) {
 export function getDateLabel(value) {
   return formatDate(value, 'Sin fecha')
 }
+
+export function getTotalBookingAmount(booking) {
+  return Number(booking.amounts?.total) || 0
+}
+
+export function getRawPaidBookingAmount(booking) {
+  return (booking.payments || [])
+    .filter((payment) => payment.status === 'paid')
+    .reduce((total, payment) => total + (Number(payment.amount) || 0), 0)
+}
+
+export function getPaidBookingAmount(booking) {
+  const totalAmount = getTotalBookingAmount(booking)
+  const rawPaidAmount = getRawPaidBookingAmount(booking)
+
+  return Math.min(rawPaidAmount, totalAmount)
+}
+
+export function getRemainingBookingAmount(booking) {
+  const totalAmount = getTotalBookingAmount(booking)
+  const paidAmount = getPaidBookingAmount(booking)
+
+  return Math.max(totalAmount - paidAmount, 0)
+}

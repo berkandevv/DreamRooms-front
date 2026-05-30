@@ -13,10 +13,9 @@ export function formatPrice(price, currencySymbol = '€', options = {}) {
   const formattedNumber = shouldShowDecimals
     ? numericPrice
     : Math.round(numericPrice)
-  const hasDecimals = shouldShowDecimals && !Number.isInteger(formattedNumber)
   const formattedPrice = new Intl.NumberFormat('es-ES', {
-    maximumFractionDigits: hasDecimals ? 2 : 0,
-    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: shouldShowDecimals ? 2 : 0,
+    minimumFractionDigits: shouldShowDecimals ? 2 : 0,
   }).format(formattedNumber)
 
   return `${formattedPrice}${currencySymbol}`

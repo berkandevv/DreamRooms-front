@@ -27,7 +27,10 @@ import {
   mapRoomTypeToForm,
   paymentStatuses,
 } from './owner/ownerForms'
-import { getLocationText } from './owner/ownerHelpers'
+import {
+  getLocationText,
+  getRemainingBookingAmount,
+} from './owner/ownerHelpers'
 import BookingRow from './owner/BookingRow'
 import OwnerShell from './owner/OwnerShell'
 import {
@@ -339,7 +342,8 @@ export default function OwnerPanelPage() {
   }
 
   async function handleCreatePayment(booking) {
-    const amount = paymentAmountByBooking[booking.id] || booking.amounts?.total
+    const amount =
+      paymentAmountByBooking[booking.id] || getRemainingBookingAmount(booking)
 
     setIsSaving(true)
     setMessage('')

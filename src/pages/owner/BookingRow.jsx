@@ -1,8 +1,18 @@
 import { FaCreditCard } from 'react-icons/fa'
 import { formatPrice } from '../../utils/formatPrice'
 import { bookingStatuses } from './ownerForms'
-import { getDateLabel } from './ownerHelpers'
+import {
+  getDateLabel,
+  getPaidBookingAmount,
+  getRemainingBookingAmount,
+} from './ownerHelpers'
 import { StatusBadge } from './OwnerUi'
+
+function formatPaymentPlaceholder(amount) {
+  const numericAmount = Number(amount)
+
+  return Number.isNaN(numericAmount) ? '0.00' : numericAmount.toFixed(2)
+}
 
 export default function BookingRow({
   booking,
@@ -13,6 +23,12 @@ export default function BookingRow({
   onStatusChange,
   paymentAmount,
 }) {
+  const paidAmount = getPaidBookingAmount(booking)
+  const remainingAmount = getRemainingBookingAmount(booking)
+  const taxesAmount = Number(booking.amounts?.taxes) || 0
+  const discountAmount = Number(booking.amounts?.discount) || 0
+  const currencySymbol = booking.amounts?.currency_symbol
+
   return (
     <article className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-[0_8px_24px_rgba(19,27,46,0.06)]">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -36,9 +52,50 @@ export default function BookingRow({
         </div>
 
         <div className="flex flex-col gap-3 md:items-end">
-          <p className="text-xl font-bold text-primary">
-            {formatPrice(booking.amounts?.total, booking.amounts?.currency_symbol)}
-          </p>
+          <div className="text-sm md:text-right">
+            <p className="text-xs font-bold uppercase tracking-wider text-secondary">
+              Total reserva
+            </p>
+            <p className="text-xl font-bold text-primary">
+              {formatPrice(booking.amounts?.total, currencySymbol, {
+                decimals: true,
+              })}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2 md:justify-end">
+              <PaymentAmountBadge
+                label="Pagado"
+                tone="paid"
+                value={formatPrice(paidAmount, currencySymbol, {
+                  decimals: true,
+                })}
+              />
+              <PaymentAmountBadge
+                label="Pendiente"
+                tone={remainingAmount > 0 ? 'pending' : 'settled'}
+                value={formatPrice(remainingAmount, currencySymbol, {
+                  decimals: true,
+                })}
+              />
+              {taxesAmount > 0 && (
+                <PaymentAmountBadge
+                  label="Tasas"
+                  tone="tax"
+                  value={formatPrice(taxesAmount, currencySymbol, {
+                    decimals: true,
+                  })}
+                />
+              )}
+              {discountAmount > 0 && (
+                <PaymentAmountBadge
+                  label="Descuento"
+                  tone="discount"
+                  value={`-${formatPrice(discountAmount, currencySymbol, {
+                    decimals: true,
+                  })}`}
+                />
+              )}
+            </div>
+          </div>
           {!compact && (
             <div className="flex flex-wrap gap-2">
               <select
@@ -64,7 +121,7 @@ export default function BookingRow({
                         [booking.id]: event.target.value,
                       }))
                     }
-                    placeholder={booking.amounts?.total || '0.00'}
+                    placeholder={formatPaymentPlaceholder(remainingAmount)}
                     step="0.01"
                     type="number"
                     value={paymentAmount || ''}
@@ -85,5 +142,23 @@ export default function BookingRow({
         </div>
       </div>
     </article>
+  )
+}
+
+function PaymentAmountBadge({ label, tone, value }) {
+  const toneClassNames = {
+    discount: 'bg-on-tertiary-container/10 text-on-tertiary-container',
+    paid: 'bg-on-tertiary-container/10 text-on-tertiary-container',
+    pending: 'bg-error-container text-error',
+    settled: 'bg-surface-container text-secondary',
+    tax: 'bg-secondary-container text-on-secondary-fixed',
+  }
+
+  return (
+    <span
+      className={`rounded-lg px-2.5 py-1 text-xs font-bold ${toneClassNames[tone]}`}
+    >
+      {label}: {value}
+    </span>
   )
 }
