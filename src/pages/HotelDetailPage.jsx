@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
 import FavoriteButton from '../components/FavoriteButton'
@@ -66,10 +66,16 @@ function getStayDates(checkIn, checkOut) {
   return dates
 }
 
+function getNumericValue(value, fallback = 0) {
+  const numberValue = Number(value)
+
+  return Number.isFinite(numberValue) ? numberValue : fallback
+}
+
 function roomTypeMatchesCapacity(roomType, adults, children) {
   return (
-    Number(roomType.capacity_adults) >= adults &&
-    Number(roomType.capacity_children) >= children
+    getNumericValue(roomType.capacity_adults) >= adults &&
+    getNumericValue(roomType.capacity_children) >= children
   )
 }
 
@@ -118,8 +124,11 @@ export default function HotelDetailPage() {
     })
   }
 
-  async function handleCheckAvailability() {
-    scrollToRooms()
+  const checkRoomTypeAvailability = useCallback(async ({ shouldScroll = false } = {}) => {
+    if (shouldScroll) {
+      scrollToRooms()
+    }
+
     setAvailabilityError('')
 
     const stayDates = getStayDates(checkIn, checkOut)
@@ -138,7 +147,7 @@ export default function HotelDetailPage() {
 
     try {
       const roomTypes = hotel.room_types || []
-      const availabilityEntries = await Promise.all(
+      const availabilityResults = await Promise.allSettled(
         roomTypes.map((roomType) => {
           return getRoomTypeAvailabilityQuote(roomType.id, {
             check_in: checkIn,
@@ -147,7 +156,15 @@ export default function HotelDetailPage() {
           }).then((quote) => [roomType.id, quote])
         }),
       )
+      const availabilityEntries = availabilityResults
+        .filter((result) => result.status === 'fulfilled')
+        .map((result) => result.value)
       const quoteByRoomType = Object.fromEntries(availabilityEntries)
+
+      if (roomTypes.length > 0 && availabilityEntries.length === 0) {
+        throw new Error('No availability quotes could be loaded')
+      }
+
       const unitsByRoomType = Object.fromEntries(
         roomTypes.map((roomType) => [
           roomType.id,
@@ -175,6 +192,10 @@ export default function HotelDetailPage() {
     } finally {
       setIsCheckingAvailability(false)
     }
+  }, [adults, checkIn, checkOut, children, hotel, unitsBooked])
+
+  function handleCheckAvailability() {
+    checkRoomTypeAvailability({ shouldScroll: true })
   }
 
   useEffect(() => {
@@ -241,6 +262,16 @@ export default function HotelDetailPage() {
       shouldIgnoreResponse = true
     }
   }, [checkIn, checkOut, hotel])
+
+  useEffect(() => {
+    if (!hotel?.room_types?.length || getStayDates(checkIn, checkOut).length === 0) {
+      return
+    }
+
+    Promise.resolve().then(() => {
+      checkRoomTypeAvailability()
+    })
+  }, [checkIn, checkOut, checkRoomTypeAvailability, hotel])
 
   if (isLoading) {
     return (

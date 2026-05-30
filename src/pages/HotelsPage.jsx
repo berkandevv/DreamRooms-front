@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router'
 import HotelListCard from '../components/HotelListCard'
 import Layout from '../components/Layout'
 import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
-import { getHotels } from '../services/hotelService'
+import { getHotelBySlug, getHotels } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
 import { formatServices } from '../utils/formatServices'
 
@@ -65,7 +65,17 @@ function getHighestPrice(hotels) {
 }
 
 function normalizeText(text) {
-  return text.trim().toLowerCase()
+  return text
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+function getNumericValue(value, fallback = 0) {
+  const numberValue = Number(value)
+
+  return Number.isFinite(numberValue) ? numberValue : fallback
 }
 
 function hotelMatchesSearch(hotel, searchText) {
@@ -87,30 +97,32 @@ function hotelMatchesSearch(hotel, searchText) {
   return searchableText.includes(normalizedSearch)
 }
 
-function hotelMatchesCapacity(hotel, adults, children) {
+function getRoomTypes(hotel, roomTypesByHotelId = {}) {
+  return hotel.room_types || roomTypesByHotelId[hotel.id] || []
+}
+
+function hotelMatchesCapacity(hotel, adults, children, roomTypesByHotelId) {
   if (!adults && !children) {
     return true
   }
 
-  if (!hotel.room_types || hotel.room_types.length === 0) {
+  const roomTypes = getRoomTypes(hotel, roomTypesByHotelId)
+
+  if (roomTypes.length === 0) {
     return true
   }
 
-  return hotel.room_types.some((roomType) => {
-    const adultCapacity = Number(roomType.capacity_adults)
-    const childrenCapacity = Number(roomType.capacity_children)
+  return roomTypes.some((roomType) => {
+    const adultCapacity = getNumericValue(roomType.capacity_adults)
+    const childrenCapacity = getNumericValue(roomType.capacity_children)
 
     return adultCapacity >= adults && childrenCapacity >= children
   })
 }
 
-function getRoomTypes(hotel) {
-  return hotel.room_types || []
-}
-
 function roomTypeMatchesCapacity(roomType, adults, children) {
-  const adultCapacity = Number(roomType.capacity_adults)
-  const childrenCapacity = Number(roomType.capacity_children)
+  const adultCapacity = getNumericValue(roomType.capacity_adults)
+  const childrenCapacity = getNumericValue(roomType.capacity_children)
 
   return adultCapacity >= adults && childrenCapacity >= children
 }
@@ -148,12 +160,13 @@ function hotelMatchesAvailability(
   children,
   availabilityQuoteByRoomType,
   stayDates,
+  roomTypesByHotelId,
 ) {
   if (stayDates.length === 0) {
     return true
   }
 
-  const roomTypes = getRoomTypes(hotel)
+  const roomTypes = getRoomTypes(hotel, roomTypesByHotelId)
 
   if (roomTypes.length === 0) {
     return false
@@ -172,9 +185,9 @@ function renderStars(rating) {
 
   for (let index = 0; index < 5; index += 1) {
     if (index < Number(rating)) {
-      stars.push(<FaStar className="h-4 w-4 text-[#D4AF37]" key={index} />)
+      stars.push(<FaStar className="h-4 w-4 text-[#10B981]" key={index} />)
     } else {
-      stars.push(<FaRegStar className="h-4 w-4 text-[#D4AF37]" key={index} />)
+      stars.push(<FaRegStar className="h-4 w-4 text-[#10B981]" key={index} />)
     }
   }
 
@@ -193,16 +206,23 @@ function filterHotels(
   children,
   availabilityQuoteByRoomType,
   stayDates,
+  roomTypesByHotelId,
 ) {
   return hotels.filter((hotel) => {
     const searchMatches = hotelMatchesSearch(hotel, searchText)
-    const capacityMatches = hotelMatchesCapacity(hotel, adults, children)
+    const capacityMatches = hotelMatchesCapacity(
+      hotel,
+      adults,
+      children,
+      roomTypesByHotelId,
+    )
     const availabilityMatches = hotelMatchesAvailability(
       hotel,
       adults,
       children,
       availabilityQuoteByRoomType,
       stayDates,
+      roomTypesByHotelId,
     )
     const regionMatches =
       selectedRegion === 'all' || hotel.location?.region === selectedRegion
@@ -247,6 +267,7 @@ export default function HotelsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [availabilityQuoteByRoomType, setAvailabilityQuoteByRoomType] = useState({})
+  const [roomTypesByHotelId, setRoomTypesByHotelId] = useState({})
   const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false)
   const [availabilityError, setAvailabilityError] = useState('')
   const [sortBy, setSortBy] = useState('rating')
@@ -282,19 +303,10 @@ export default function HotelsPage() {
       return
     }
 
-    const roomTypeIds = [
-      ...new Set(
-        hotels
-          .flatMap((hotel) => getRoomTypes(hotel))
-          .map((roomType) => roomType.id)
-          .filter(Boolean),
-      ),
-    ]
-
     let shouldIgnoreResponse = false
 
     Promise.resolve()
-      .then(() => {
+      .then(async () => {
         if (shouldIgnoreResponse) {
           return []
         }
@@ -302,7 +314,34 @@ export default function HotelsPage() {
         setIsAvailabilityLoading(true)
         setAvailabilityError('')
 
-        return Promise.all(
+        const hotelDetailResults = await Promise.allSettled(
+          hotels.map((hotel) => {
+            return getHotelBySlug(hotel.slug).then((hotelDetail) => [
+              hotel.id,
+              getRoomTypes(hotelDetail),
+            ])
+          }),
+        )
+        const hotelRoomTypeEntries = hotelDetailResults
+          .filter((result) => result.status === 'fulfilled')
+          .map((result) => result.value)
+        const loadedRoomTypesByHotelId = Object.fromEntries(hotelRoomTypeEntries)
+        const roomTypeIds = [
+          ...new Set(
+            hotelRoomTypeEntries
+              .flatMap(([, roomTypes]) => roomTypes)
+              .map((roomType) => roomType.id)
+              .filter(Boolean),
+          ),
+        ]
+
+        if (shouldIgnoreResponse) {
+          return []
+        }
+
+        setRoomTypesByHotelId(loadedRoomTypesByHotelId)
+
+        const availabilityResults = await Promise.allSettled(
           roomTypeIds.map((roomTypeId) => {
             return getRoomTypeAvailabilityQuote(roomTypeId, {
               check_in: checkIn,
@@ -311,13 +350,28 @@ export default function HotelsPage() {
             }).then((quote) => [roomTypeId, quote])
           }),
         )
+
+        return {
+          availabilityResults,
+          roomTypeIds,
+        }
       })
-      .then((availabilityEntries) => {
+      .then((result) => {
         if (shouldIgnoreResponse) {
           return
         }
 
-        setAvailabilityQuoteByRoomType(Object.fromEntries(availabilityEntries))
+        const availabilityResults = result?.availabilityResults || []
+        const roomTypeIds = result?.roomTypeIds || []
+        const fulfilledEntries = availabilityResults
+          .filter((entry) => entry.status === 'fulfilled')
+          .map((entry) => entry.value)
+
+        setAvailabilityQuoteByRoomType(Object.fromEntries(fulfilledEntries))
+
+        if (roomTypeIds.length > 0 && fulfilledEntries.length === 0) {
+          setAvailabilityError('No se pudo comprobar la disponibilidad por fechas.')
+        }
       })
       .catch(() => {
         if (shouldIgnoreResponse) {
@@ -357,6 +411,7 @@ export default function HotelsPage() {
     children,
     shouldFilterByAvailability ? availabilityQuoteByRoomType : {},
     shouldFilterByAvailability ? stayDates : [],
+    roomTypesByHotelId,
   )
   const sortedHotels = sortHotels(filteredHotels, sortBy)
   const totalPages = Math.ceil(sortedHotels.length / HOTELS_PER_PAGE)

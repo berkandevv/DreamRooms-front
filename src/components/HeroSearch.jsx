@@ -27,8 +27,11 @@ export default function HeroSearch() {
     event.preventDefault()
 
     const params = new URLSearchParams()
+    const formData = new FormData(event.currentTarget)
 
-    Object.entries(searchData).forEach(([key, value]) => {
+    Object.keys(searchData).forEach((key) => {
+      const value = formData.get(key)?.toString().trim()
+
       if (value) {
         params.set(key, value)
       }
