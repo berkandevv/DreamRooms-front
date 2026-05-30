@@ -31,7 +31,7 @@ export default function HotelDetailHero({ hotel }) {
           </div>
 
           <div className="rounded-lg bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-on-surface shadow">
-            <span className="text-[#10B981]">{stars}</span>
+            <span className="text-[#D4AF37]">{stars}</span>
             <span className="ml-1 text-secondary">
               ({hotel.reviews_count || 0} reseñas)
             </span>

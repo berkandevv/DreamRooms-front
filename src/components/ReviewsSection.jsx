@@ -30,7 +30,7 @@ export default function ReviewsSection({ reviews, error }) {
                   </p>
                 </div>
                 <p className="font-semibold text-on-surface">
-                  <span className="text-[#10B981]">☆</span> {review.rating}
+                  <span className="text-[#D4AF37]">☆</span> {review.rating}
                 </p>
               </div>
 

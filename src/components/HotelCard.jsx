@@ -22,7 +22,7 @@ export default function HotelCard({ hotel, isFavorite = false, onFavoriteToggle 
         )}
 
         <div className="absolute right-4 top-4 rounded-lg bg-surface-container-lowest/90 px-3 py-1 text-sm font-semibold text-on-surface shadow">
-          <span className="text-[#10B981]">{stars}</span>
+          <span className="text-[#D4AF37]">{stars}</span>
         </div>
         {onFavoriteToggle && (
           <FavoriteButton
