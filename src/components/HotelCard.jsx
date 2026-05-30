@@ -1,7 +1,8 @@
 import { Link } from 'react-router'
 import { formatPrice } from '../utils/formatPrice'
+import FavoriteButton from './FavoriteButton'
 
-export default function HotelCard({ hotel }) {
+export default function HotelCard({ hotel, isFavorite = false, onFavoriteToggle }) {
   const city = hotel.location?.city || 'Ciudad no disponible'
   const country = hotel.location?.country || 'País no disponible'
   const price = formatPrice(hotel.starting_price, hotel.currency_symbol)
@@ -23,6 +24,13 @@ export default function HotelCard({ hotel }) {
         <div className="absolute right-4 top-4 rounded-lg bg-surface-container-lowest/90 px-3 py-1 text-sm font-semibold text-on-surface shadow">
           <span className="text-[#10B981]">{stars}</span>
         </div>
+        {onFavoriteToggle && (
+          <FavoriteButton
+            className="absolute left-4 top-4 w-11 rounded-full px-0"
+            isFavorite={isFavorite}
+            onToggle={() => onFavoriteToggle(hotel)}
+          />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-5">

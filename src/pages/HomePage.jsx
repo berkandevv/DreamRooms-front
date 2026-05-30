@@ -3,6 +3,7 @@ import HeroSearch from '../components/HeroSearch'
 import HotelGrid from '../components/HotelGrid'
 import Layout from '../components/Layout'
 import PartnerCTA from '../components/PartnerCTA'
+import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotels } from '../services/hotelService'
 
 function getTopRatedHotels(hotels) {
@@ -17,6 +18,7 @@ export default function HomePage() {
   const [hotels, setHotels] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const { canUseFavorites, favoriteIds, toggleFavorite } = useCustomerFavorites()
 
   useEffect(() => {
     getHotels()
@@ -35,7 +37,13 @@ export default function HomePage() {
   return (
     <Layout>
       <HeroSearch />
-      <HotelGrid error={error} hotels={hotels} isLoading={isLoading} />
+      <HotelGrid
+        error={error}
+        favoriteIds={favoriteIds}
+        hotels={hotels}
+        isLoading={isLoading}
+        onFavoriteToggle={canUseFavorites ? toggleFavorite : null}
+      />
       <PartnerCTA />
     </Layout>
   )

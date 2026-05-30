@@ -3,6 +3,7 @@ import { FaChevronDown, FaRegStar, FaStar } from 'react-icons/fa'
 import { useSearchParams } from 'react-router'
 import HotelListCard from '../components/HotelListCard'
 import Layout from '../components/Layout'
+import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotels } from '../services/hotelService'
 import { getRoomTypeAvailability } from '../services/roomTypeService'
 import { formatServices } from '../utils/formatServices'
@@ -288,6 +289,7 @@ export default function HotelsPage() {
   const [selectedServices, setSelectedServices] = useState([])
   const [maxPrice, setMaxPrice] = useState(500)
   const [filterSearchText, setFilterSearchText] = useState(urlSearchText)
+  const { canUseFavorites, favoriteIds, toggleFavorite } = useCustomerFavorites()
 
   useEffect(() => {
     getHotels()
@@ -749,7 +751,12 @@ export default function HotelsPage() {
                     {currentPage} de {totalPages}
                   </p>
                   {currentHotels.map((hotel) => (
-                    <HotelListCard hotel={hotel} key={hotel.id} />
+                    <HotelListCard
+                      hotel={hotel}
+                      isFavorite={favoriteIds.has(Number(hotel.id))}
+                      key={hotel.id}
+                      onFavoriteToggle={canUseFavorites ? toggleFavorite : null}
+                    />
                   ))}
                 </div>
               )}

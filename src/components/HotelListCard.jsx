@@ -2,8 +2,13 @@ import { Link, useLocation } from 'react-router'
 import { formatServices } from '../utils/formatServices'
 import { formatPrice } from '../utils/formatPrice'
 import { getServiceIcon } from '../utils/getServiceIcon'
+import FavoriteButton from './FavoriteButton'
 
-export default function HotelListCard({ hotel }) {
+export default function HotelListCard({
+  hotel,
+  isFavorite = false,
+  onFavoriteToggle,
+}) {
   const location = useLocation()
   const city = hotel.location?.city || 'Ciudad no disponible'
   const country = hotel.location?.country || 'País no disponible'
@@ -26,6 +31,13 @@ export default function HotelListCard({ hotel }) {
         <div className="absolute right-4 top-4 rounded-full bg-surface-container-lowest/90 px-3 py-1 text-sm font-semibold text-on-surface shadow">
           <span className="text-[#10B981]">{stars}</span>
         </div>
+        {onFavoriteToggle && (
+          <FavoriteButton
+            className="absolute left-4 top-4 w-11 rounded-full px-0"
+            isFavorite={isFavorite}
+            onToggle={() => onFavoriteToggle(hotel)}
+          />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-6">

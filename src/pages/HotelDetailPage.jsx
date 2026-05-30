@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
+import FavoriteButton from '../components/FavoriteButton'
 import HotelDetailHero from '../components/HotelDetailHero'
 import Layout from '../components/Layout'
 import ReviewsSection from '../components/ReviewsSection'
 import RoomTypeCard from '../components/RoomTypeCard'
 import ServicesList from '../components/ServicesList'
+import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotelBySlug, getHotelReviews } from '../services/hotelService'
 import { getRoomTypeAvailability } from '../services/roomTypeService'
 
@@ -90,6 +92,7 @@ export default function HotelDetailPage() {
   const [availabilityError, setAvailabilityError] = useState('')
   const [availabilityNotice, setAvailabilityNotice] = useState('')
   const [availableRoomTypeIds, setAvailableRoomTypeIds] = useState(null)
+  const { canUseFavorites, favoriteIds, toggleFavorite } = useCustomerFavorites()
 
   const { hotel, isLoading, error } = detail
 
@@ -218,9 +221,22 @@ export default function HotelDetailPage() {
   return (
     <Layout>
       <section className="mx-auto max-w-7xl space-y-10 px-5 py-8 md:px-8">
-        <Link className="inline-block text-sm font-semibold text-secondary hover:text-primary" to="/">
-          ← Volver a hoteles
-        </Link>
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <Link className="inline-block text-sm font-semibold text-secondary hover:text-primary" to="/">
+            ← Volver a hoteles
+          </Link>
+          {canUseFavorites && (
+            <FavoriteButton
+              isFavorite={favoriteIds.has(Number(hotel.id))}
+              label={
+                favoriteIds.has(Number(hotel.id))
+                  ? 'Quitar de favoritos'
+                  : 'Guardar favorito'
+              }
+              onToggle={() => toggleFavorite(hotel)}
+            />
+          )}
+        </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <HotelDetailHero hotel={hotel} />

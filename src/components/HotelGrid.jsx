@@ -1,6 +1,12 @@
 import HotelCard from './HotelCard'
 
-export default function HotelGrid({ hotels, isLoading, error }) {
+export default function HotelGrid({
+  favoriteIds = new Set(),
+  hotels,
+  isLoading,
+  error,
+  onFavoriteToggle,
+}) {
   if (isLoading) {
     return (
       <section className="mx-auto max-w-7xl px-5 py-10 md:px-8">
@@ -47,7 +53,12 @@ export default function HotelGrid({ hotels, isLoading, error }) {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {hotels.map((hotel) => (
-          <HotelCard hotel={hotel} key={hotel.id} />
+          <HotelCard
+            hotel={hotel}
+            isFavorite={favoriteIds.has(Number(hotel.id))}
+            key={hotel.id}
+            onFavoriteToggle={onFavoriteToggle}
+          />
         ))}
       </div>
     </section>

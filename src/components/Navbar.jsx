@@ -127,12 +127,20 @@ export default function Navbar() {
             )}
 
             {isCustomer && (
-              <Link
-                className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-surface hover:shadow-md"
-                to="/my-bookings"
-              >
-                Mis reservas
-              </Link>
+              <>
+                <Link
+                  className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-surface hover:shadow-md"
+                  to="/favorites"
+                >
+                  Favoritos
+                </Link>
+                <Link
+                  className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-surface hover:shadow-md"
+                  to="/my-bookings"
+                >
+                  Mis reservas
+                </Link>
+              </>
             )}
 
             <div className="relative">

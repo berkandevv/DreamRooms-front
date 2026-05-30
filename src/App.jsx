@@ -4,6 +4,7 @@ import AboutPage from './pages/AboutPage'
 import CheckoutPage from './pages/CheckoutPage'
 import ContactPage from './pages/ContactPage'
 import HelpCenterPage from './pages/HelpCenterPage'
+import FavoritesPage from './pages/FavoritesPage'
 import HotelDetailPage from './pages/HotelDetailPage'
 import HotelsPage from './pages/HotelsPage'
 import HomePage from './pages/HomePage'
@@ -31,28 +32,32 @@ function getRouteLevel(pathname) {
     return 3
   }
 
-  if (pathname === '/my-bookings') {
+  if (pathname === '/favorites') {
     return 4
   }
 
-  if (pathname === '/about') {
+  if (pathname === '/my-bookings') {
     return 5
   }
 
-  if (['/help', '/contact', '/privacy', '/terms'].includes(pathname)) {
+  if (pathname === '/about') {
     return 6
   }
 
-  if (pathname === '/login') {
+  if (['/help', '/contact', '/privacy', '/terms'].includes(pathname)) {
     return 7
   }
 
-  if (pathname === '/register') {
+  if (pathname === '/login') {
     return 8
   }
 
-  if (pathname.startsWith('/owner')) {
+  if (pathname === '/register') {
     return 9
+  }
+
+  if (pathname.startsWith('/owner')) {
+    return 10
   }
 
   return 0
@@ -94,6 +99,7 @@ export default function App() {
           <Route element={<ContactPage />} path="/contact" />
           <Route element={<PrivacyPolicyPage />} path="/privacy" />
           <Route element={<TermsPage />} path="/terms" />
+          <Route element={<FavoritesPage />} path="/favorites" />
           <Route element={<MyBookingsPage />} path="/my-bookings" />
           <Route element={<OwnerPanelPage />} path="/owner" />
           <Route element={<LoginPage />} path="/login" />
