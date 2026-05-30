@@ -113,7 +113,7 @@ export default function ContactPage() {
           <div className="relative mt-12 overflow-hidden rounded-lg border border-outline-variant">
             <img
               alt="Mapa urbano conceptual"
-              className="h-[420px] w-full object-cover"
+              className="h-105 w-full object-cover"
               src={mapImage}
             />
             <a

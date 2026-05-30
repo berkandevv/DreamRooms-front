@@ -910,7 +910,7 @@ function Book({
   roomTypeName,
 }) {
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-on-surface/45 px-5 py-8 backdrop-blur-sm">
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-on-surface/45 px-5 py-8 backdrop-blur-sm">
       <section className="w-full max-w-md overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_24px_70px_rgba(19,27,46,0.25)]">
         <div className="border-b border-outline-variant bg-surface-container p-5">
           <p className="text-sm font-bold uppercase tracking-wider text-secondary">

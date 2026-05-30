@@ -148,14 +148,14 @@ export default function HelpCenterPage() {
 
       <section className="bg-surface py-14">
         <div className="mx-auto max-w-7xl px-5 md:px-8">
-          <div className="relative min-h-[340px] overflow-hidden rounded-lg">
+          <div className="relative min-h-85 overflow-hidden rounded-lg">
             <img
               alt="Suite de hotel con ventanal y jardín"
               className="absolute inset-0 h-full w-full object-cover"
               src={heroImage}
             />
             <div className="absolute inset-0 bg-primary/45" />
-            <div className="relative flex min-h-[340px] max-w-xl flex-col justify-center p-8 text-on-primary md:p-12">
+            <div className="relative flex min-h-85 max-w-xl flex-col justify-center p-8 text-on-primary md:p-12">
               <h2 className="text-3xl font-bold">Excelencia en cada reserva</h2>
               <p className="mt-4 leading-7">
                 Te damos herramientas claras para que cada propiedad mantenga su
