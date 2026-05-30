@@ -13,6 +13,7 @@ import {
   getRoomTypeAvailability,
   getRoomTypeAvailabilityQuote,
 } from '../services/roomTypeService'
+import { getStayDates } from '../utils/dateUtils'
 
 function addDays(date, days) {
   const nextDate = new Date(date)
@@ -37,33 +38,6 @@ function getNextAvailabilityRange() {
     from: formatDateInput(startDate),
     to: formatDateInput(endDate),
   }
-}
-
-function getStayDates(checkIn, checkOut) {
-  if (!checkIn || !checkOut) {
-    return []
-  }
-
-  const startDate = new Date(`${checkIn}T00:00:00Z`)
-  const endDate = new Date(`${checkOut}T00:00:00Z`)
-
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return []
-  }
-
-  if (endDate <= startDate) {
-    return []
-  }
-
-  const dates = []
-  const currentDate = new Date(startDate)
-
-  while (currentDate < endDate) {
-    dates.push(currentDate.toISOString().slice(0, 10))
-    currentDate.setUTCDate(currentDate.getUTCDate() + 1)
-  }
-
-  return dates
 }
 
 function getNumericValue(value, fallback = 0) {

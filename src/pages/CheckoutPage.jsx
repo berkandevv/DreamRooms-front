@@ -10,8 +10,7 @@ import {
 import { createCustomerBooking } from '../services/customerBookingService'
 import { getHotelBySlug } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
-import { getBookingAmounts } from '../utils/bookingUtils'
-import { formatDate, getIsoDate, getNights } from '../utils/dateUtils'
+import { formatDate, getIsoDate, getStayDates } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
 import { pluralize } from '../utils/textUtils'
 
@@ -24,31 +23,15 @@ const initialCustomerData = {
   notes: '',
 }
 
-function getStayDates(checkIn, checkOut) {
-  if (!checkIn || !checkOut) {
-    return []
+function getPriceQuote(availabilityQuote, hotel) {
+  return {
+    discount: availabilityQuote?.discount_amount,
+    discountRate: hotel?.pricing?.discount_rate_percent || 0,
+    subtotal: availabilityQuote?.subtotal_amount,
+    taxes: availabilityQuote?.taxes_amount,
+    taxRate: hotel?.pricing?.tax_rate_percent || 0,
+    total: availabilityQuote?.total_amount,
   }
-
-  const startDate = new Date(`${checkIn}T00:00:00Z`)
-  const endDate = new Date(`${checkOut}T00:00:00Z`)
-
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return []
-  }
-
-  if (endDate <= startDate) {
-    return []
-  }
-
-  const dates = []
-  const currentDate = new Date(startDate)
-
-  while (currentDate < endDate) {
-    dates.push(currentDate.toISOString().slice(0, 10))
-    currentDate.setUTCDate(currentDate.getUTCDate() + 1)
-  }
-
-  return dates
 }
 
 export default function CheckoutPage() {
@@ -107,11 +90,9 @@ export default function CheckoutPage() {
   const roomType = useMemo(() => {
     return hotel?.room_types?.find((item) => Number(item.id) === roomTypeId)
   }, [hotel, roomTypeId])
-  const nights = getNights(stayData.check_in, stayData.check_out)
   const unitsBooked = Number(stayData.units_booked) || 1
   const currencySymbol =
     hotel?.pricing?.currency_symbol || hotel?.currency_symbol || '€'
-  const priceQuote = getBookingAmounts(roomType, hotel, nights, unitsBooked)
   const stayDates = getStayDates(stayData.check_in, stayData.check_out)
   const availabilityKey = roomType
     ? `${roomType.id}-${stayData.check_in}-${stayData.check_out}-${unitsBooked}`
@@ -120,6 +101,8 @@ export default function CheckoutPage() {
     availabilityCheck.key === availabilityKey ? availabilityCheck.quote : null
   const availabilityError =
     availabilityCheck.key === availabilityKey ? availabilityCheck.error : ''
+  const nights = availabilityQuote?.nights ?? stayDates.length
+  const priceQuote = getPriceQuote(availabilityQuote, hotel)
   const isAvailabilityReady = Boolean(availabilityQuote)
   const shouldBlockReservation =
     stayDates.length > 0 &&

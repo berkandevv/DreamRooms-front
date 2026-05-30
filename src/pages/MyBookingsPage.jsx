@@ -20,29 +20,10 @@ import {
 } from '../services/authService'
 import {
   cancelCustomerBooking,
-  getCustomerBooking,
   getCustomerBookings,
 } from '../services/customerBookingService'
 import { formatDate } from '../utils/dateUtils'
 import { pluralize } from '../utils/textUtils'
-
-function mergeBookingData(booking, bookingDetails) {
-  return {
-    ...booking,
-    ...bookingDetails,
-    hotel: {
-      ...booking.hotel,
-      ...bookingDetails.hotel,
-      cover_image: bookingDetails.hotel?.cover_image || booking.hotel?.cover_image,
-    },
-    room_type: {
-      ...booking.room_type,
-      ...bookingDetails.room_type,
-      cover_image:
-        bookingDetails.room_type?.cover_image || booking.room_type?.cover_image,
-    },
-  }
-}
 
 function getReview(booking) {
   return typeof booking.review === 'object' && booking.review !== null
@@ -50,31 +31,11 @@ function getReview(booking) {
     : null
 }
 
-async function loadCompletedBookingDetails(bookings) {
-  return Promise.all(
-    bookings.map(async (booking) => {
-      if (booking.status?.toLowerCase() !== 'completed') {
-        return booking
-      }
-
-      try {
-        const bookingDetails = await getCustomerBooking(booking.id)
-
-        return mergeBookingData(booking, bookingDetails)
-      } catch {
-        return booking
-      }
-    }),
-  )
-}
-
 export default function MyBookingsPage() {
   const [bookings, setBookings] = useState([])
   const [error, setError] = useState('')
   const [expandedReviewId, setExpandedReviewId] = useState(null)
   const [reviewedBookings, setReviewedBookings] = useState([])
-  const [checkingReviewBookingId, setCheckingReviewBookingId] = useState(null)
-  const [reviewCheckError, setReviewCheckError] = useState('')
   const [cancellingBookingId, setCancellingBookingId] = useState(null)
   const [cancelError, setCancelError] = useState('')
   const isAuthenticated = Boolean(getAuthToken())
@@ -88,9 +49,8 @@ export default function MyBookingsPage() {
 
     getCustomerBookings()
       .then((data) => enrichBookingsWithHotelImages(data))
-      .then((enrichedBookings) => loadCompletedBookingDetails(enrichedBookings))
-      .then((bookingsWithDetails) => {
-        const customer = bookingsWithDetails.find((booking) => {
+      .then((enrichedBookings) => {
+        const customer = enrichedBookings.find((booking) => {
           return booking.customer?.name || booking.customer?.email
         })?.customer
 
@@ -101,9 +61,9 @@ export default function MyBookingsPage() {
           })
         }
 
-        setBookings(bookingsWithDetails)
+        setBookings(enrichedBookings)
         setReviewedBookings(
-          bookingsWithDetails
+          enrichedBookings
             .filter((booking) => bookingHasReview(booking))
             .map((booking) => booking.id),
         )
@@ -149,19 +109,7 @@ export default function MyBookingsPage() {
     })
   }
 
-  function mergeBookingDetails(bookingDetails) {
-    setBookings((currentBookings) => {
-      return currentBookings.map((booking) => {
-        if (booking.id !== bookingDetails.id) {
-          return booking
-        }
-
-        return mergeBookingData(booking, bookingDetails)
-      })
-    })
-  }
-
-  async function handleReviewToggle(booking) {
+  function handleReviewToggle(booking) {
     if (expandedReviewId === booking.id) {
       setExpandedReviewId(null)
       return
@@ -172,25 +120,7 @@ export default function MyBookingsPage() {
       return
     }
 
-    setCheckingReviewBookingId(booking.id)
-    setReviewCheckError('')
-
-    try {
-      const bookingDetails = await getCustomerBooking(booking.id)
-
-      mergeBookingDetails(bookingDetails)
-
-      if (bookingHasReview(bookingDetails)) {
-        markBookingAsReviewed(booking.id)
-        return
-      }
-
-      setExpandedReviewId(booking.id)
-    } catch (bookingError) {
-      setReviewCheckError(bookingError.message)
-    } finally {
-      setCheckingReviewBookingId(null)
-    }
+    setExpandedReviewId(booking.id)
   }
 
   async function handleCancelBooking(bookingId) {
@@ -319,11 +249,6 @@ export default function MyBookingsPage() {
                 <h2 className="mb-4 text-2xl font-bold text-primary">
                   Estancias pasadas
                 </h2>
-                {reviewCheckError && (
-                  <p className="mb-4 rounded-xl border border-error bg-error-container p-4 text-sm font-semibold text-error">
-                    {reviewCheckError}
-                  </p>
-                )}
                 <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
                   {pastBookings.length === 0 && (
                     <p className="p-6 text-secondary">
@@ -372,13 +297,10 @@ export default function MyBookingsPage() {
                             canReviewBooking(booking, reviewedBookings) && (
                               <button
                                 className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-                                disabled={checkingReviewBookingId === booking.id}
                                 onClick={() => handleReviewToggle(booking)}
                                 type="button"
                               >
-                                {checkingReviewBookingId === booking.id
-                                  ? 'Comprobando...'
-                                  : 'Escribir comentario'}
+                                Escribir comentario
                               </button>
                             )
                           )}

@@ -6,6 +6,7 @@ import Layout from '../components/Layout'
 import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotelBySlug, getHotels } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
+import { getStayDates } from '../utils/dateUtils'
 import { formatServices } from '../utils/formatServices'
 
 const HOTELS_PER_PAGE = 6
@@ -125,33 +126,6 @@ function roomTypeMatchesCapacity(roomType, adults, children) {
   const childrenCapacity = getNumericValue(roomType.capacity_children)
 
   return adultCapacity >= adults && childrenCapacity >= children
-}
-
-function getStayDates(checkIn, checkOut) {
-  if (!checkIn || !checkOut) {
-    return []
-  }
-
-  const startDate = new Date(`${checkIn}T00:00:00Z`)
-  const endDate = new Date(`${checkOut}T00:00:00Z`)
-
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return []
-  }
-
-  if (endDate <= startDate) {
-    return []
-  }
-
-  const dates = []
-  const currentDate = new Date(startDate)
-
-  while (currentDate < endDate) {
-    dates.push(currentDate.toISOString().slice(0, 10))
-    currentDate.setUTCDate(currentDate.getUTCDate() + 1)
-  }
-
-  return dates
 }
 
 function hotelMatchesAvailability(

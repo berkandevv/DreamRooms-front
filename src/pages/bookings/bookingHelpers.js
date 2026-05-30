@@ -32,20 +32,12 @@ export function isPastBooking(booking) {
 }
 
 export function bookingHasReview(booking) {
-  return Boolean(
-    booking.review ||
-      booking.has_review ||
-      booking.hasReview ||
-      booking.review_id ||
-      booking.reviewed ||
-      booking.reviewed_at,
-  )
+  return Boolean(booking.review || booking.has_review)
 }
 
 export function canReviewBooking(booking, reviewedBookings) {
   return (
-    booking.status?.toLowerCase() === 'completed' &&
-    !bookingHasReview(booking) &&
+    [true, 'true', 1, '1'].includes(booking.can_review) &&
     !reviewedBookings.includes(booking.id)
   )
 }

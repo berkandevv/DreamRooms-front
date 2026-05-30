@@ -55,7 +55,7 @@ export function setAuthenticatedUser(user) {
 // Guarda el token y los datos del usuario después de iniciar sesión o registrarse
 function saveAuthSession(result, fallbackUserData = {}) {
   const token = result.token || result.access_token || result.data?.token
-  const user = result.user || result.data?.user
+  const user = result.user || result.data?.user || result.data
 
   if (!token) {
     throw new Error('La respuesta de autenticación no incluye token')

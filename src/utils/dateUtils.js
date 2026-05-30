@@ -18,18 +18,29 @@ export function getIsoDate(date) {
   return new Date(`${date}T00:00:00Z`).toISOString()
 }
 
-export function getNights(checkIn, checkOut) {
+export function getStayDates(checkIn, checkOut) {
   if (!checkIn || !checkOut) {
-    return 0
+    return []
   }
 
   const startDate = new Date(`${checkIn}T00:00:00Z`)
   const endDate = new Date(`${checkOut}T00:00:00Z`)
-  const difference = endDate.getTime() - startDate.getTime()
 
-  if (Number.isNaN(difference) || difference <= 0) {
-    return 0
+  if (
+    Number.isNaN(startDate.getTime()) ||
+    Number.isNaN(endDate.getTime()) ||
+    endDate <= startDate
+  ) {
+    return []
   }
 
-  return Math.ceil(difference / 86400000)
+  const dates = []
+  const currentDate = new Date(startDate)
+
+  while (currentDate < endDate) {
+    dates.push(currentDate.toISOString().slice(0, 10))
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+  }
+
+  return dates
 }
