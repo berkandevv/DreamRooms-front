@@ -11,6 +11,7 @@ import {
   getOwnerHotel,
   getOwnerHotels,
   getOwnerRoomType,
+  getOwnerRoomTypeAvailability,
   getOwnerRoomTypes,
   getOwnerServices,
   updateOwnerBookingStatus,
@@ -19,6 +20,7 @@ import {
   uploadOwnerHotelImage,
   uploadOwnerRoomTypeImage,
 } from '../services/ownerService'
+import { formatDate } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
 import {
   bookingStatuses,
@@ -68,11 +70,132 @@ function getServicesForScope(services, scope) {
   })
 }
 
+function addDays(date, days) {
+  const nextDate = new Date(date)
+
+  nextDate.setDate(nextDate.getDate() + days)
+
+  return nextDate
+}
+
+function formatDateInput(date) {
+  return date.toISOString().slice(0, 10)
+}
+
+function getAvailabilityPreviewRange() {
+  const today = new Date()
+  const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+  return {
+    from: formatDateInput(startDate),
+    to: formatDateInput(addDays(startDate, 90)),
+  }
+}
+
+function isSameAvailabilityPattern(firstDay, secondDay) {
+  return (
+    firstDay.status === secondDay.status &&
+    Number(firstDay.available_units) === Number(secondDay.available_units) &&
+    Number(firstDay.price) === Number(secondDay.price) &&
+    Number(firstDay.min_stay_nights) === Number(secondDay.min_stay_nights)
+  )
+}
+
+function getAvailabilityRanges(availabilityDays) {
+  if (availabilityDays.length === 0) {
+    return []
+  }
+
+  const sortedDays = [...availabilityDays].sort((firstDay, secondDay) => {
+    return firstDay.date.localeCompare(secondDay.date)
+  })
+  const ranges = []
+
+  sortedDays.forEach((dayAvailability) => {
+    const currentRange = ranges.at(-1)
+    const previousDate = currentRange
+      ? formatDateInput(addDays(new Date(`${currentRange.to}T00:00:00`), 1))
+      : ''
+
+    if (
+      currentRange &&
+      previousDate === dayAvailability.date &&
+      isSameAvailabilityPattern(currentRange.sample, dayAvailability)
+    ) {
+      currentRange.to = dayAvailability.date
+      return
+    }
+
+    ranges.push({
+      from: dayAvailability.date,
+      sample: dayAvailability,
+      to: dayAvailability.date,
+    })
+  })
+
+  return ranges
+}
+
+function getAvailabilityPatternKey(availabilityRange) {
+  const { sample } = availabilityRange
+
+  return [
+    sample.status,
+    Number(sample.available_units),
+    Number(sample.price),
+    Number(sample.min_stay_nights),
+  ].join('|')
+}
+
+function getGroupedAvailabilityRanges(availabilityRanges) {
+  const groupsByPattern = new Map()
+
+  availabilityRanges.forEach((availabilityRange) => {
+    const patternKey = getAvailabilityPatternKey(availabilityRange)
+    const currentGroup = groupsByPattern.get(patternKey)
+
+    if (currentGroup) {
+      currentGroup.ranges.push(availabilityRange)
+      return
+    }
+
+    groupsByPattern.set(patternKey, {
+      ranges: [availabilityRange],
+      sample: availabilityRange.sample,
+    })
+  })
+
+  return [...groupsByPattern.values()]
+}
+
+function isSpecialAvailabilityDay(dayAvailability, roomType) {
+  const basePrice = Number(roomType?.base_price)
+  const totalUnits = Number(roomType?.total_units)
+
+  return (
+    dayAvailability.status !== 'open' ||
+    Number(dayAvailability.min_stay_nights) > 1 ||
+    (Number.isFinite(basePrice) && Number(dayAvailability.price) !== basePrice) ||
+    (Number.isFinite(totalUnits) &&
+      Number(dayAvailability.available_units) !== totalUnits)
+  )
+}
+
+function getSpecialAvailabilityDays(availabilityDays, roomType) {
+  return availabilityDays.filter((dayAvailability) => {
+    return isSpecialAvailabilityDay(dayAvailability, roomType)
+  })
+}
+
 export default function OwnerPanelPage() {
   const [activeView, setActiveView] = useState('dashboard')
   const [hotels, setHotels] = useState([])
   const [bookings, setBookings] = useState([])
   const [roomTypes, setRoomTypes] = useState([])
+  const [availabilityPreview, setAvailabilityPreview] = useState([])
+  const [isAvailabilityPreviewLoading, setIsAvailabilityPreviewLoading] =
+    useState(false)
+  const [availabilityPreviewError, setAvailabilityPreviewError] = useState('')
   const [hotelServices, setHotelServices] = useState([])
   const [roomTypeServices, setRoomTypeServices] = useState([])
   const [selectedHotelId, setSelectedHotelId] = useState('')
@@ -87,6 +210,7 @@ export default function OwnerPanelPage() {
   const [editHotelForm, setEditHotelForm] = useState(initialHotelForm)
   const [editRoomTypeForm, setEditRoomTypeForm] = useState(initialRoomTypeForm)
   const [availabilityForm, setAvailabilityForm] = useState(initialAvailabilityForm)
+  const [closeDate, setCloseDate] = useState('')
   const [isLoading, setIsLoading] = useState(Boolean(getAuthToken()))
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
@@ -168,6 +292,55 @@ export default function OwnerPanelPage() {
       })
   }, [bookingFilters, bookingHotelFilter, isAuthenticated])
 
+  useEffect(() => {
+    if (!selectedRoomTypeId) {
+      return
+    }
+
+    let shouldIgnoreResponse = false
+    const previewRange = getAvailabilityPreviewRange()
+
+    Promise.resolve()
+      .then(() => {
+        if (shouldIgnoreResponse) {
+          return []
+        }
+
+        setIsAvailabilityPreviewLoading(true)
+        setAvailabilityPreviewError('')
+
+        return getOwnerRoomTypeAvailability(
+          selectedRoomTypeId,
+          previewRange.from,
+          previewRange.to,
+        )
+      })
+      .then((data) => {
+        if (shouldIgnoreResponse) {
+          return
+        }
+
+        setAvailabilityPreview(data)
+      })
+      .catch((loadError) => {
+        if (shouldIgnoreResponse) {
+          return
+        }
+
+        setAvailabilityPreview([])
+        setAvailabilityPreviewError(loadError.message)
+      })
+      .finally(() => {
+        if (!shouldIgnoreResponse) {
+          setIsAvailabilityPreviewLoading(false)
+        }
+      })
+
+    return () => {
+      shouldIgnoreResponse = true
+    }
+  }, [selectedRoomTypeId])
+
   function updateHotelForm(event) {
     const { checked, files, name, type, value } = event.target
     setHotelForm((currentForm) => ({
@@ -201,6 +374,10 @@ export default function OwnerPanelPage() {
   function updateAvailabilityForm(event) {
     const { name, value } = event.target
     setAvailabilityForm((currentForm) => ({ ...currentForm, [name]: value }))
+  }
+
+  function updateCloseDate(event) {
+    setCloseDate(event.target.value)
   }
 
   function updateEditHotelForm(event) {
@@ -392,7 +569,66 @@ export default function OwnerPanelPage() {
 
     try {
       await bulkUpdateOwnerAvailability(selectedRoomTypeId, items)
+      const previewRange = getAvailabilityPreviewRange()
+      const previewData = await getOwnerRoomTypeAvailability(
+        selectedRoomTypeId,
+        previewRange.from,
+        previewRange.to,
+      )
+
+      setAvailabilityPreview(previewData)
       setMessage('Disponibilidad actualizada correctamente.')
+    } catch (saveError) {
+      setError(saveError.message)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  async function handleCloseDate(event) {
+    event.preventDefault()
+
+    if (!selectedRoomTypeId) {
+      setError('Selecciona un tipo de habitación antes de cerrar una fecha.')
+      return
+    }
+
+    if (!closeDate) {
+      setError('Selecciona la fecha que quieres cerrar.')
+      return
+    }
+
+    const selectedRoomType = roomTypes.find((roomType) => {
+      return String(roomType.id) === String(selectedRoomTypeId)
+    })
+    const existingDay = availabilityPreview.find((dayAvailability) => {
+      return dayAvailability.date === closeDate
+    })
+
+    setIsSaving(true)
+    setMessage('')
+
+    try {
+      await bulkUpdateOwnerAvailability(selectedRoomTypeId, [
+        {
+          available_units: 0,
+          currency: selectedRoomType?.currency || availabilityForm.currency || 'EUR',
+          date: closeDate,
+          min_stay_nights: Number(existingDay?.min_stay_nights) || 1,
+          price: Number(existingDay?.price || selectedRoomType?.base_price) || 0,
+          status: 'closed',
+        },
+      ])
+      const previewRange = getAvailabilityPreviewRange()
+      const previewData = await getOwnerRoomTypeAvailability(
+        selectedRoomTypeId,
+        previewRange.from,
+        previewRange.to,
+      )
+
+      setAvailabilityPreview(previewData)
+      setCloseDate('')
+      setMessage('Fecha cerrada correctamente.')
     } catch (saveError) {
       setError(saveError.message)
     } finally {
@@ -515,9 +751,14 @@ export default function OwnerPanelPage() {
           {activeView === 'inventory' && (
             <InventoryView
               availabilityForm={availabilityForm}
+              availabilityPreview={availabilityPreview}
+              availabilityPreviewError={availabilityPreviewError}
               hotels={hotels}
+              isAvailabilityPreviewLoading={isAvailabilityPreviewLoading}
               isSaving={isSaving}
+              closeDate={closeDate}
               onAvailabilitySubmit={handleBulkAvailability}
+              onCloseDateSubmit={handleCloseDate}
               onCreateRoomType={handleCreateRoomType}
               onHotelChange={handleSelectedHotelChange}
               onRoomTypeChange={handleSelectedRoomTypeChange}
@@ -527,6 +768,7 @@ export default function OwnerPanelPage() {
               selectedHotelId={selectedHotelId}
               selectedRoomTypeId={selectedRoomTypeId}
               updateAvailabilityForm={updateAvailabilityForm}
+              updateCloseDate={updateCloseDate}
               updateRoomTypeForm={updateRoomTypeForm}
             />
           )}
@@ -646,9 +888,14 @@ function DashboardView({ hotels, setActiveView, stats }) {
 
 function InventoryView({
   availabilityForm,
+  availabilityPreview,
+  availabilityPreviewError,
+  closeDate,
   hotels,
+  isAvailabilityPreviewLoading,
   isSaving,
   onAvailabilitySubmit,
+  onCloseDateSubmit,
   onCreateRoomType,
   onHotelChange,
   onRoomTypeChange,
@@ -658,8 +905,18 @@ function InventoryView({
   selectedHotelId,
   selectedRoomTypeId,
   updateAvailabilityForm,
+  updateCloseDate,
   updateRoomTypeForm,
 }) {
+  const selectedRoomType = roomTypes.find((roomType) => {
+    return String(roomType.id) === String(selectedRoomTypeId)
+  })
+  const availabilityRanges = getAvailabilityRanges(availabilityPreview)
+  const specialAvailabilityDays = getSpecialAvailabilityDays(
+    availabilityPreview,
+    selectedRoomType,
+  )
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
       <section className="space-y-6 lg:col-span-8">
@@ -728,6 +985,15 @@ function InventoryView({
             </article>
           ))}
         </div>
+
+        <AvailabilityPreview
+          availabilityDays={availabilityPreview}
+          availabilityError={availabilityPreviewError}
+          availabilityRanges={availabilityRanges}
+          isLoading={isAvailabilityPreviewLoading}
+          selectedRoomType={selectedRoomType}
+          specialAvailabilityDays={specialAvailabilityDays}
+        />
       </section>
 
       <aside className="space-y-6 lg:col-span-4">
@@ -809,7 +1075,39 @@ function InventoryView({
           </form>
         </PanelCard>
 
-        <PanelCard title="Disponibilidad masiva">
+        <PanelCard title="Cerrar una fecha">
+          <form className="space-y-3" onSubmit={onCloseDateSubmit}>
+            <SelectInput
+              label="Tipo de habitación"
+              name="room_type_id"
+              onChange={(event) => onRoomTypeChange(event.target.value)}
+              value={selectedRoomTypeId}
+            >
+              {roomTypes.map((roomType) => (
+                <option key={roomType.id} value={roomType.id}>
+                  {roomType.name}
+                </option>
+              ))}
+            </SelectInput>
+            <TextInput
+              label="Fecha"
+              name="close_date"
+              onChange={updateCloseDate}
+              required
+              type="date"
+              value={closeDate}
+            />
+            <PrimaryButton disabled={isSaving || !selectedRoomTypeId}>
+              Cerrar fecha
+            </PrimaryButton>
+          </form>
+        </PanelCard>
+
+        <PanelCard title="Disponibilidad por rango o temporada">
+          <p className="mb-4 text-sm text-secondary">
+            Aplica unidades, precio, estado y mínimo de noches a un periodo
+            completo.
+          </p>
           <form className="space-y-3" onSubmit={onAvailabilitySubmit}>
             <SelectInput
               label="Tipo de habitación"
@@ -857,6 +1155,14 @@ function InventoryView({
                 type="number"
                 value={availabilityForm.price}
               />
+              <TextInput
+                label="Mín. noches"
+                min="1"
+                name="min_stay_nights"
+                onChange={updateAvailabilityForm}
+                type="number"
+                value={availabilityForm.min_stay_nights}
+              />
             </div>
             <SelectInput
               label="Estado"
@@ -873,6 +1179,210 @@ function InventoryView({
         </PanelCard>
       </aside>
     </div>
+  )
+}
+
+function AvailabilityPreview({
+  availabilityDays,
+  availabilityError,
+  availabilityRanges,
+  isLoading,
+  selectedRoomType,
+  specialAvailabilityDays,
+}) {
+  const openDays = availabilityDays.filter((dayAvailability) => {
+    return dayAvailability.status === 'open'
+  }).length
+  const unavailableDays = availabilityDays.filter((dayAvailability) => {
+    return dayAvailability.status !== 'open'
+  }).length
+  const regularRanges = availabilityRanges.filter((availabilityRange) => {
+    return !isSpecialAvailabilityDay(availabilityRange.sample, selectedRoomType)
+  })
+  const closedRanges = availabilityRanges.filter((availabilityRange) => {
+    return availabilityRange.sample.status === 'closed'
+  })
+  const specialRanges = availabilityRanges.filter((availabilityRange) => {
+    return (
+      availabilityRange.sample.status !== 'closed' &&
+      isSpecialAvailabilityDay(availabilityRange.sample, selectedRoomType)
+    )
+  })
+  const regularGroups = getGroupedAvailabilityRanges(regularRanges)
+  const closedGroups = getGroupedAvailabilityRanges(closedRanges)
+  const specialGroups = getGroupedAvailabilityRanges(specialRanges)
+  const [showAllRegularRanges, setShowAllRegularRanges] = useState(false)
+  const [showAllClosedRanges, setShowAllClosedRanges] = useState(false)
+  const [showAllSpecialRanges, setShowAllSpecialRanges] = useState(false)
+  const visibleRegularRanges = showAllRegularRanges
+    ? regularGroups
+    : regularGroups.slice(0, 4)
+  const visibleClosedRanges = showAllClosedRanges
+    ? closedGroups
+    : closedGroups.slice(0, 4)
+  const visibleSpecialRanges = showAllSpecialRanges
+    ? specialGroups
+    : specialGroups.slice(0, 4)
+
+  return (
+    <PanelCard title="Disponibilidad próxima">
+      {!selectedRoomType && (
+        <p className="text-sm text-secondary">
+          Selecciona una habitación para ver los próximos 90 días.
+        </p>
+      )}
+
+      {selectedRoomType && isLoading && (
+        <p className="text-sm text-secondary">Cargando disponibilidad...</p>
+      )}
+
+      {selectedRoomType && availabilityError && (
+        <p className="rounded-lg border border-error bg-error-container p-3 text-sm font-semibold text-error">
+          {availabilityError}
+        </p>
+      )}
+
+      {selectedRoomType &&
+        !isLoading &&
+        !availabilityError &&
+        availabilityRanges.length === 0 && (
+          <p className="text-sm text-secondary">
+            No hay disponibilidad cargada para los próximos 90 días.
+          </p>
+        )}
+
+      {selectedRoomType && availabilityRanges.length > 0 && (
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <Metric label="Abiertos" value={openDays} />
+            <Metric label="No disponibles" value={unavailableDays} />
+            <Metric label="Con cambios" value={specialAvailabilityDays.length} />
+          </div>
+
+          <AvailabilityRangeSection
+            emptyText="No hay rangos o temporadas en este periodo."
+            ranges={visibleRegularRanges}
+            roomType={selectedRoomType}
+            title="Rangos / temporadas"
+          />
+
+          {regularGroups.length > 4 && (
+            <button
+              className="text-sm font-semibold text-secondary underline transition hover:text-primary"
+              onClick={() => setShowAllRegularRanges((isVisible) => !isVisible)}
+              type="button"
+            >
+              {showAllRegularRanges
+                ? 'Ver menos rangos'
+                : `Ver ${regularGroups.length - 4} grupos más`}
+            </button>
+          )}
+
+          <AvailabilityRangeSection
+            emptyText="No hay fechas cerradas en este periodo."
+            ranges={visibleClosedRanges}
+            roomType={selectedRoomType}
+            title="Fechas cerradas"
+          />
+
+          {closedGroups.length > 4 && (
+            <button
+              className="text-sm font-semibold text-secondary underline transition hover:text-primary"
+              onClick={() => setShowAllClosedRanges((isVisible) => !isVisible)}
+              type="button"
+            >
+              {showAllClosedRanges
+                ? 'Ver menos fechas cerradas'
+                : `Ver ${closedGroups.length - 4} grupos cerrados más`}
+            </button>
+          )}
+
+          <AvailabilityRangeSection
+            emptyText="No hay cambios especiales en este periodo."
+            ranges={visibleSpecialRanges}
+            roomType={selectedRoomType}
+            title="Cambios especiales"
+          />
+
+          {specialGroups.length > 4 && (
+            <button
+              className="text-sm font-semibold text-secondary underline transition hover:text-primary"
+              onClick={() => setShowAllSpecialRanges((isVisible) => !isVisible)}
+              type="button"
+            >
+              {showAllSpecialRanges
+                ? 'Ver menos cambios especiales'
+                : `Ver ${specialGroups.length - 4} grupos especiales más`}
+            </button>
+          )}
+        </div>
+      )}
+    </PanelCard>
+  )
+}
+
+function AvailabilityRangeSection({ emptyText, ranges, roomType, title }) {
+  return (
+    <section>
+      <h3 className="text-base font-bold text-primary">{title}</h3>
+      {ranges.length === 0 ? (
+        <p className="mt-2 text-sm text-secondary">{emptyText}</p>
+      ) : (
+        <div className="mt-3 space-y-2">
+          {ranges.map((availabilityGroup) => (
+            <AvailabilityRangeRow
+              availabilityGroup={availabilityGroup}
+              key={getAvailabilityPatternKey(availabilityGroup.ranges[0])}
+              roomType={roomType}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
+function formatAvailabilityRangeDate(availabilityRange) {
+  if (availabilityRange.from === availabilityRange.to) {
+    return formatDate(availabilityRange.from)
+  }
+
+  return `${formatDate(availabilityRange.from)} - ${formatDate(availabilityRange.to)}`
+}
+
+function AvailabilityRangeRow({ availabilityGroup, roomType }) {
+  const { ranges, sample } = availabilityGroup
+  const visibleRanges = ranges.slice(0, 3)
+
+  return (
+    <article className="rounded-lg border border-outline-variant bg-surface p-3">
+      <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
+        <div>
+          <div className="space-y-1">
+            {visibleRanges.map((availabilityRange) => (
+              <p
+                className="font-bold text-primary"
+                key={`${availabilityRange.from}-${availabilityRange.to}`}
+              >
+                {formatAvailabilityRangeDate(availabilityRange)}
+              </p>
+            ))}
+            {ranges.length > visibleRanges.length && (
+              <p className="text-sm font-semibold text-secondary">
+                +{ranges.length - visibleRanges.length} tramos más con estas
+                condiciones
+              </p>
+            )}
+          </div>
+          <p className="mt-1 text-sm text-secondary">
+            {sample.available_units} unidades ·{' '}
+            {formatPrice(sample.price, roomType.currency_symbol)} · mínimo{' '}
+            {sample.min_stay_nights || 1} noche
+          </p>
+        </div>
+        <StatusBadge status={sample.status} />
+      </div>
+    </article>
   )
 }
 
