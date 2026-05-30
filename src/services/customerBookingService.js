@@ -58,7 +58,7 @@ export async function createCustomerBooking(bookingData) {
   const result = await response.json()
 
   if (!response.ok) {
-    throw new Error(result.message || 'No se pudo crear la reserva')
+    throw new Error(getErrorMessage(result, 'No se pudo crear la reserva'))
   }
 
   return result.data

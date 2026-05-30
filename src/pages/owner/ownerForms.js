@@ -1,5 +1,5 @@
 export const bookingStatuses = ['pending', 'confirmed', 'completed', 'cancelled']
-export const paymentStatuses = ['pending', 'partial', 'paid', 'failed', 'refunded']
+export const paymentStatuses = ['pending', 'paid', 'failed', 'refunded']
 
 export const initialHotelForm = {
   name: '',

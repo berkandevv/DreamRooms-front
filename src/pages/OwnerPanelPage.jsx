@@ -34,7 +34,7 @@ import {
 } from './owner/ownerForms'
 import {
   getLocationText,
-  getRemainingBookingAmount,
+  getTotalBookingAmount,
   getStatusLabel,
 } from './owner/ownerHelpers'
 import BookingRow from './owner/BookingRow'
@@ -68,7 +68,6 @@ export default function OwnerPanelPage() {
   const [editHotelForm, setEditHotelForm] = useState(initialHotelForm)
   const [editRoomTypeForm, setEditRoomTypeForm] = useState(initialRoomTypeForm)
   const [availabilityForm, setAvailabilityForm] = useState(initialAvailabilityForm)
-  const [paymentAmountByBooking, setPaymentAmountByBooking] = useState({})
   const [isLoading, setIsLoading] = useState(Boolean(getAuthToken()))
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
@@ -368,8 +367,7 @@ export default function OwnerPanelPage() {
   }
 
   async function handleCreatePayment(booking) {
-    const amount =
-      paymentAmountByBooking[booking.id] || getRemainingBookingAmount(booking)
+    const amount = getTotalBookingAmount(booking)
 
     setIsSaving(true)
     setMessage('')
@@ -379,9 +377,9 @@ export default function OwnerPanelPage() {
         amount: Number(amount),
         currency: booking.amounts?.currency || 'EUR',
         metadata: [],
-        provider: 'stripe',
+        provider: 'manual',
         status: 'paid',
-        transaction_reference: `manual-${booking.booking_reference}`,
+        transaction_reference: `HOTEL-${booking.booking_reference || booking.id}`,
       })
       setBookings((currentBookings) => {
         return currentBookings.map((currentBooking) => {
@@ -489,9 +487,7 @@ export default function OwnerPanelPage() {
               isSaving={isSaving}
               onCreatePayment={handleCreatePayment}
               onFilterChange={setBookingFilters}
-              onPaymentAmountChange={setPaymentAmountByBooking}
               onStatusChange={handleStatusChange}
-              paymentAmountByBooking={paymentAmountByBooking}
               selectedHotelId={bookingHotelFilter}
               setSelectedHotelId={setBookingHotelFilter}
             />
@@ -847,9 +843,7 @@ function BookingsView({
   isSaving,
   onCreatePayment,
   onFilterChange,
-  onPaymentAmountChange,
   onStatusChange,
-  paymentAmountByBooking,
   selectedHotelId,
   setSelectedHotelId,
 }) {
@@ -921,9 +915,7 @@ function BookingsView({
             disabled={isSaving}
             key={booking.id}
             onCreatePayment={onCreatePayment}
-            onPaymentAmountChange={onPaymentAmountChange}
             onStatusChange={onStatusChange}
-            paymentAmount={paymentAmountByBooking[booking.id]}
           />
         ))}
         {bookings.length === 0 && (

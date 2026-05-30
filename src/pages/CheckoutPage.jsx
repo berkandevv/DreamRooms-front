@@ -47,6 +47,7 @@ export default function CheckoutPage() {
     children_count: initialChildren,
     units_booked: 1,
   })
+  const [paymentMethod, setPaymentMethod] = useState('card')
   const [customerData, setCustomerData] = useState({
     ...initialCustomerData,
     name: authenticatedUser?.name || '',
@@ -134,11 +135,17 @@ export default function CheckoutPage() {
         adults_count: Number(stayData.adults_count),
         children_count: Number(stayData.children_count),
         units_booked: Number(stayData.units_booked),
+        payment_method: paymentMethod,
         customer_name: customerData.name,
         customer_email: customerData.email,
         customer_phone: customerData.phone,
         notes: customerData.notes,
-        guests: [],
+        guests: [
+          {
+            full_name: customerData.name,
+            is_primary: true,
+          },
+        ],
       })
 
       setBooking(createdBooking)
@@ -261,10 +268,43 @@ export default function CheckoutPage() {
             </section>
 
             <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-wider text-secondary">
+                  Paso 3
+                </p>
+                <h2 className="mt-1 text-2xl font-bold text-on-surface">
+                  Forma de pago
+                </h2>
+                <p className="mt-2 text-secondary">
+                  Elige cómo quieres confirmar la reserva.
+                </p>
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <PaymentMethodOption
+                  checked={paymentMethod === 'card'}
+                  description="La reserva quedará confirmada y pagada."
+                  label="Tarjeta"
+                  name="payment_method"
+                  onChange={() => setPaymentMethod('card')}
+                  value="card"
+                />
+                <PaymentMethodOption
+                  checked={paymentMethod === 'hotel'}
+                  description="Pagarás directamente en el hotel. La reserva quedará pendiente."
+                  label="Pagar en el hotel"
+                  name="payment_method"
+                  onChange={() => setPaymentMethod('hotel')}
+                  value="hotel"
+                />
+              </div>
+            </section>
+
+            <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
               <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
                 <div>
                   <p className="text-sm font-bold uppercase tracking-wider text-secondary">
-                    Paso 2
+                    Paso 4
                   </p>
                   <h2 className="mt-1 text-2xl font-bold text-on-surface">
                     Datos del cliente
@@ -349,8 +389,11 @@ export default function CheckoutPage() {
 
               {booking && (
                 <div className="mt-5 rounded-lg border border-outline-variant bg-secondary-container p-4 text-sm font-semibold text-on-secondary-fixed">
-                  Reserva creada correctamente. Referencia:{' '}
-                  {booking.booking_reference || booking.id}
+                  {booking.payment_method === 'card' ||
+                  booking.payment_status === 'paid'
+                    ? 'Reserva confirmada y pagada.'
+                    : 'Reserva pendiente de confirmación/pago en hotel.'}{' '}
+                  Referencia: {booking.booking_reference || booking.id}
                 </div>
               )}
             </section>
@@ -436,13 +479,51 @@ export default function CheckoutPage() {
               </button>
 
               <p className="text-center text-xs font-semibold text-secondary">
-                La reserva se crea con estado pendiente hasta su aprobación
+                {paymentMethod === 'card'
+                  ? 'Pago con tarjeta: confirmación inmediata'
+                  : 'Pago en hotel: la reserva queda pendiente'}
               </p>
             </div>
           </aside>
         </form>
       </section>
     </Layout>
+  )
+}
+
+function PaymentMethodOption({
+  checked,
+  description,
+  label,
+  name,
+  onChange,
+  value,
+}) {
+  return (
+    <label
+      className={`cursor-pointer rounded-xl border p-4 transition ${
+        checked
+          ? 'border-primary bg-secondary-container'
+          : 'border-outline-variant bg-surface hover:border-primary'
+      }`}
+    >
+      <span className="flex items-start gap-3">
+        <input
+          checked={checked}
+          className="mt-1 h-4 w-4 accent-primary"
+          name={name}
+          onChange={onChange}
+          type="radio"
+          value={value}
+        />
+        <span>
+          <span className="block font-bold text-on-surface">{label}</span>
+          <span className="mt-1 block text-sm text-secondary">
+            {description}
+          </span>
+        </span>
+      </span>
+    </label>
   )
 }
 

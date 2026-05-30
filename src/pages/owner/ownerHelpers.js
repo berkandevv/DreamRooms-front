@@ -33,13 +33,15 @@ export function getStatusLabel(status) {
     confirmed: 'Confirmada',
     draft: 'Borrador',
     failed: 'Fallido',
+    hotel: 'Pago en hotel',
     inactive: 'Inactivo',
+    manual: 'Manual',
     open: 'Abierto',
     paid: 'Pagado',
-    partial: 'Parcial',
     pending: 'Pendiente',
     published: 'Publicado',
     refunded: 'Reembolsado',
+    card: 'Tarjeta',
   }
 
   return labels[status] || status || 'Desconocido'
@@ -76,4 +78,12 @@ export function getRemainingBookingAmount(booking) {
   const paidAmount = getPaidBookingAmount(booking)
 
   return Math.max(totalAmount - paidAmount, 0)
+}
+
+export function canRegisterManualPayment(booking) {
+  return (
+    booking.payment_method === 'hotel' &&
+    booking.payment_status === 'pending' &&
+    getTotalBookingAmount(booking) > 0
+  )
 }

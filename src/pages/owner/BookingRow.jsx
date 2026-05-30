@@ -2,10 +2,12 @@ import { FaCreditCard } from 'react-icons/fa'
 import { formatPrice } from '../../utils/formatPrice'
 import { bookingStatuses } from './ownerForms'
 import {
+  canRegisterManualPayment,
   getDateLabel,
   getPaidBookingAmount,
   getRemainingBookingAmount,
   getStatusLabel,
+  getTotalBookingAmount,
 } from './ownerHelpers'
 import { StatusBadge } from './OwnerUi'
 
@@ -20,12 +22,12 @@ export default function BookingRow({
   compact = false,
   disabled = false,
   onCreatePayment,
-  onPaymentAmountChange,
   onStatusChange,
-  paymentAmount,
 }) {
   const paidAmount = getPaidBookingAmount(booking)
   const remainingAmount = getRemainingBookingAmount(booking)
+  const totalAmount = getTotalBookingAmount(booking)
+  const canCreateManualPayment = canRegisterManualPayment(booking)
   const taxesAmount = Number(booking.amounts?.taxes) || 0
   const discountAmount = Number(booking.amounts?.discount) || 0
   const currencySymbol = booking.amounts?.currency_symbol
@@ -44,6 +46,9 @@ export default function BookingRow({
           <p className="mt-1 text-sm text-secondary">
             {booking.booking_reference} · {booking.hotel?.name} ·{' '}
             {booking.room_type?.name}
+          </p>
+          <p className="mt-1 text-sm font-semibold text-secondary">
+            Método de pago: {getStatusLabel(booking.payment_method)}
           </p>
           <p className="mt-1 text-sm text-secondary">
             {getDateLabel(booking.stay?.check_in)} -{' '}
@@ -113,28 +118,24 @@ export default function BookingRow({
               </select>
               {onCreatePayment && (
                 <>
-                  <input
-                    className="h-10 w-28 rounded-lg border border-outline-variant bg-surface px-3 text-sm outline-none focus:border-primary"
-                    min="0"
-                    onChange={(event) =>
-                      onPaymentAmountChange((currentAmounts) => ({
-                        ...currentAmounts,
-                        [booking.id]: event.target.value,
-                      }))
-                    }
-                    placeholder={formatPaymentPlaceholder(remainingAmount)}
-                    step="0.01"
-                    type="number"
-                    value={paymentAmount || ''}
-                  />
+                  {canCreateManualPayment && (
+                    <span className="inline-flex h-10 items-center rounded-lg border border-outline-variant bg-surface px-3 text-sm font-semibold text-secondary">
+                      {formatPaymentPlaceholder(totalAmount)}
+                    </span>
+                  )}
                   <button
                     className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-primary px-3 text-sm font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-                    disabled={disabled}
+                    disabled={disabled || !canCreateManualPayment}
                     onClick={() => onCreatePayment(booking)}
                     type="button"
+                    title={
+                      canCreateManualPayment
+                        ? 'Registrar pago manual por el total'
+                        : 'Solo disponible para reservas pendientes con pago en hotel'
+                    }
                   >
                     <FaCreditCard className="h-3 w-3" />
-                    Pago
+                    Pago manual
                   </button>
                 </>
               )}
