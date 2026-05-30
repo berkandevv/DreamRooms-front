@@ -127,7 +127,7 @@ export default function TermsPage() {
               <div className="relative overflow-hidden rounded-lg">
                 <img
                   alt="Lobby elegante de hotel"
-                  className="h-[360px] w-full object-cover"
+                  className="h-90 w-full object-cover"
                   src={termsImage}
                 />
                 <div className="absolute inset-0 bg-primary/35" />

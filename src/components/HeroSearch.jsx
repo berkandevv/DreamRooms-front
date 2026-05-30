@@ -45,7 +45,7 @@ export default function HeroSearch() {
 
   return (
     <section className="mx-auto max-w-7xl px-5 pb-10 md:px-8">
-      <div className="relative flex min-h-[440px] items-center overflow-hidden rounded-xl bg-primary-container">
+      <div className="relative flex min-h-110 items-center overflow-hidden rounded-xl bg-primary-container">
         <img
           alt="Piscina de resort al atardecer con palmeras"
           className="absolute inset-0 h-full w-full object-cover opacity-80"
