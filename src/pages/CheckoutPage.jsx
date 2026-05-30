@@ -39,6 +39,8 @@ export default function CheckoutPage() {
   const [loadError, setLoadError] = useState('')
   const [booking, setBooking] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPaymentGatewayOpen, setIsPaymentGatewayOpen] = useState(false)
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [stayData, setStayData] = useState({
     check_in: initialCheckIn,
@@ -95,64 +97,100 @@ export default function CheckoutPage() {
     }))
   }
 
+  function validateBookingData() {
+    if (!roomType) {
+      throw new Error('Selecciona un tipo de habitación válido.')
+    }
+
+    if (nights <= 0) {
+      throw new Error('Selecciona fechas válidas para confirmar la reserva.')
+    }
+  }
+
+  function buildBookingPayload(selectedPaymentMethod) {
+    return {
+      room_type_id: roomType.id,
+      check_in: getIsoDate(stayData.check_in),
+      check_out: getIsoDate(stayData.check_out),
+      adults_count: Number(stayData.adults_count),
+      children_count: Number(stayData.children_count),
+      units_booked: Number(stayData.units_booked),
+      payment_method: selectedPaymentMethod,
+      customer_name: customerData.name,
+      customer_email: customerData.email,
+      customer_phone: customerData.phone,
+      notes: customerData.notes,
+      guests: [
+        {
+          full_name: customerData.name,
+          is_primary: true,
+        },
+      ],
+    }
+  }
+
+  async function submitBooking(selectedPaymentMethod) {
+    if (!isAuthenticated) {
+      await registerUser({
+        name: customerData.name,
+        email: customerData.email,
+        phone: customerData.phone,
+        password: customerData.password,
+        password_confirmation: customerData.password_confirmation,
+        account_type: 'customer',
+      })
+    }
+
+    if (customerData.name || customerData.email) {
+      setAuthenticatedUser({
+        email: customerData.email,
+        name: customerData.name,
+      })
+    }
+
+    const createdBooking = await createCustomerBooking(
+      buildBookingPayload(selectedPaymentMethod),
+    )
+
+    setBooking(createdBooking)
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
-    setIsSubmitting(true)
     setSubmitError('')
     setBooking(null)
 
     try {
-      if (!roomType) {
-        throw new Error('Selecciona un tipo de habitación válido.')
+      validateBookingData()
+
+      if (paymentMethod === 'card') {
+        setIsPaymentGatewayOpen(true)
+        return
       }
 
-      if (nights <= 0) {
-        throw new Error('Selecciona fechas válidas para confirmar la reserva.')
-      }
-
-      if (!isAuthenticated) {
-        await registerUser({
-          name: customerData.name,
-          email: customerData.email,
-          phone: customerData.phone,
-          password: customerData.password,
-          password_confirmation: customerData.password_confirmation,
-          account_type: 'customer',
-        })
-      }
-
-      if (customerData.name || customerData.email) {
-        setAuthenticatedUser({
-          email: customerData.email,
-          name: customerData.name,
-        })
-      }
-
-      const createdBooking = await createCustomerBooking({
-        room_type_id: roomType.id,
-        check_in: getIsoDate(stayData.check_in),
-        check_out: getIsoDate(stayData.check_out),
-        adults_count: Number(stayData.adults_count),
-        children_count: Number(stayData.children_count),
-        units_booked: Number(stayData.units_booked),
-        payment_method: paymentMethod,
-        customer_name: customerData.name,
-        customer_email: customerData.email,
-        customer_phone: customerData.phone,
-        notes: customerData.notes,
-        guests: [
-          {
-            full_name: customerData.name,
-            is_primary: true,
-          },
-        ],
-      })
-
-      setBooking(createdBooking)
+      setIsSubmitting(true)
+      await submitBooking('hotel')
     } catch (error) {
       setSubmitError(error.message)
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  async function handleGatewayPayment() {
+    setIsProcessingPayment(true)
+    setSubmitError('')
+
+    try {
+      await new Promise((resolve) => {
+        window.setTimeout(resolve, 900)
+      })
+      await submitBooking('card')
+      setIsPaymentGatewayOpen(false)
+    } catch (error) {
+      setSubmitError(error.message)
+    } finally {
+      setIsProcessingPayment(false)
     }
   }
 
@@ -270,7 +308,7 @@ export default function CheckoutPage() {
             <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(19,27,46,0.08)]">
               <div>
                 <p className="text-sm font-bold uppercase tracking-wider text-secondary">
-                  Paso 3
+                  Paso 2
                 </p>
                 <h2 className="mt-1 text-2xl font-bold text-on-surface">
                   Forma de pago
@@ -304,7 +342,7 @@ export default function CheckoutPage() {
               <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
                 <div>
                   <p className="text-sm font-bold uppercase tracking-wider text-secondary">
-                    Paso 4
+                    Paso 3
                   </p>
                   <h2 className="mt-1 text-2xl font-bold text-on-surface">
                     Datos del cliente
@@ -475,7 +513,11 @@ export default function CheckoutPage() {
                 disabled={isSubmitting}
                 type="submit"
               >
-                {isSubmitting ? 'Confirmando reserva...' : 'Confirmar reserva'}
+                {isSubmitting
+                  ? 'Confirmando reserva...'
+                  : paymentMethod === 'card'
+                    ? 'Ir al pago'
+                    : 'Confirmar reserva'}
               </button>
 
               <p className="text-center text-xs font-semibold text-secondary">
@@ -486,6 +528,24 @@ export default function CheckoutPage() {
             </div>
           </aside>
         </form>
+
+        {isPaymentGatewayOpen && (
+          <PaymentGatewayModal
+            amount={formatPrice(amounts.total, currencySymbol, {
+              decimals: true,
+            })}
+            error={submitError}
+            hotelName={hotel.name}
+            isProcessing={isProcessingPayment}
+            onCancel={() => {
+              if (!isProcessingPayment) {
+                setIsPaymentGatewayOpen(false)
+              }
+            }}
+            onPay={handleGatewayPayment}
+            roomTypeName={roomType.name}
+          />
+        )}
       </section>
     </Layout>
   )
@@ -524,6 +584,74 @@ function PaymentMethodOption({
         </span>
       </span>
     </label>
+  )
+}
+
+function PaymentGatewayModal({
+  amount,
+  error,
+  hotelName,
+  isProcessing,
+  onCancel,
+  onPay,
+  roomTypeName,
+}) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-on-surface/45 px-5 py-8 backdrop-blur-sm">
+      <section className="w-full max-w-md overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_24px_70px_rgba(19,27,46,0.25)]">
+        <div className="border-b border-outline-variant bg-surface-container p-5">
+          <p className="text-sm font-bold uppercase tracking-wider text-secondary">
+            Pasarela segura
+          </p>
+          <h2 className="mt-1 text-2xl font-bold text-on-surface">
+            Pago con tarjeta
+          </h2>
+        </div>
+
+        <div className="space-y-5 p-5">
+          <div className="rounded-lg border border-outline-variant bg-surface p-4">
+            <p className="text-sm font-semibold text-secondary">{hotelName}</p>
+            <p className="mt-1 font-bold text-on-surface">{roomTypeName}</p>
+            <div className="mt-4 flex items-end justify-between gap-4 border-t border-outline-variant pt-4">
+              <span className="text-sm font-bold uppercase tracking-wider text-secondary">
+                Total a pagar
+              </span>
+              <span className="text-3xl font-bold text-primary">{amount}</span>
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-secondary-container p-4 text-sm font-semibold text-on-secondary-fixed">
+            El sistema
+            marcará la reserva como pagada al confirmar.
+          </div>
+
+          {error && (
+            <p className="rounded-lg border border-error bg-error-container p-3 text-sm font-semibold text-error">
+              {error}
+            </p>
+          )}
+
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              className="h-11 rounded-lg border border-outline-variant px-4 text-sm font-semibold text-secondary transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isProcessing}
+              onClick={onCancel}
+              type="button"
+            >
+              Volver
+            </button>
+            <button
+              className="h-11 rounded-lg bg-primary px-5 text-sm font-semibold text-on-primary shadow-md transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isProcessing}
+              onClick={onPay}
+              type="button"
+            >
+              {isProcessing ? 'Procesando pago...' : `Pagar ${amount}`}
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }
 
