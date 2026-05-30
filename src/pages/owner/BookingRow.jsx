@@ -3,6 +3,7 @@ import { formatPrice } from '../../utils/formatPrice'
 import { bookingStatuses } from './ownerForms'
 import {
   canRegisterManualPayment,
+  getBookedUnits,
   getDateLabel,
   getPaidBookingAmount,
   getRemainingBookingAmount,
@@ -45,7 +46,8 @@ export default function BookingRow({
           <p className="mt-1 text-sm text-secondary">
             {getDateLabel(booking.stay?.check_in)} -{' '}
             {getDateLabel(booking.stay?.check_out)} ·{' '}
-            {booking.stay?.nights || 0} noches
+            {booking.stay?.nights || 0} noches · {getBookedUnits(booking)}{' '}
+            {getBookedUnits(booking) === 1 ? 'habitación' : 'habitaciones'}
           </p>
         </div>
 

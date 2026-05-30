@@ -13,12 +13,16 @@ export function getStatusLabel(status) {
 
 export function getPaymentMethodLabel(paymentMethod) {
   const labels = {
-    card: 'Tarjeta',
+    card: 'Pago con tarjeta',
     hotel: 'Pago en hotel',
     manual: 'Manual',
   }
 
   return labels[paymentMethod?.toLowerCase()] || 'No indicado'
+}
+
+export function getBookedUnits(booking) {
+  return Number(booking.stay?.units_booked || booking.units_booked) || 1
 }
 
 export function isPastBooking(booking) {

@@ -4,6 +4,7 @@ import { pluralize } from '../../utils/textUtils'
 import {
   getBookingImage,
   getBookingImageAlt,
+  getBookedUnits,
   getPaymentMethodLabel,
 } from './bookingHelpers'
 import StatusBadge from './StatusBadge'
@@ -47,13 +48,12 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
             <p className="mt-1 text-sm font-semibold text-outline">
               Ref. {booking.booking_reference || booking.id}
             </p>
-            <p className="mt-2 text-sm font-semibold text-secondary">
-              Método de pago: {getPaymentMethodLabel(booking.payment_method)}
-            </p>
 
             <p className="mt-5 text-sm font-semibold text-secondary">
               {booking.stay?.nights || '-'}{' '}
               {pluralize(booking.stay?.nights, 'noche', 'noches')} ·{' '}
+              {getBookedUnits(booking)}{' '}
+              {pluralize(getBookedUnits(booking), 'habitación', 'habitaciones')} ·{' '}
               {booking.stay?.adults_count || 0} adultos,{' '}
               {booking.stay?.children_count || 0} niños
             </p>
@@ -77,6 +77,7 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
         <div className="flex flex-row items-center justify-between gap-4 border-t border-outline-variant pt-4 lg:w-44 lg:flex-col lg:items-end lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
           <div className="flex flex-col items-start gap-3 lg:items-end">
             <StatusBadge status={booking.status} />
+            <PaymentMethodBadge paymentMethod={booking.payment_method} />
             <p className="text-xl font-bold text-primary">
               {booking.amounts?.total}
               {booking.amounts?.currency_symbol}
@@ -96,6 +97,22 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
         </div>
       </div>
     </article>
+  )
+}
+
+function PaymentMethodBadge({ paymentMethod }) {
+  const normalizedPaymentMethod = paymentMethod?.toLowerCase()
+  const toneClassName =
+    normalizedPaymentMethod === 'card'
+      ? 'bg-[#DBEAFE] text-[#1D4ED8]'
+      : normalizedPaymentMethod === 'hotel'
+        ? 'bg-[#FEF3C7] text-[#92400E]'
+        : 'bg-surface-container text-secondary'
+
+  return (
+    <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase ${toneClassName}`}>
+      {getPaymentMethodLabel(paymentMethod)}
+    </span>
   )
 }
 

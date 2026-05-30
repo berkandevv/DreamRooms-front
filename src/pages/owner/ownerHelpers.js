@@ -80,6 +80,10 @@ export function getRemainingBookingAmount(booking) {
   return Math.max(totalAmount - paidAmount, 0)
 }
 
+export function getBookedUnits(booking) {
+  return Number(booking.stay?.units_booked || booking.units_booked) || 1
+}
+
 export function canRegisterManualPayment(booking) {
   return (
     booking.payment_method === 'hotel' &&

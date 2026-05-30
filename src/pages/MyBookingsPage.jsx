@@ -9,6 +9,7 @@ import {
   bookingHasReview,
   canReviewBooking,
   enrichBookingsWithHotelImages,
+  getBookedUnits,
   getPaymentMethodLabel,
   isPastBooking,
 } from './bookings/bookingHelpers'
@@ -346,6 +347,14 @@ export default function MyBookingsPage() {
                           <p className="mt-2 text-sm font-semibold text-secondary">
                             Método de pago:{' '}
                             {getPaymentMethodLabel(booking.payment_method)}
+                          </p>
+                          <p className="mt-1 text-sm font-semibold text-secondary">
+                            {getBookedUnits(booking)}{' '}
+                            {pluralize(
+                              getBookedUnits(booking),
+                              'habitación reservada',
+                              'habitaciones reservadas',
+                            )}
                           </p>
                         </div>
                         <p className="text-sm font-semibold text-primary">
