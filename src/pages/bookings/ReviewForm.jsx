@@ -2,7 +2,11 @@ import { useState } from 'react'
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import { createCustomerBookingReview } from '../../services/customerBookingService'
 
-export default function ReviewForm({ booking, onCreated }) {
+function isAlreadyReviewedError(error) {
+  return error.message.toLowerCase().includes('already has a review')
+}
+
+export default function ReviewForm({ booking, onAlreadyReviewed, onCreated }) {
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -14,12 +18,17 @@ export default function ReviewForm({ booking, onCreated }) {
     setError('')
 
     try {
-      await createCustomerBookingReview(booking.id, {
+      const review = await createCustomerBookingReview(booking.id, {
         comment,
         rating,
       })
-      onCreated(booking.id)
+      onCreated(booking.id, review)
     } catch (reviewError) {
+      if (isAlreadyReviewedError(reviewError)) {
+        onAlreadyReviewed(booking.id)
+        return
+      }
+
       setError(reviewError.message)
     } finally {
       setIsSubmitting(false)

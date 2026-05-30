@@ -17,9 +17,21 @@ export function isPastBooking(booking) {
   return ['cancelled', 'completed'].includes(status)
 }
 
+export function bookingHasReview(booking) {
+  return Boolean(
+    booking.review ||
+      booking.has_review ||
+      booking.hasReview ||
+      booking.review_id ||
+      booking.reviewed ||
+      booking.reviewed_at,
+  )
+}
+
 export function canReviewBooking(booking, reviewedBookings) {
   return (
     booking.status?.toLowerCase() === 'completed' &&
+    !bookingHasReview(booking) &&
     !reviewedBookings.includes(booking.id)
   )
 }

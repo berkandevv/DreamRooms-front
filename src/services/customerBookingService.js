@@ -2,6 +2,14 @@ import { getAuthHeaders } from './authService'
 
 const API_URL = 'http://localhost:8000/api/customer/bookings'
 
+function getErrorMessage(result, fallbackMessage) {
+  const validationMessage = Object.values(result.errors || {})
+    .flat()
+    .find(Boolean)
+
+  return validationMessage || result.message || fallbackMessage
+}
+
 // Obtiene todas las reservas del cliente autenticado
 export async function getCustomerBookings() {
   const response = await fetch(API_URL, {
@@ -70,7 +78,7 @@ export async function createCustomerBookingReview(bookingId, reviewData) {
   const result = await response.json()
 
   if (!response.ok) {
-    throw new Error(result.message || 'No se pudo publicar el comentario')
+    throw new Error(getErrorMessage(result, 'No se pudo publicar el comentario'))
   }
 
   return result.data
