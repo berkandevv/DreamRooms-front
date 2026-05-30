@@ -4,6 +4,7 @@ import { pluralize } from '../../utils/textUtils'
 import {
   getBookingImage,
   getBookingImageAlt,
+  getPaymentMethodLabel,
 } from './bookingHelpers'
 import StatusBadge from './StatusBadge'
 
@@ -45,6 +46,9 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
             </p>
             <p className="mt-1 text-sm font-semibold text-outline">
               Ref. {booking.booking_reference || booking.id}
+            </p>
+            <p className="mt-2 text-sm font-semibold text-secondary">
+              Método de pago: {getPaymentMethodLabel(booking.payment_method)}
             </p>
 
             <p className="mt-5 text-sm font-semibold text-secondary">

@@ -7,15 +7,8 @@ import {
   getPaidBookingAmount,
   getRemainingBookingAmount,
   getStatusLabel,
-  getTotalBookingAmount,
 } from './ownerHelpers'
 import { StatusBadge } from './OwnerUi'
-
-function formatPaymentPlaceholder(amount) {
-  const numericAmount = Number(amount)
-
-  return Number.isNaN(numericAmount) ? '0.00' : numericAmount.toFixed(2)
-}
 
 export default function BookingRow({
   booking,
@@ -26,7 +19,6 @@ export default function BookingRow({
 }) {
   const paidAmount = getPaidBookingAmount(booking)
   const remainingAmount = getRemainingBookingAmount(booking)
-  const totalAmount = getTotalBookingAmount(booking)
   const canCreateManualPayment = canRegisterManualPayment(booking)
   const taxesAmount = Number(booking.amounts?.taxes) || 0
   const discountAmount = Number(booking.amounts?.discount) || 0
@@ -117,27 +109,20 @@ export default function BookingRow({
                 ))}
               </select>
               {onCreatePayment && (
-                <>
-                  {canCreateManualPayment && (
-                    <span className="inline-flex h-10 items-center rounded-lg border border-outline-variant bg-surface px-3 text-sm font-semibold text-secondary">
-                      {formatPaymentPlaceholder(totalAmount)}
-                    </span>
-                  )}
-                  <button
-                    className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-primary px-3 text-sm font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-                    disabled={disabled || !canCreateManualPayment}
-                    onClick={() => onCreatePayment(booking)}
-                    type="button"
-                    title={
-                      canCreateManualPayment
-                        ? 'Registrar pago manual por el total'
-                        : 'Solo disponible para reservas pendientes con pago en hotel'
-                    }
-                  >
-                    <FaCreditCard className="h-3 w-3" />
-                    Pago manual
-                  </button>
-                </>
+                <button
+                  className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-primary px-3 text-sm font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={disabled || !canCreateManualPayment}
+                  onClick={() => onCreatePayment(booking)}
+                  type="button"
+                  title={
+                    canCreateManualPayment
+                      ? 'Registrar pago completo'
+                      : 'Solo disponible para reservas pendientes con pago en hotel'
+                  }
+                >
+                  <FaCreditCard className="h-3 w-3" />
+                  Pago
+                </button>
               )}
             </div>
           )}

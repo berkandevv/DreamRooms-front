@@ -9,6 +9,7 @@ import {
   bookingHasReview,
   canReviewBooking,
   enrichBookingsWithHotelImages,
+  getPaymentMethodLabel,
   isPastBooking,
 } from './bookings/bookingHelpers'
 import {
@@ -341,6 +342,10 @@ export default function MyBookingsPage() {
                           </h3>
                           <p className="mt-1 text-sm font-semibold text-secondary">
                             {booking.room_type?.name || 'Habitación'}
+                          </p>
+                          <p className="mt-2 text-sm font-semibold text-secondary">
+                            Método de pago:{' '}
+                            {getPaymentMethodLabel(booking.payment_method)}
                           </p>
                         </div>
                         <p className="text-sm font-semibold text-primary">
