@@ -5,6 +5,7 @@ import {
   getDateLabel,
   getPaidBookingAmount,
   getRemainingBookingAmount,
+  getStatusLabel,
 } from './ownerHelpers'
 import { StatusBadge } from './OwnerUi'
 
@@ -106,7 +107,7 @@ export default function BookingRow({
               >
                 {bookingStatuses.map((status) => (
                   <option key={status} value={status}>
-                    {status}
+                    {getStatusLabel(status)}
                   </option>
                 ))}
               </select>

@@ -1,4 +1,4 @@
-import { getStatusClass } from './ownerHelpers'
+import { getStatusClass, getStatusLabel } from './ownerHelpers'
 
 // Muestra una tarjeta con una métrica del panel
 export function StatCard({ label, value }) {
@@ -38,7 +38,7 @@ export function StatusBadge({ label = '', status }) {
       className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${getStatusClass(status)}`}
     >
       {label ? `${label}: ` : ''}
-      {status || 'unknown'}
+      {getStatusLabel(status)}
     </span>
   )
 }

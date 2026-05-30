@@ -30,6 +30,7 @@ import {
 import {
   getLocationText,
   getRemainingBookingAmount,
+  getStatusLabel,
 } from './owner/ownerHelpers'
 import BookingRow from './owner/BookingRow'
 import OwnerShell from './owner/OwnerShell'
@@ -859,7 +860,7 @@ function BookingsView({
           <option value="">Todos</option>
           {bookingStatuses.map((status) => (
             <option key={status} value={status}>
-              {status}
+              {getStatusLabel(status)}
             </option>
           ))}
         </SelectInput>
@@ -877,7 +878,7 @@ function BookingsView({
           <option value="">Todos</option>
           {paymentStatuses.map((status) => (
             <option key={status} value={status}>
-              {status}
+              {getStatusLabel(status)}
             </option>
           ))}
         </SelectInput>

@@ -22,6 +22,29 @@ export function getDateLabel(value) {
   return formatDate(value, 'Sin fecha')
 }
 
+export function getStatusLabel(status) {
+  const labels = {
+    active: 'Activa',
+    authorized: 'Autorizado',
+    blocked: 'Bloqueado',
+    cancelled: 'Cancelada',
+    closed: 'Cerrado',
+    completed: 'Completada',
+    confirmed: 'Confirmada',
+    draft: 'Borrador',
+    failed: 'Fallido',
+    inactive: 'Inactivo',
+    open: 'Abierto',
+    paid: 'Pagado',
+    partial: 'Parcial',
+    pending: 'Pendiente',
+    published: 'Publicado',
+    refunded: 'Reembolsado',
+  }
+
+  return labels[status] || status || 'Desconocido'
+}
+
 export function getTotalBookingAmount(booking) {
   return Number(booking.amounts?.total) || 0
 }
@@ -34,12 +57,21 @@ export function getRawPaidBookingAmount(booking) {
 
 export function getPaidBookingAmount(booking) {
   const totalAmount = getTotalBookingAmount(booking)
+
+  if (booking.payment_status === 'paid') {
+    return totalAmount
+  }
+
   const rawPaidAmount = getRawPaidBookingAmount(booking)
 
   return Math.min(rawPaidAmount, totalAmount)
 }
 
 export function getRemainingBookingAmount(booking) {
+  if (booking.payment_status === 'paid') {
+    return 0
+  }
+
   const totalAmount = getTotalBookingAmount(booking)
   const paidAmount = getPaidBookingAmount(booking)
 
