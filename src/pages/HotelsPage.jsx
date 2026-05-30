@@ -268,7 +268,7 @@ function filterHotels(
 
 export default function HotelsPage() {
   const [searchParams] = useSearchParams()
-  const searchText = searchParams.get('destination') || ''
+  const urlSearchText = searchParams.get('destination') || ''
   const adults = Number(searchParams.get('adults')) || 0
   const children = Number(searchParams.get('children')) || 0
   const checkIn = searchParams.get('check_in') || ''
@@ -287,6 +287,7 @@ export default function HotelsPage() {
   const [selectedRating, setSelectedRating] = useState('all')
   const [selectedServices, setSelectedServices] = useState([])
   const [maxPrice, setMaxPrice] = useState(500)
+  const [filterSearchText, setFilterSearchText] = useState(urlSearchText)
 
   useEffect(() => {
     getHotels()
@@ -379,7 +380,7 @@ export default function HotelsPage() {
     selectedRating,
     selectedServices,
     maxPrice,
-    searchText,
+    filterSearchText,
     adults,
     children,
     shouldFilterByAvailability ? availabilityByRoomType : {},
@@ -407,6 +408,11 @@ export default function HotelsPage() {
 
   function handleCityChange(event) {
     setSelectedCity(event.target.value)
+    setCurrentPage(1)
+  }
+
+  function handleFilterSearchChange(event) {
+    setFilterSearchText(event.target.value)
     setCurrentPage(1)
   }
 
@@ -439,6 +445,7 @@ export default function HotelsPage() {
     setSelectedCity('all')
     setSelectedRating('all')
     setSelectedServices([])
+    setFilterSearchText('')
     setMaxPrice(highestPrice)
     setCurrentPage(1)
   }
@@ -468,10 +475,10 @@ export default function HotelsPage() {
             <p className="mt-2 text-secondary">
               Explora todos los alojamientos disponibles en Dream Rooms
             </p>
-            {(searchText || adults > 0 || children > 0 || checkIn || checkOut) && (
+            {(urlSearchText || adults > 0 || children > 0 || checkIn || checkOut) && (
               <p className="mt-3 text-sm font-semibold text-secondary">
                 Búsqueda:{' '}
-                {searchText && <span>{searchText}</span>}
+                {urlSearchText && <span>{urlSearchText}</span>}
                 {(adults > 0 || children > 0) && (
                   <span>
                     {' '}
@@ -547,6 +554,23 @@ export default function HotelsPage() {
                 >
                   Limpiar
                 </button>
+              </div>
+
+              <div>
+                <label
+                  className="text-sm font-bold text-on-surface"
+                  htmlFor="hotel-search-filter"
+                >
+                  Hotel o destino
+                </label>
+                <input
+                  className="mt-3 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-on-surface outline-none transition placeholder:text-secondary/70 focus:border-primary"
+                  id="hotel-search-filter"
+                  onChange={handleFilterSearchChange}
+                  placeholder="Nombre, ciudad o destino"
+                  type="search"
+                  value={filterSearchText}
+                />
               </div>
 
               <div>
