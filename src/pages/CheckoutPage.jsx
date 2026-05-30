@@ -9,7 +9,7 @@ import {
 } from '../services/authService'
 import { createCustomerBooking } from '../services/customerBookingService'
 import { getHotelBySlug } from '../services/hotelService'
-import { getRoomTypeAvailability } from '../services/roomTypeService'
+import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
 import { getBookingAmounts } from '../utils/bookingUtils'
 import { formatDate, getIsoDate, getNights } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
@@ -51,57 +51,6 @@ function getStayDates(checkIn, checkOut) {
   return dates
 }
 
-function getAvailabilityIssue(dayAvailability, nights, unitsBooked) {
-  if (!dayAvailability) {
-    return 'Sin disponibilidad cargada'
-  }
-
-  if (dayAvailability.status !== 'open') {
-    return 'Cerrado'
-  }
-
-  if (Number(dayAvailability.available_units) < unitsBooked) {
-    return 'Sin unidades suficientes'
-  }
-
-  if ((Number(dayAvailability.min_stay_nights) || 0) > nights) {
-    return `Mínimo ${dayAvailability.min_stay_nights} noches`
-  }
-
-  return ''
-}
-
-function getAvailabilitySummary(availabilityDays, stayDates, nights, unitsBooked) {
-  const availabilityByDate = new Map(
-    availabilityDays.map((dayAvailability) => [
-      dayAvailability.date,
-      dayAvailability,
-    ]),
-  )
-  const checkedNights = stayDates.map((date) => {
-    const dayAvailability = availabilityByDate.get(date)
-
-    return {
-      date,
-      availability: dayAvailability,
-      issue: getAvailabilityIssue(dayAvailability, nights, unitsBooked),
-    }
-  })
-
-  return {
-    checkedNights,
-    isAvailable:
-      checkedNights.length > 0 &&
-      checkedNights.every((checkedNight) => !checkedNight.issue),
-    minStayNights: Math.max(
-      0,
-      ...checkedNights.map((checkedNight) => {
-        return Number(checkedNight.availability?.min_stay_nights) || 0
-      }),
-    ),
-  }
-}
-
 export default function CheckoutPage() {
   const { slug } = useParams()
   const [searchParams] = useSearchParams()
@@ -121,7 +70,7 @@ export default function CheckoutPage() {
   const [isPaymentGatewayOpen, setIsPaymentGatewayOpen] = useState(false)
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
   const [availabilityCheck, setAvailabilityCheck] = useState({
-    days: [],
+    quote: null,
     error: '',
     key: '',
   })
@@ -162,27 +111,21 @@ export default function CheckoutPage() {
   const unitsBooked = Number(stayData.units_booked) || 1
   const currencySymbol =
     hotel?.pricing?.currency_symbol || hotel?.currency_symbol || '€'
-  const quote = getBookingAmounts(roomType, hotel, nights, unitsBooked)
+  const priceQuote = getBookingAmounts(roomType, hotel, nights, unitsBooked)
   const stayDates = getStayDates(stayData.check_in, stayData.check_out)
   const availabilityKey = roomType
-    ? `${roomType.id}-${stayData.check_in}-${stayData.check_out}`
+    ? `${roomType.id}-${stayData.check_in}-${stayData.check_out}-${unitsBooked}`
     : ''
-  const availabilityDays =
-    availabilityCheck.key === availabilityKey ? availabilityCheck.days : []
+  const availabilityQuote =
+    availabilityCheck.key === availabilityKey ? availabilityCheck.quote : null
   const availabilityError =
     availabilityCheck.key === availabilityKey ? availabilityCheck.error : ''
-  const availabilitySummary = getAvailabilitySummary(
-    availabilityDays,
-    stayDates,
-    nights,
-    unitsBooked,
-  )
+  const isAvailabilityReady = Boolean(availabilityQuote)
   const shouldBlockReservation =
     stayDates.length > 0 &&
     !isAvailabilityLoading &&
     !availabilityError &&
-    availabilityCheck.key === availabilityKey &&
-    !availabilitySummary.isAvailable
+    (!isAvailabilityReady || availabilityQuote?.is_available === false)
 
   useEffect(() => {
     if (!roomType?.id || stayDates.length === 0) {
@@ -199,18 +142,19 @@ export default function CheckoutPage() {
 
         setIsAvailabilityLoading(true)
 
-        return getRoomTypeAvailability(roomType.id, {
-          from: stayData.check_in,
-          to: stayData.check_out,
+        return getRoomTypeAvailabilityQuote(roomType.id, {
+          check_in: stayData.check_in,
+          check_out: stayData.check_out,
+          units_booked: unitsBooked,
         })
       })
-      .then((days) => {
+      .then((quote) => {
         if (shouldIgnoreResponse) {
           return
         }
 
         setAvailabilityCheck({
-          days,
+          quote,
           error: '',
           key: availabilityKey,
         })
@@ -221,7 +165,7 @@ export default function CheckoutPage() {
         }
 
         setAvailabilityCheck({
-          days: [],
+          quote: null,
           error: 'No se pudo comprobar la disponibilidad para esas fechas.',
           key: availabilityKey,
         })
@@ -241,6 +185,7 @@ export default function CheckoutPage() {
     stayData.check_in,
     stayData.check_out,
     stayDates.length,
+    unitsBooked,
   ])
 
   function handleStayChange(event) {
@@ -276,6 +221,10 @@ export default function CheckoutPage() {
 
     if (availabilityError) {
       throw new Error(availabilityError)
+    }
+
+    if (!isAvailabilityReady) {
+      throw new Error('Espera a que termine la comprobación de disponibilidad.')
     }
 
     if (shouldBlockReservation) {
@@ -483,10 +432,9 @@ export default function CheckoutPage() {
               </div>
 
               <Availability
-                checkedNights={availabilitySummary.checkedNights}
                 error={availabilityError}
-                isAvailable={availabilitySummary.isAvailable}
                 isLoading={isAvailabilityLoading}
+                quote={availabilityQuote}
                 stayDates={stayDates}
                 unitsBooked={unitsBooked}
               />
@@ -631,7 +579,7 @@ export default function CheckoutPage() {
             isSubmitting={isSubmitting}
             nights={nights}
             paymentMethod={paymentMethod}
-            quote={quote}
+            quote={priceQuote}
             roomType={roomType}
             shouldBlockReservation={shouldBlockReservation}
             stayData={stayData}
@@ -640,7 +588,7 @@ export default function CheckoutPage() {
 
         {isPaymentGatewayOpen && (
           <Book
-            amount={formatPrice(quote.total, currencySymbol, {
+            amount={formatPrice(priceQuote.total, currencySymbol, {
               decimals: true,
             })}
             error={submitError}
@@ -660,14 +608,7 @@ export default function CheckoutPage() {
   )
 }
 
-function Availability({
-  checkedNights,
-  error,
-  isAvailable,
-  isLoading,
-  stayDates,
-  unitsBooked,
-}) {
+function Availability({ error, isLoading, quote, stayDates, unitsBooked }) {
   if (stayDates.length === 0) {
     return (
       <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-4 text-sm font-semibold text-secondary">
@@ -692,6 +633,24 @@ function Availability({
       </div>
     )
   }
+
+  if (!quote) {
+    return (
+      <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-4 text-sm font-semibold text-secondary">
+        Preparando la comprobación de disponibilidad...
+      </div>
+    )
+  }
+
+  const isAvailable = quote.is_available === true
+  const checkedNights = quote.stay_dates || stayDates
+  const dailyAvailability = quote.daily_available_units || []
+  const availabilityByDate = new Map(
+    dailyAvailability.map((dayAvailability) => [
+      dayAvailability.date,
+      dayAvailability,
+    ]),
+  )
 
   return (
     <div
@@ -725,50 +684,76 @@ function Availability({
               : 'bg-error text-on-primary'
           }`}
         >
-          {checkedNights.length} {pluralize(checkedNights.length, 'noche', 'noches')} ·{' '}
+          {quote.nights || checkedNights.length}{' '}
+          {pluralize(quote.nights || checkedNights.length, 'noche', 'noches')} ·{' '}
           {unitsBooked} {pluralize(unitsBooked, 'habitación', 'habitaciones')}
         </span>
       </div>
 
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="rounded-lg bg-surface-container-lowest p-3">
+          <p className="text-xs font-bold uppercase tracking-wider text-secondary">
+            Disponibles para toda la estancia
+          </p>
+          <p className="mt-1 text-2xl font-bold text-on-surface">
+            {quote.available_units_for_stay ?? 0}
+          </p>
+        </div>
+        <div className="rounded-lg bg-surface-container-lowest p-3">
+          <p className="text-xs font-bold uppercase tracking-wider text-secondary">
+            Quedarían tras reservar
+          </p>
+          <p className="mt-1 text-2xl font-bold text-on-surface">
+            {quote.remaining_units_after_booking ?? 0}
+          </p>
+        </div>
+      </div>
+
       <div className="mt-4 space-y-2">
-        {checkedNights.map((checkedNight) => (
-          <div
-            className="grid grid-cols-1 gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 text-sm sm:grid-cols-[1fr_auto] sm:items-center"
-            key={checkedNight.date}
-          >
-            <div>
-              <p className="font-semibold text-on-surface">
-                Noche del {formatDate(checkedNight.date)}
-              </p>
-              <p className="mt-0.5 text-xs font-semibold text-secondary">
-                {checkedNight.availability
-                  ? `${checkedNight.availability.available_units || 0} habitaciones libres`
-                  : 'No existe disponibilidad para esa noche'}
-              </p>
-              {checkedNight.date === stayDates[0] &&
-                checkedNight.availability?.min_stay_nights && (
+        {checkedNights.map((date) => {
+          const dayAvailability = availabilityByDate.get(date)
+          const dayIsAvailable =
+            dayAvailability?.status === 'open' &&
+            Number(dayAvailability.available_units) >= unitsBooked
+
+          return (
+            <div
+              className="grid grid-cols-1 gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 text-sm sm:grid-cols-[1fr_auto] sm:items-center"
+              key={date}
+            >
+              <div>
+                <p className="font-semibold text-on-surface">
+                  Noche del {formatDate(date)}
+                </p>
+                <p className="mt-0.5 text-xs font-semibold text-secondary">
+                  {dayAvailability
+                    ? `${dayAvailability.available_units || 0} habitaciones libres`
+                    : 'No existe disponibilidad para esa noche'}
+                </p>
+                {date === stayDates[0] && dayAvailability?.min_stay_nights && (
                   <p className="mt-1 text-xs font-bold text-secondary">
                     Mínimo desde check-in:{' '}
-                    {checkedNight.availability.min_stay_nights}{' '}
+                    {dayAvailability.min_stay_nights}{' '}
                     {pluralize(
-                      Number(checkedNight.availability.min_stay_nights),
+                      Number(dayAvailability.min_stay_nights),
                       'noche',
                       'noches',
                     )}
                   </p>
                 )}
+              </div>
+              <span
+                className={`w-fit rounded-full px-2.5 py-1 text-xs font-bold ${
+                  dayIsAvailable
+                    ? 'bg-[#D1FAE5] text-[#047857]'
+                    : 'bg-error-container text-error'
+                }`}
+              >
+                {dayIsAvailable ? 'Disponible' : 'No disponible'}
+              </span>
             </div>
-            <span
-              className={`w-fit rounded-full px-2.5 py-1 text-xs font-bold ${
-                checkedNight.issue
-                  ? 'bg-error-container text-error'
-                  : 'bg-[#D1FAE5] text-[#047857]'
-              }`}
-            >
-              {checkedNight.issue || 'Disponible'}
-            </span>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

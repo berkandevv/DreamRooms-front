@@ -9,7 +9,35 @@ import RoomTypeCard from '../components/RoomTypeCard'
 import ServicesList from '../components/ServicesList'
 import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotelBySlug, getHotelReviews } from '../services/hotelService'
-import { getRoomTypeAvailability } from '../services/roomTypeService'
+import {
+  getRoomTypeAvailability,
+  getRoomTypeAvailabilityQuote,
+} from '../services/roomTypeService'
+
+function addDays(date, days) {
+  const nextDate = new Date(date)
+
+  nextDate.setUTCDate(nextDate.getUTCDate() + days)
+
+  return nextDate
+}
+
+function formatDateInput(date) {
+  return date.toISOString().slice(0, 10)
+}
+
+function getNextAvailabilityRange() {
+  const today = new Date()
+  const startDate = new Date(
+    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+  )
+  const endDate = addDays(startDate, 30)
+
+  return {
+    from: formatDateInput(startDate),
+    to: formatDateInput(endDate),
+  }
+}
 
 function getStayDates(checkIn, checkOut) {
   if (!checkIn || !checkOut) {
@@ -45,32 +73,15 @@ function roomTypeMatchesCapacity(roomType, adults, children) {
   )
 }
 
-function isAvailabilityOpen(dayAvailability, nights) {
-  const unavailableStatuses = ['unavailable', 'blocked', 'closed']
-  const status = dayAvailability.status?.toLowerCase()
-  const minStayNights = Number(dayAvailability.min_stay_nights) || 0
-
-  return (
-    Number(dayAvailability.available_units) > 0 &&
-    !unavailableStatuses.includes(status) &&
-    minStayNights <= nights
-  )
-}
-
-function roomTypeIsAvailable(roomTypeId, availabilityByRoomType, stayDates) {
-  const roomTypeAvailability = availabilityByRoomType[roomTypeId] || []
-  const availabilityByDate = new Map(
-    roomTypeAvailability.map((dayAvailability) => [
-      dayAvailability.date,
-      dayAvailability,
-    ]),
-  )
-
-  return stayDates.every((date) => {
-    const dayAvailability = availabilityByDate.get(date)
-
-    return dayAvailability && isAvailabilityOpen(dayAvailability, stayDates.length)
-  })
+function getOpenAvailabilityDays(availabilityDays) {
+  return availabilityDays
+    .filter((dayAvailability) => {
+      return (
+        dayAvailability.status === 'open' &&
+        Number(dayAvailability.available_units) > 0
+      )
+    })
+    .slice(0, 4)
 }
 
 export default function HotelDetailPage() {
@@ -81,6 +92,7 @@ export default function HotelDetailPage() {
   const checkOut = searchParams.get('check_out') || ''
   const adults = Number(searchParams.get('adults')) || 0
   const children = Number(searchParams.get('children')) || 0
+  const unitsBooked = Number(searchParams.get('units_booked')) || 1
   const [detail, setDetail] = useState({
     hotel: null,
     isLoading: true,
@@ -92,6 +104,9 @@ export default function HotelDetailPage() {
   const [availabilityError, setAvailabilityError] = useState('')
   const [availabilityNotice, setAvailabilityNotice] = useState('')
   const [availableRoomTypeIds, setAvailableRoomTypeIds] = useState(null)
+  const [availableUnitsByRoomType, setAvailableUnitsByRoomType] = useState({})
+  const [nextAvailabilityByRoomType, setNextAvailabilityByRoomType] = useState({})
+  const [nextAvailabilityError, setNextAvailabilityError] = useState('')
   const { canUseFavorites, favoriteIds, toggleFavorite } = useCustomerFavorites()
 
   const { hotel, isLoading, error } = detail
@@ -111,6 +126,7 @@ export default function HotelDetailPage() {
 
     if (stayDates.length === 0) {
       setAvailableRoomTypeIds(null)
+      setAvailableUnitsByRoomType({})
       setAvailabilityNotice(
         'Para comprobar disponibilidad real, vuelve desde una búsqueda con fechas de entrada y salida.',
       )
@@ -124,28 +140,37 @@ export default function HotelDetailPage() {
       const roomTypes = hotel.room_types || []
       const availabilityEntries = await Promise.all(
         roomTypes.map((roomType) => {
-          return getRoomTypeAvailability(roomType.id, {
-            from: checkIn,
-            to: checkOut,
-          }).then((availability) => [roomType.id, availability])
+          return getRoomTypeAvailabilityQuote(roomType.id, {
+            check_in: checkIn,
+            check_out: checkOut,
+            units_booked: unitsBooked,
+          }).then((quote) => [roomType.id, quote])
         }),
       )
-      const availabilityByRoomType = Object.fromEntries(availabilityEntries)
+      const quoteByRoomType = Object.fromEntries(availabilityEntries)
+      const unitsByRoomType = Object.fromEntries(
+        roomTypes.map((roomType) => [
+          roomType.id,
+          quoteByRoomType[roomType.id]?.available_units_for_stay ?? null,
+        ]),
+      )
       const availableIds = roomTypes
         .filter((roomType) => {
           return (
             roomTypeMatchesCapacity(roomType, adults, children) &&
-            roomTypeIsAvailable(roomType.id, availabilityByRoomType, stayDates)
+            quoteByRoomType[roomType.id]?.is_available === true
           )
         })
         .map((roomType) => roomType.id)
 
       setAvailableRoomTypeIds(availableIds)
+      setAvailableUnitsByRoomType(unitsByRoomType)
       setAvailabilityNotice(
         `${availableIds.length} tipos de habitación disponibles para las fechas seleccionadas.`,
       )
     } catch {
       setAvailableRoomTypeIds(null)
+      setAvailableUnitsByRoomType({})
       setAvailabilityError('No se pudo comprobar la disponibilidad.')
     } finally {
       setIsCheckingAvailability(false)
@@ -178,6 +203,44 @@ export default function HotelDetailPage() {
         setReviewsError('No se pudieron cargar las reseñas!')
       })
   }, [slug])
+
+  useEffect(() => {
+    if (!hotel?.room_types?.length || checkIn || checkOut) {
+      return undefined
+    }
+
+    let shouldIgnoreResponse = false
+    const range = getNextAvailabilityRange()
+
+    Promise.all(
+      hotel.room_types.map((roomType) => {
+        return getRoomTypeAvailability(roomType.id, range).then((availability) => [
+          roomType.id,
+          getOpenAvailabilityDays(availability),
+        ])
+      }),
+    )
+      .then((availabilityEntries) => {
+        if (shouldIgnoreResponse) {
+          return
+        }
+
+        setNextAvailabilityByRoomType(Object.fromEntries(availabilityEntries))
+        setNextAvailabilityError('')
+      })
+      .catch(() => {
+        if (!shouldIgnoreResponse) {
+          setNextAvailabilityByRoomType({})
+          setNextAvailabilityError(
+            'No se pudo cargar una vista previa de fechas disponibles.',
+          )
+        }
+      })
+
+    return () => {
+      shouldIgnoreResponse = true
+    }
+  }, [checkIn, checkOut, hotel])
 
   if (isLoading) {
     return (
@@ -307,6 +370,12 @@ export default function HotelDetailPage() {
             </p>
           )}
 
+          {!checkIn && !checkOut && nextAvailabilityError && (
+            <p className="mb-5 rounded-xl border border-outline-variant bg-surface-container-lowest p-4 text-sm font-semibold text-secondary">
+              {nextAvailabilityError}
+            </p>
+          )}
+
           {isCheckingAvailability && (
             <p className="mb-5 rounded-xl border border-outline-variant bg-surface-container-lowest p-4 text-sm font-semibold text-secondary">
               Comprobando disponibilidad...
@@ -329,6 +398,12 @@ export default function HotelDetailPage() {
                   key={roomType.id}
                   roomType={roomType}
                   searchParams={searchParams}
+                  nextAvailabilityDays={
+                    !checkIn && !checkOut
+                      ? nextAvailabilityByRoomType[roomType.id]
+                      : []
+                  }
+                  selectedAvailableUnits={availableUnitsByRoomType[roomType.id]}
                 />
               ))}
           </div>

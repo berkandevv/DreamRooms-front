@@ -27,3 +27,16 @@ export async function getRoomTypeAvailability(roomTypeId, params = {}) {
 
   return result.data
 }
+
+export async function getRoomTypeAvailabilityQuote(roomTypeId, params = {}) {
+  const response = await fetch(
+    `${API_BASE_URL}/${roomTypeId}/availability/quote${buildQuery(params)}`,
+  )
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(result.message || 'No se pudo comprobar la estancia')
+  }
+
+  return result.data
+}

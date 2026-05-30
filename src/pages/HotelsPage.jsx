@@ -5,7 +5,7 @@ import HotelListCard from '../components/HotelListCard'
 import Layout from '../components/Layout'
 import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotels } from '../services/hotelService'
-import { getRoomTypeAvailability } from '../services/roomTypeService'
+import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
 import { formatServices } from '../utils/formatServices'
 
 const HOTELS_PER_PAGE = 6
@@ -142,43 +142,11 @@ function getStayDates(checkIn, checkOut) {
   return dates
 }
 
-function isAvailabilityOpen(dayAvailability, nights) {
-  const unavailableStatuses = ['unavailable', 'blocked', 'closed']
-  const status = dayAvailability.status?.toLowerCase()
-  const minStayNights = Number(dayAvailability.min_stay_nights) || 0
-
-  return (
-    Number(dayAvailability.available_units) > 0 &&
-    !unavailableStatuses.includes(status) &&
-    minStayNights <= nights
-  )
-}
-
-function roomTypeIsAvailable(roomTypeId, availabilityByRoomType, stayDates) {
-  if (stayDates.length === 0) {
-    return true
-  }
-
-  const roomTypeAvailability = availabilityByRoomType[roomTypeId] || []
-  const availabilityByDate = new Map(
-    roomTypeAvailability.map((dayAvailability) => [
-      dayAvailability.date,
-      dayAvailability,
-    ]),
-  )
-
-  return stayDates.every((date) => {
-    const dayAvailability = availabilityByDate.get(date)
-
-    return dayAvailability && isAvailabilityOpen(dayAvailability, stayDates.length)
-  })
-}
-
 function hotelMatchesAvailability(
   hotel,
   adults,
   children,
-  availabilityByRoomType,
+  availabilityQuoteByRoomType,
   stayDates,
 ) {
   if (stayDates.length === 0) {
@@ -194,7 +162,7 @@ function hotelMatchesAvailability(
   return roomTypes.some((roomType) => {
     return (
       roomTypeMatchesCapacity(roomType, adults, children) &&
-      roomTypeIsAvailable(roomType.id, availabilityByRoomType, stayDates)
+      availabilityQuoteByRoomType[roomType.id]?.is_available === true
     )
   })
 }
@@ -204,9 +172,9 @@ function renderStars(rating) {
 
   for (let index = 0; index < 5; index += 1) {
     if (index < Number(rating)) {
-      stars.push(<FaStar className="h-4 w-4 text-[#10B981]" key={index} />)
+      stars.push(<FaStar className="h-4 w-4 text-[#D4AF37]" key={index} />)
     } else {
-      stars.push(<FaRegStar className="h-4 w-4 text-[#10B981]" key={index} />)
+      stars.push(<FaRegStar className="h-4 w-4 text-[#D4AF37]" key={index} />)
     }
   }
 
@@ -223,7 +191,7 @@ function filterHotels(
   searchText,
   adults,
   children,
-  availabilityByRoomType,
+  availabilityQuoteByRoomType,
   stayDates,
 ) {
   return hotels.filter((hotel) => {
@@ -233,7 +201,7 @@ function filterHotels(
       hotel,
       adults,
       children,
-      availabilityByRoomType,
+      availabilityQuoteByRoomType,
       stayDates,
     )
     const regionMatches =
@@ -274,10 +242,11 @@ export default function HotelsPage() {
   const children = Number(searchParams.get('children')) || 0
   const checkIn = searchParams.get('check_in') || ''
   const checkOut = searchParams.get('check_out') || ''
+  const unitsBooked = Number(searchParams.get('units_booked')) || 1
   const [hotels, setHotels] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
-  const [availabilityByRoomType, setAvailabilityByRoomType] = useState({})
+  const [availabilityQuoteByRoomType, setAvailabilityQuoteByRoomType] = useState({})
   const [isAvailabilityLoading, setIsAvailabilityLoading] = useState(false)
   const [availabilityError, setAvailabilityError] = useState('')
   const [sortBy, setSortBy] = useState('rating')
@@ -335,10 +304,11 @@ export default function HotelsPage() {
 
         return Promise.all(
           roomTypeIds.map((roomTypeId) => {
-            return getRoomTypeAvailability(roomTypeId, {
-              from: checkIn,
-              to: checkOut,
-            }).then((availability) => [roomTypeId, availability])
+            return getRoomTypeAvailabilityQuote(roomTypeId, {
+              check_in: checkIn,
+              check_out: checkOut,
+              units_booked: unitsBooked,
+            }).then((quote) => [roomTypeId, quote])
           }),
         )
       })
@@ -347,14 +317,14 @@ export default function HotelsPage() {
           return
         }
 
-        setAvailabilityByRoomType(Object.fromEntries(availabilityEntries))
+        setAvailabilityQuoteByRoomType(Object.fromEntries(availabilityEntries))
       })
       .catch(() => {
         if (shouldIgnoreResponse) {
           return
         }
 
-        setAvailabilityByRoomType({})
+        setAvailabilityQuoteByRoomType({})
         setAvailabilityError('No se pudo comprobar la disponibilidad por fechas.')
       })
       .finally(() => {
@@ -366,7 +336,7 @@ export default function HotelsPage() {
     return () => {
       shouldIgnoreResponse = true
     }
-  }, [checkIn, checkOut, hotels])
+  }, [checkIn, checkOut, hotels, unitsBooked])
 
   const availableRegions = getAvailableRegions(hotels)
   const availableCities = getAvailableCities(hotels, selectedRegion)
@@ -385,7 +355,7 @@ export default function HotelsPage() {
     filterSearchText,
     adults,
     children,
-    shouldFilterByAvailability ? availabilityByRoomType : {},
+    shouldFilterByAvailability ? availabilityQuoteByRoomType : {},
     shouldFilterByAvailability ? stayDates : [],
   )
   const sortedHotels = sortHotels(filteredHotels, sortBy)
