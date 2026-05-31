@@ -101,15 +101,26 @@ export default function RegisterPage() {
         isLeaving ? 'auth-exit-right' : 'auth-enter-right'
       }`}
     >
-      <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-surface-container-low p-16 md:flex">
+      <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-primary p-16 md:flex">
+        <img
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/brand/auth-hotel-room.jpg"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/55 to-black/85" />
+
         <div className="relative z-10">
-          <Link aria-label="Dream Rooms" to="/">
+          <Link
+            aria-label="Dream Rooms"
+            className="inline-flex rounded-xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur-sm"
+            to="/"
+          >
             <BrandLogo />
           </Link>
         </div>
 
         <div className="relative z-10 max-w-lg">
-          <h1 className="mb-8 text-5xl font-bold leading-tight text-on-surface">
+          <h1 className="mb-8 text-5xl font-bold leading-tight text-white">
             {isOwner
               ? 'Haz crecer tu alojamiento con una audiencia global'
               : 'Tu próxima estancia empieza con una cuenta sencilla'}
@@ -140,17 +151,11 @@ export default function RegisterPage() {
               title="Acceso seguro"
             />
           </div>
+
+          <p className="mt-10 text-sm font-semibold text-white/75">
+            Plataforma para viajeros y propietarios de alojamientos
+          </p>
         </div>
-
-        <p className="relative z-10 text-sm font-semibold text-on-surface-variant">
-          Plataforma para viajeros y propietarios de alojamientos
-        </p>
-
-        <img
-          alt="Dream Rooms"
-          className="absolute bottom-10 right-10 h-64 w-64 object-contain opacity-10"
-          src="/brand/logo.png"
-        />
       </section>
 
       <section className="flex flex-1 items-center justify-center p-6 md:p-16">
@@ -304,12 +309,12 @@ export default function RegisterPage() {
 function FeatureItem({ icon, title, description }) {
   return (
     <div className="flex items-start gap-4">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary-container font-bold text-primary">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20 font-bold text-white">
         {icon}
       </span>
       <div>
-        <h3 className="mb-1 text-xl font-bold text-on-surface">{title}</h3>
-        <p className="leading-relaxed text-on-surface-variant">{description}</p>
+        <h3 className="mb-1 text-xl font-bold text-white">{title}</h3>
+        <p className="leading-relaxed text-white/80">{description}</p>
       </div>
     </div>
   )

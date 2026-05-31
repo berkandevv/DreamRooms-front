@@ -158,25 +158,28 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <section className="relative hidden w-1/2 overflow-hidden bg-white lg:flex">
-        <div className="relative z-10 flex h-full w-full flex-col justify-between p-16 text-on-surface">
-          <Link aria-label="Dream Rooms" to="/">
+      <section className="relative hidden w-1/2 overflow-hidden bg-primary lg:flex">
+        <img
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/brand/auth-hotel-room.jpg"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/20 to-black/75" />
+
+        <div className="relative z-10 flex h-full w-full flex-col justify-between p-16 text-white">
+          <Link
+            aria-label="Dream Rooms"
+            className="w-fit rounded-xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur-sm"
+            to="/"
+          >
             <BrandLogo />
           </Link>
-
-          <div className="mx-auto flex h-80 w-80 items-center justify-center rounded-2rem bg-white shadow-[0_24px_70px_rgba(19,27,46,0.12)]">
-            <img
-              alt="Dream Rooms"
-              className="h-64 w-64 object-contain"
-              src="/brand/logo.png"
-            />
-          </div>
 
           <div className="max-w-lg">
             <h2 className="mb-4 text-5xl font-bold leading-tight">
               Bienvenido de nuevo
             </h2>
-            <p className="text-lg leading-8 text-secondary">
+            <p className="text-lg leading-8 text-white/85">
               Tu próximo refugio te espera. Accede para gestionar tus reservas
               y preferencias.
             </p>
