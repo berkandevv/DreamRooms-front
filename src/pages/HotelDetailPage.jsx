@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { FaExternalLinkAlt, FaMapMarkerAlt } from 'react-icons/fa'
 import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
 import FavoriteButton from '../components/FavoriteButton'
@@ -50,6 +51,40 @@ function getNumericValue(value, fallback = 0) {
   return Number.isFinite(numberValue) ? numberValue : fallback
 }
 
+// Crea el enlace de Google Maps cuando el hotel tiene coordenadas válidas
+function getGoogleMapsHref(location) {
+  const { latitude: latitudeValue, longitude: longitudeValue } = location || {}
+
+  if (
+    latitudeValue === null ||
+    latitudeValue === undefined ||
+    latitudeValue === '' ||
+    longitudeValue === null ||
+    longitudeValue === undefined ||
+    longitudeValue === ''
+  ) {
+    return ''
+  }
+
+  const latitude = Number(latitudeValue)
+  const longitude = Number(longitudeValue)
+
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    longitude < -180 ||
+    longitude > 180
+  ) {
+    return ''
+  }
+
+  return `https://maps.google.com/?q=${encodeURIComponent(
+    `${latitude},${longitude}`,
+  )}`
+}
+
 // Comprueba si una habitación tiene capacidad para los huéspedes
 function roomTypeMatchesCapacity(roomType, adults, children) {
   return (
@@ -96,6 +131,7 @@ export default function HotelDetailPage() {
   const { canUseFavorites, favoriteIds, toggleFavorite } = useCustomerFavorites()
 
   const { hotel, isLoading, error } = detail
+  const googleMapsHref = getGoogleMapsHref(hotel?.location)
 
   // Desplaza la vista hasta la sección de habitaciones
   function scrollToRooms() {
@@ -332,6 +368,18 @@ export default function HotelDetailPage() {
             <p className="mt-4 leading-7 text-on-surface-variant">
               {hotel.description || 'Este hotel todavía no tiene descripción.'}
             </p>
+            {googleMapsHref && (
+              <a
+                className="mt-5 inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-sm font-semibold text-primary transition hover:border-primary hover:bg-surface-container"
+                href={googleMapsHref}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <FaMapMarkerAlt className="h-4 w-4" />
+                Ver en Google Maps
+                <FaExternalLinkAlt className="h-3 w-3" />
+              </a>
+            )}
 
             <div className="mt-8 border-t border-outline-variant pt-6">
               <h3 className="text-lg font-bold text-on-surface">Servicios</h3>
