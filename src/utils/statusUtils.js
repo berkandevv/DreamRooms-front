@@ -1,7 +1,6 @@
 const statusLabels = {
   active: 'Activa',
   authorized: 'Autorizado',
-  blocked: 'Bloqueado',
   cancelled: 'Cancelada',
   card: 'Pago con tarjeta',
   closed: 'Cerrado',

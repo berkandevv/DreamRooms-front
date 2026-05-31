@@ -1060,7 +1060,6 @@ function InventoryView({
               value={availabilityForm.status}
             >
               <option value="open">Abierto</option>
-              <option value="blocked">Bloqueado</option>
               <option value="closed">Cerrado</option>
             </SelectInput>
             <PrimaryButton disabled={isSaving}>Aplicar cambios</PrimaryButton>
@@ -1673,7 +1672,6 @@ function SettingsView({
               >
                 <option value="active">Activa</option>
                 <option value="inactive">Inactiva</option>
-                <option value="draft">Borrador</option>
               </SelectInput>
               <TextInput
                 label="Moneda"
