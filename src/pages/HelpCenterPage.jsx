@@ -2,7 +2,6 @@ import {
   FaCalendarAlt,
   FaChevronDown,
   FaCreditCard,
-  FaLifeRing,
   FaRocket,
   FaUserCog,
 } from 'react-icons/fa'
@@ -43,8 +42,7 @@ const faqs = [
   '¿Puedo integrar Dream Rooms con otros canales de venta?',
 ]
 
-const heroImage =
-  'https://images.pexels.com/photos/775219/pexels-photo-775219.jpeg?auto=compress&cs=tinysrgb&w=1600'
+const heroImage = '/images/static-pages/about-story.jpg'
 
 export default function HelpCenterPage() {
   return (
@@ -57,14 +55,6 @@ export default function HelpCenterPage() {
           <h1 className="mt-3 text-4xl font-bold text-primary md:text-5xl">
             ¿En qué podemos ayudarte?
           </h1>
-          <label className="mx-auto mt-8 flex max-w-2xl items-center gap-3 rounded-lg border border-outline-variant bg-surface-container-lowest px-5 py-4 text-left shadow-sm">
-            <FaLifeRing className="h-5 w-5 shrink-0 text-secondary" />
-            <input
-              className="w-full bg-transparent text-sm text-on-surface outline-none placeholder:text-secondary"
-              placeholder="Buscar soluciones..."
-              type="search"
-            />
-          </label>
         </div>
       </section>
 
@@ -128,13 +118,7 @@ export default function HelpCenterPage() {
               Nuestro equipo de soporte puede ayudarte con reservas,
               disponibilidad, pagos o configuración de propiedades.
             </p>
-            <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-              <a
-                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-on-primary transition hover:opacity-85"
-                href="mailto:berkanraimov@gmail.com"
-              >
-                Hablar con soporte
-              </a>
+            <div className="mt-6 flex justify-center">
               <Link
                 className="rounded-lg border border-outline bg-surface-container-lowest px-6 py-3 text-sm font-semibold text-primary transition hover:border-primary"
                 to="/contact"

@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import HeroSearchField from './HeroSearchField'
 
-const heroImg =
-  'https://images.pexels.com/photos/20639392/pexels-photo-20639392.jpeg?auto=compress&cs=tinysrgb&w=1800'
+const heroImg = '/images/static-pages/about-hero.jpg'
 
 export default function HeroSearch() {
   const navigate = useNavigate()

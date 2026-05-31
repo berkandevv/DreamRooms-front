@@ -3,8 +3,7 @@ import { FaEnvelope, FaExternalLinkAlt, FaMapMarkerAlt, FaPhone } from 'react-ic
 import Layout from '../components/Layout'
 
 const contactEmail = 'berkanraimov@gmail.com'
-const mapImage =
-  'https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg?auto=compress&cs=tinysrgb&w=1600'
+const mapImage = '/images/static-pages/contact-map.jpg'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -124,7 +123,7 @@ export default function ContactPage() {
               rel="noreferrer"
               target="_blank"
             >
-              Ampliar mapa
+              Ver en Google Maps
             </a>
           </div>
         </div>

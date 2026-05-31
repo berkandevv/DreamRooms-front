@@ -1,8 +1,7 @@
 import { FaClock } from 'react-icons/fa'
 import Layout from '../components/Layout'
 
-const termsImage =
-  'https://images.pexels.com/photos/7031607/pexels-photo-7031607.jpeg?auto=compress&cs=tinysrgb&w=1600'
+const termsImage = '/images/static-pages/terms-lobby.jpg'
 
 const sections = [
   'Aceptación de términos',

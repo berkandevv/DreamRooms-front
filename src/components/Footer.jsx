@@ -22,9 +22,6 @@ export default function Footer() {
           <Link className="hover:text-primary" to="/contact">
             Contacto
           </Link>
-          <Link className="hover:text-primary" to="/help">
-            Ayuda
-          </Link>
         </div>
       </div>
     </footer>

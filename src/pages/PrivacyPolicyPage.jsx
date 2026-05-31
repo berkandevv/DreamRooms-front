@@ -8,8 +8,7 @@ import {
 import { Link } from 'react-router'
 import Layout from '../components/Layout'
 
-const cityImage =
-  'https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg?auto=compress&cs=tinysrgb&w=1600'
+const cityImage = '/images/static-pages/privacy-city.jpg'
 
 export default function PrivacyPolicyPage() {
   return (

@@ -9,11 +9,9 @@ import {
 import Layout from '../components/Layout'
 import PartnerRegistrationForm from '../components/PartnerRegistrationForm'
 
-const heroImage =
-  'https://images.pexels.com/photos/20639392/pexels-photo-20639392.jpeg?auto=compress&cs=tinysrgb&w=1800'
+const heroImage = '/images/static-pages/about-hero.jpg'
 
-const storyImage =
-  'https://images.pexels.com/photos/33636636/pexels-photo-33636636.jpeg?auto=compress&cs=tinysrgb&w=1200'
+const storyImage = '/images/static-pages/about-story.jpg'
 
 const values = [
   {
