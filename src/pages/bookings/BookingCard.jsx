@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import PaymentMethodBadge from '../../components/PaymentMethodBadge'
 import { formatDate } from '../../utils/dateUtils'
 import { pluralize } from '../../utils/textUtils'
+import { getBookingCancellationText } from '../../utils/cancellationUtils'
 import {
   getBookingImage,
   getBookingImageAlt,
@@ -11,6 +12,8 @@ import StatusBadge from './StatusBadge'
 
 export default function BookingCard({ booking, isCancelling, onCancel }) {
   const imageUrl = getBookingImage(booking)
+  const cancellationText = getBookingCancellationText(booking.cancellation)
+  const canCancel = booking.cancellation?.can_cancel === true
 
   // Solicita la cancelación de la reserva
   function handleCancelClick() {
@@ -66,6 +69,11 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
           </div>
 
           <div className="mt-5 border-t border-outline-variant pt-4">
+            {cancellationText && (
+              <p className="mb-3 text-sm font-semibold text-secondary">
+                {cancellationText}
+              </p>
+            )}
             <Link
               className="text-sm font-semibold text-secondary underline transition hover:text-primary"
               to={`/hotels/${booking.hotel?.slug || ''}`}
@@ -85,7 +93,7 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
             </p>
           </div>
 
-          {booking.status?.toLowerCase() !== 'cancelled' && (
+          {booking.status?.toLowerCase() !== 'cancelled' && canCancel && (
             <button
               className="rounded-lg border border-error/25 bg-error-container/60 px-4 py-2 text-sm font-semibold text-error transition hover:bg-error-container disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isCancelling}

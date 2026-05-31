@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { formatServices } from '../utils/formatServices'
 import { formatDate } from '../utils/dateUtils'
 import { formatSquareMeters } from '../utils/formatSquareMeters'
+import { getFreeCancellationPolicyText } from '../utils/cancellationUtils'
 import PricePerNight from './PricePerNight'
 
 export default function RoomTypeCard({
@@ -73,6 +74,14 @@ export default function RoomTypeCard({
             <div className="flex items-start gap-3">
               <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
               <span>{servicesText}</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <FaCheck className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
+              <span>
+                {getFreeCancellationPolicyText(
+                  roomType.free_cancellation_hours,
+                )}
+              </span>
             </div>
           </div>
 

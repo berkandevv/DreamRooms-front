@@ -113,13 +113,13 @@ export default function TermsPage() {
                 </p>
                 <div className="mt-5 rounded-lg border border-secondary-container bg-secondary-container/35 p-7 leading-8 text-on-surface-variant">
                   <p className="font-semibold italic text-primary">
-                    Las cancelaciones con menos de 48 horas de antelación pueden
-                    estar sujetas a penalización.
+                    Cada tipo de habitación muestra su plazo de cancelación
+                    gratuita antes de confirmar la reserva.
                   </p>
                   <p className="mt-4">
-                    En caso de fuerza mayor o incidencias técnicas, Dream Rooms
-                    actuará como mediador para resolver la situación con datos de
-                    reserva completos.
+                    El plazo queda fijado al crear la reserva. Dream Rooms no
+                    aplica penalizaciones ni reembolsos parciales desde la
+                    plataforma.
                   </p>
                 </div>
               </section>

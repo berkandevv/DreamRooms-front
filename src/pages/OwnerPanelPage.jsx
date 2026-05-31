@@ -929,6 +929,20 @@ function InventoryView({
               type="number"
               value={roomTypeForm.base_price}
             />
+            <TextInput
+              label="Cancelación gratuita (horas)"
+              max="8760"
+              min="0"
+              name="free_cancellation_hours"
+              onChange={updateRoomTypeForm}
+              placeholder="Sin límite"
+              type="number"
+              value={roomTypeForm.free_cancellation_hours}
+            />
+            <p className="text-xs leading-5 text-secondary">
+              Déjalo vacío para permitir cancelación gratuita sin fecha límite.
+              Usa 0 para permitirla hasta la hora exacta del check-in.
+            </p>
             <ImageUploadFields
               formData={roomTypeForm}
               label="Foto de la habitación"
@@ -1635,6 +1649,16 @@ function SettingsView({
                 type="number"
                 value={editRoomTypeForm.base_price}
               />
+              <TextInput
+                label="Cancelación gratuita (horas)"
+                max="8760"
+                min="0"
+                name="free_cancellation_hours"
+                onChange={updateEditRoomTypeForm}
+                placeholder="Sin límite"
+                type="number"
+                value={editRoomTypeForm.free_cancellation_hours}
+              />
               <SelectInput
                 label="Estado"
                 name="status"
@@ -1652,6 +1676,11 @@ function SettingsView({
                 value={editRoomTypeForm.currency}
               />
             </div>
+
+            <p className="text-xs leading-5 text-secondary">
+              Déjalo vacío para permitir cancelación gratuita sin fecha límite.
+              Usa 0 para permitirla hasta la hora exacta del check-in.
+            </p>
 
             <ServiceCheckboxGroup
               label="Servicios de la habitación"

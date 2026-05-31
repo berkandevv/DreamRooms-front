@@ -8,6 +8,7 @@ export const initialRoomTypeForm = {
   size_m2: '',
   bed_type: '',
   base_price: '',
+  free_cancellation_hours: '',
   currency: 'EUR',
   image: null,
   image_alt_text: '',
@@ -35,6 +36,10 @@ export function buildRoomTypePayload(formData) {
     base_price: Number(roomTypeData.base_price),
     capacity_adults: Number(roomTypeData.capacity_adults),
     capacity_children: Number(roomTypeData.capacity_children),
+    free_cancellation_hours:
+      roomTypeData.free_cancellation_hours === ''
+        ? null
+        : Number(roomTypeData.free_cancellation_hours),
     service_ids: roomTypeData.service_ids.map(Number),
     size_m2: getIntegerSquareMeters(roomTypeData.size_m2),
     total_units: Number(roomTypeData.total_units),
@@ -54,6 +59,7 @@ export function mapRoomTypeToForm(roomType) {
     capacity_children: roomType.capacity_children || 0,
     currency: roomType.currency || 'EUR',
     description: roomType.description || '',
+    free_cancellation_hours: roomType.free_cancellation_hours ?? '',
     image: null,
     image_alt_text: '',
     image_is_cover: true,

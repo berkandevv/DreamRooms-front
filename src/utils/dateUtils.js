@@ -11,6 +11,21 @@ export function formatDate(date, fallback = '-') {
   })
 }
 
+// Formatea una fecha y hora para mostrarla en castellano
+export function formatDateTime(date, fallback = '-') {
+  if (!date) {
+    return fallback
+  }
+
+  return new Date(date).toLocaleString('es-ES', {
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
 // Convierte una fecha de formulario al formato ISO
 export function getIsoDate(date) {
   if (!date) {

@@ -12,6 +12,7 @@ import { getHotelBySlug } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
 import { formatDate, getIsoDate, getStayDates } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
+import { getFreeCancellationPolicyText } from '../utils/cancellationUtils'
 import { pluralize } from '../utils/textUtils'
 
 const initialCustomerData = {
@@ -566,6 +567,11 @@ export default function CheckoutPage() {
 
           <Quote
             currencySymbol={currencySymbol}
+            freeCancellationHours={
+              availabilityQuote
+                ? availabilityQuote.free_cancellation_hours
+                : roomType.free_cancellation_hours
+            }
             hotel={hotel}
             isAvailabilityLoading={isAvailabilityLoading}
             isSubmitting={isSubmitting}
@@ -753,6 +759,7 @@ function Availability({ error, isLoading, quote, stayDates, unitsBooked }) {
 
 function Quote({
   currencySymbol,
+  freeCancellationHours,
   hotel,
   isAvailabilityLoading,
   isSubmitting,
@@ -830,6 +837,10 @@ function Quote({
 
         <p className="rounded-lg bg-surface-container p-3 text-xs font-semibold text-secondary">
           Total estimado con las tasas y descuentos configurados por el hotel
+        </p>
+
+        <p className="rounded-lg bg-surface-container p-3 text-xs font-semibold text-secondary">
+          {getFreeCancellationPolicyText(freeCancellationHours)}
         </p>
 
         <button
