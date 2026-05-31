@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { Link } from 'react-router'
-import AccountSecurityPanel from '../components/AccountSecurityPanel'
 import { getAuthToken } from '../services/authService'
 import {
   bulkUpdateOwnerAvailability,
@@ -572,22 +571,24 @@ export default function OwnerPanelPage() {
 
   return (
     <OwnerShell activeView={activeView} setActiveView={setActiveView}>
-      <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-        <div>
-          <h1 className="text-3xl font-bold text-primary">Mi panel</h1>
-          <p className="mt-1 text-secondary">
-            Gestiona propiedades, reservas, pagos e inventario desde una sola vista
-          </p>
+      {activeView === 'dashboard' && (
+        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <h1 className="text-3xl font-bold text-primary">Mi panel</h1>
+            <p className="mt-1 text-secondary">
+              Gestiona propiedades, reservas, pagos e inventario desde una sola vista
+            </p>
+          </div>
+          <button
+            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-on-primary transition hover:opacity-90"
+            onClick={() => setActiveView('new-property')}
+            type="button"
+          >
+            <FaPlus className="h-4 w-4" />
+            Añadir hotel
+          </button>
         </div>
-        <button
-          className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 font-semibold text-on-primary transition hover:opacity-90"
-          onClick={() => setActiveView('new-property')}
-          type="button"
-        >
-          <FaPlus className="h-4 w-4" />
-          Añadir hotel
-        </button>
-      </div>
+      )}
 
       {error && (
         <p className="mb-4 rounded-lg border border-error bg-error-container p-3 text-sm font-semibold text-error">
@@ -665,28 +666,23 @@ export default function OwnerPanelPage() {
           )}
 
           {activeView === 'settings' && (
-            <>
-              <SettingsView
-                editHotelForm={editHotelForm}
-                editRoomTypeForm={editRoomTypeForm}
-                hotels={hotels}
-                hotelServices={hotelServices}
-                isSaving={isSaving}
-                onHotelChange={handleSelectedHotelChange}
-                onRoomTypeChange={handleSelectedRoomTypeChange}
-                onUpdateHotel={handleUpdateHotel}
-                onUpdateRoomType={handleUpdateRoomType}
-                roomTypes={roomTypes}
-                roomTypeServices={roomTypeServices}
-                selectedHotelId={selectedHotelId}
-                selectedRoomTypeId={selectedRoomTypeId}
-                updateEditHotelForm={updateEditHotelForm}
-                updateEditRoomTypeForm={updateEditRoomTypeForm}
-              />
-              <div className="mt-6">
-                <AccountSecurityPanel />
-              </div>
-            </>
+            <SettingsView
+              editHotelForm={editHotelForm}
+              editRoomTypeForm={editRoomTypeForm}
+              hotels={hotels}
+              hotelServices={hotelServices}
+              isSaving={isSaving}
+              onHotelChange={handleSelectedHotelChange}
+              onRoomTypeChange={handleSelectedRoomTypeChange}
+              onUpdateHotel={handleUpdateHotel}
+              onUpdateRoomType={handleUpdateRoomType}
+              roomTypes={roomTypes}
+              roomTypeServices={roomTypeServices}
+              selectedHotelId={selectedHotelId}
+              selectedRoomTypeId={selectedRoomTypeId}
+              updateEditHotelForm={updateEditHotelForm}
+              updateEditRoomTypeForm={updateEditRoomTypeForm}
+            />
           )}
         </>
       )}
@@ -843,7 +839,7 @@ function InventoryView({
                   <Metric label="Unidades" value={roomType.total_units || 0} />
                   <Metric
                     label="Capacidad"
-                    value={`${roomType.capacity_adults || 0}+${roomType.capacity_children || 0}`}
+                    value={`${roomType.capacity_adults || 0} adultos, ${roomType.capacity_children || 0} niños`}
                   />
                   <Metric
                     label="Precio"
@@ -1240,6 +1236,13 @@ function NewPropertyView({
 }) {
   return (
     <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div className="lg:col-span-12">
+        <h2 className="text-2xl font-bold text-primary">Nuevo hotel</h2>
+        <p className="mt-1 text-secondary">
+          Crea la ficha inicial de una nueva propiedad
+        </p>
+      </div>
+
       <div className="lg:col-span-8">
         <PanelCard title="Información básica del hotel">
           <form className="space-y-5" onSubmit={onSubmit}>
