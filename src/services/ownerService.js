@@ -1,13 +1,14 @@
 import { getAuthHeaders } from './authService'
 import { API_BASE_URL } from '../config/api'
 import { buildQuery } from '../utils/buildQuery'
+import { requestJson } from './apiClient'
 
 const OWNER_API_URL = `${API_BASE_URL}/owner`
 
 // Centraliza las peticiones privadas del panel de propietario
 async function requestOwner(path, options = {}) {
   const isFormData = options.body instanceof FormData
-  const response = await fetch(`${OWNER_API_URL}${path}`, {
+  const result = await requestJson(`${OWNER_API_URL}${path}`, {
     ...options,
     headers: {
       Accept: 'application/json',
@@ -15,12 +16,7 @@ async function requestOwner(path, options = {}) {
       ...getAuthHeaders(),
       ...options.headers,
     },
-  })
-  const result = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(result.message || 'No se pudo completar la operación')
-  }
+  }, 'No se pudo completar la operación')
 
   return result.data
 }

@@ -1,42 +1,33 @@
 import { API_BASE_URL } from '../config/api'
+import { requestJson } from './apiClient'
 
 const API_URL = `${API_BASE_URL}/hotels`
 
 // Obtiene el listado público de hoteles
 export async function getHotels() {
-  const response = await fetch(API_URL)
-
-  if (!response.ok) {
-    throw new Error('No se pudieron cargar los hoteles')
-  }
-
-  const result = await response.json()
+  const result = await requestJson(API_URL, {}, 'No se pudieron cargar los hoteles')
 
   return result.data
 }
 
 // Obtiene el detalle público de un hotel por su slug
 export async function getHotelBySlug(slug) {
-  const response = await fetch(`${API_URL}/${slug}`)
-
-  if (!response.ok) {
-    throw new Error('No se pudo cargar el detalle del hotel!')
-  }
-
-  const result = await response.json()
+  const result = await requestJson(
+    `${API_URL}/${slug}`,
+    {},
+    'No se pudo cargar el detalle del hotel',
+  )
 
   return result.data
 }
 
 // Obtiene las reseñas públicas de un hotel
 export async function getHotelReviews(slug) {
-  const response = await fetch(`${API_URL}/${slug}/reviews`)
-
-  if (!response.ok) {
-    throw new Error('No se pudieron cargar las reseñas!')
-  }
-
-  const result = await response.json()
+  const result = await requestJson(
+    `${API_URL}/${slug}/reviews`,
+    {},
+    'No se pudieron cargar las reseñas',
+  )
 
   return result.data
 }

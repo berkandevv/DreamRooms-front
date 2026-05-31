@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config/api'
+import { requestJson } from './apiClient'
 
 const AUTH_API_URL = `${API_BASE_URL}/auth`
 export const AUTH_SESSION_CHANGED_EVENT = 'auth-session-changed'
@@ -97,20 +98,14 @@ export function getAuthHeaders() {
 
 // Registra un nuevo usuario y guarda su sesión
 export async function registerUser(userData) {
-  const response = await fetch(`${AUTH_API_URL}/register`, {
+  const result = await requestJson(`${AUTH_API_URL}/register`, {
     body: JSON.stringify(userData),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     method: 'POST',
-  })
-
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(result.message || 'No se pudo crear la cuenta')
-  }
+  }, 'No se pudo crear la cuenta')
 
   saveAuthSession(result, {
     account_type: userData.account_type,
@@ -123,20 +118,14 @@ export async function registerUser(userData) {
 
 // Inicia sesión con email y contraseña
 export async function loginUser(credentials) {
-  const response = await fetch(`${AUTH_API_URL}/login`, {
+  const result = await requestJson(`${AUTH_API_URL}/login`, {
     body: JSON.stringify(credentials),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     method: 'POST',
-  })
-
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(result.message || 'No se pudo iniciar sesión')
-  }
+  }, 'No se pudo iniciar sesión')
 
   saveAuthSession(result, {
     email: credentials.email,
@@ -147,18 +136,12 @@ export async function loginUser(credentials) {
 
 // Pide al backend los datos actualizados del usuario autenticado
 export async function getAuthenticatedProfile() {
-  const response = await fetch(`${AUTH_API_URL}/me`, {
+  const result = await requestJson(`${AUTH_API_URL}/me`, {
     headers: {
       Accept: 'application/json',
       ...getAuthHeaders(),
     },
-  })
-
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(result.message || 'No se pudo cargar el perfil')
-  }
+  }, 'No se pudo cargar el perfil')
 
   setAuthenticatedUser(result.data)
 

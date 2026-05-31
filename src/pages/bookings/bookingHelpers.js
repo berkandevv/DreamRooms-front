@@ -1,20 +1,10 @@
 import { getHotelBySlug } from '../../services/hotelService'
+export { getBookedUnits } from '../../utils/bookingUtils'
+import { getStatusLabel as getSharedStatusLabel } from '../../utils/statusUtils'
 
 // Obtiene la etiqueta visible de un estado de reserva
 export function getStatusLabel(status) {
-  const labels = {
-    cancelled: 'Cancelada',
-    completed: 'Completada',
-    confirmed: 'Confirmada',
-    pending: 'Pendiente',
-  }
-
-  return labels[status?.toLowerCase()] || status || 'Sin estado'
-}
-
-// Obtiene el número de unidades incluidas en una reserva
-export function getBookedUnits(booking) {
-  return Number(booking.stay?.units_booked || booking.units_booked) || 1
+  return getSharedStatusLabel(status, 'Sin estado')
 }
 
 // Comprueba si una reserva ya ha finalizado

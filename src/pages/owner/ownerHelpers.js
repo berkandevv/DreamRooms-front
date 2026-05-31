@@ -1,4 +1,6 @@
 import { formatDate } from '../../utils/dateUtils'
+export { getBookedUnits } from '../../utils/bookingUtils'
+export { getStatusLabel } from '../../utils/statusUtils'
 
 // Obtiene la ubicación visible de un hotel
 export function getLocationText(hotel) {
@@ -23,32 +25,6 @@ export function getStatusClass(status) {
 // Obtiene la etiqueta visible de una fecha
 export function getDateLabel(value) {
   return formatDate(value, 'Sin fecha')
-}
-
-// Obtiene la etiqueta visible de un estado
-export function getStatusLabel(status) {
-  const labels = {
-    active: 'Activa',
-    authorized: 'Autorizado',
-    blocked: 'Bloqueado',
-    cancelled: 'Cancelada',
-    closed: 'Cerrado',
-    completed: 'Completada',
-    confirmed: 'Confirmada',
-    draft: 'Borrador',
-    failed: 'Fallido',
-    hotel: 'Pago en hotel',
-    inactive: 'Inactivo',
-    manual: 'Manual',
-    open: 'Abierto',
-    paid: 'Pagado',
-    pending: 'Pendiente',
-    published: 'Publicado',
-    refunded: 'Reembolsado',
-    card: 'Pago con tarjeta',
-  }
-
-  return labels[status] || status || 'Desconocido'
 }
 
 // Obtiene el importe total de una reserva
@@ -86,11 +62,6 @@ export function getRemainingBookingAmount(booking) {
   const paidAmount = getPaidBookingAmount(booking)
 
   return Math.max(totalAmount - paidAmount, 0)
-}
-
-// Obtiene las unidades incluidas en una reserva
-export function getBookedUnits(booking) {
-  return Number(booking.stay?.units_booked || booking.units_booked) || 1
 }
 
 // Comprueba si una reserva admite un pago manual
