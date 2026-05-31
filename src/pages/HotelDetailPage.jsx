@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { FaExternalLinkAlt, FaMapMarkerAlt } from 'react-icons/fa'
+import { FaMapMarkerAlt } from 'react-icons/fa'
 import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
 import FavoriteButton from '../components/FavoriteButton'
@@ -377,7 +377,6 @@ export default function HotelDetailPage() {
               >
                 <FaMapMarkerAlt className="h-4 w-4" />
                 Ver en Google Maps
-                <FaExternalLinkAlt className="h-3 w-3" />
               </a>
             )}
 

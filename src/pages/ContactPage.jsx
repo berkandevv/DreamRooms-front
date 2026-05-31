@@ -118,11 +118,12 @@ export default function ContactPage() {
               src={mapImage}
             />
             <a
-              className="absolute bottom-5 right-5 rounded-lg bg-surface-container-lowest px-4 py-3 text-sm font-semibold text-primary shadow-lg transition hover:bg-surface-container"
+              className="absolute bottom-5 right-5 inline-flex items-center gap-2 rounded-lg bg-surface-container-lowest px-4 py-3 text-sm font-semibold text-primary shadow-lg transition hover:bg-surface-container"
               href="https://maps.google.com/?q=Paseo%20de%20la%20Castellana%20200%2C%2028046%20Madrid"
               rel="noreferrer"
               target="_blank"
             >
+              <FaMapMarkerAlt className="h-4 w-4" />
               Ver en Google Maps
             </a>
           </div>

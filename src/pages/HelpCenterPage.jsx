@@ -42,7 +42,7 @@ const faqs = [
   '¿Puedo integrar Dream Rooms con otros canales de venta?',
 ]
 
-const heroImage = '/images/static-pages/about-story.jpg'
+const heroImage = '/images/static-pages/privacy-city.jpg'
 
 export default function HelpCenterPage() {
   return (
@@ -134,12 +134,12 @@ export default function HelpCenterPage() {
         <div className="mx-auto max-w-7xl px-5 md:px-8">
           <div className="relative min-h-85 overflow-hidden rounded-lg">
             <img
-              alt="Suite de hotel con ventanal y jardín"
+              alt="Vista urbana nocturna desde un hotel"
               className="absolute inset-0 h-full w-full object-cover"
               src={heroImage}
             />
             <div className="absolute inset-0 bg-primary/45" />
-            <div className="relative flex min-h-85 max-w-xl flex-col justify-center p-8 text-on-primary md:p-12">
+            <div className="relative flex min-h-85 max-w-xl flex-col justify-start px-8 pb-8 pt-5 text-on-primary md:px-12 md:pb-12 md:pt-7">
               <h2 className="text-3xl font-bold">Excelencia en cada reserva</h2>
               <p className="mt-4 leading-7">
                 Te damos herramientas claras para que cada propiedad mantenga su

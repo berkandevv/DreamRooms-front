@@ -111,7 +111,6 @@ export default function PrivacyPolicyPage() {
                 <a className="font-semibold underline" href="mailto:berkanraimov@gmail.com">
                   berkanraimov@gmail.com
                 </a>
-                .
               </p>
             </PolicySection>
           </article>

@@ -11,7 +11,7 @@ import PartnerRegistrationForm from '../components/PartnerRegistrationForm'
 
 const heroImage = '/images/static-pages/about-hero.jpg'
 
-const storyImage = '/images/static-pages/about-story.jpg'
+const storyImage = '/images/static-pages/about-story-elegant-pexels.jpg'
 
 const values = [
   {
@@ -98,7 +98,7 @@ export default function AboutPage() {
           <div className="relative">
             <div className="aspect-4/5 overflow-hidden rounded-xl bg-surface-container shadow-[0_14px_40px_rgba(19,27,46,0.14)]">
               <img
-                alt="Interior de suite moderna"
+                alt="Lobby elegante de hotel con iluminación cálida"
                 className="h-full w-full object-cover"
                 src={storyImage}
               />
@@ -188,8 +188,8 @@ export default function AboutPage() {
 function InfoCard({ description, icon: Icon, title, variant = 'primary' }) {
   const iconClass =
     variant === 'secondary'
-      ? 'bg-secondary-container text-on-secondary-container'
-      : 'bg-primary-container text-on-primary'
+      ? 'bg-secondary-container text-black'
+      : 'bg-secondary-container text-primary'
 
   return (
     <article className="rounded-xl border border-outline-variant bg-surface-container-lowest p-8 shadow-[0_8px_24px_rgba(19,27,46,0.08)] transition hover:shadow-[0_18px_40px_rgba(19,27,46,0.14)]">
