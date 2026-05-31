@@ -148,6 +148,36 @@ export async function getAuthenticatedProfile() {
   return result.data
 }
 
+// Actualiza la contraseña del usuario autenticado
+export async function updateAuthenticatedPassword(passwordData) {
+  return requestJson(`${AUTH_API_URL}/password`, {
+    body: JSON.stringify(passwordData),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+    },
+    method: 'PUT',
+  }, 'No se pudo cambiar la contraseña')
+}
+
+// Desactiva la cuenta del usuario autenticado y elimina su sesión local
+export async function deactivateAuthenticatedAccount(passwordData) {
+  const result = await requestJson(`${AUTH_API_URL}/account`, {
+    body: JSON.stringify(passwordData),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+    },
+    method: 'DELETE',
+  }, 'No se pudo desactivar la cuenta')
+
+  clearAuthSession()
+
+  return result
+}
+
 // Cierra la sesión en el backend y limpia los datos locales
 export async function logoutUser() {
   const response = await fetch(`${AUTH_API_URL}/logout`, {

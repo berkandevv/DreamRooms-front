@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { matchPath, Route, Routes, useLocation } from 'react-router'
 import AboutPage from './pages/AboutPage'
+import AccountPage from './pages/AccountPage'
 import CheckoutPage from './pages/CheckoutPage'
 import ContactPage from './pages/ContactPage'
 import HelpCenterPage from './pages/HelpCenterPage'
@@ -23,6 +24,7 @@ const routeAnimationLevels = [
   { level: 4, paths: ['/favorites'] },
   { level: 5, paths: ['/my-bookings'] },
   { level: 6, paths: ['/about'] },
+  { level: 6, paths: ['/account'] },
   { level: 7, paths: ['/help', '/contact', '/privacy', '/terms'] },
   { level: 8, paths: ['/login'] },
   { level: 9, paths: ['/register'] },
@@ -72,6 +74,7 @@ export default function App() {
           <Route element={<HotelDetailPage />} path="/hotels/:slug" />
           <Route element={<CheckoutPage />} path="/hotels/:slug/checkout" />
           <Route element={<AboutPage />} path="/about" />
+          <Route element={<AccountPage />} path="/account" />
           <Route element={<HelpCenterPage />} path="/help" />
           <Route element={<ContactPage />} path="/contact" />
           <Route element={<PrivacyPolicyPage />} path="/privacy" />

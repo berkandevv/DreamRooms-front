@@ -75,9 +75,9 @@ export default function RegisterPage() {
         ...formData,
         account_type: accountType,
       })
-      setSuccessMessage('¡Cuenta creada correctamente!')
-      setFormData(initialFormData)
-      setTermsAccepted(false)
+      navigate(accountType === 'owner' ? '/owner' : '/my-bookings', {
+        replace: true,
+      })
     } catch (registerError) {
       setError(registerError.message)
     } finally {

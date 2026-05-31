@@ -159,6 +159,19 @@ export default function Navbar() {
 
               {isMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest shadow-[0_12px_30px_rgba(19,27,46,0.18)]">
+                  <Link
+                    className="block w-full px-4 py-3 text-left text-sm font-semibold text-secondary transition hover:bg-surface-container"
+                    onClick={() => {
+                      if (isOwner) {
+                        sessionStorage.setItem('owner_active_view', 'settings')
+                      }
+
+                      setIsMenuOpen(false)
+                    }}
+                    to={isOwner ? '/owner' : '/account'}
+                  >
+                    {isOwner ? 'Ajustes del panel' : 'Mi cuenta'}
+                  </Link>
                   <button
                     className="block w-full px-4 py-3 text-left text-sm font-semibold text-error transition hover:bg-error-container disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={isLoggingOut}

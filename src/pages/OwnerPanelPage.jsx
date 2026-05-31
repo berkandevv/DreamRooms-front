@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { Link } from 'react-router'
+import AccountSecurityPanel from '../components/AccountSecurityPanel'
 import { getAuthToken } from '../services/authService'
 import {
   bulkUpdateOwnerAvailability,
@@ -664,23 +665,28 @@ export default function OwnerPanelPage() {
           )}
 
           {activeView === 'settings' && (
-            <SettingsView
-              editHotelForm={editHotelForm}
-              editRoomTypeForm={editRoomTypeForm}
-              hotels={hotels}
-              hotelServices={hotelServices}
-              isSaving={isSaving}
-              onHotelChange={handleSelectedHotelChange}
-              onRoomTypeChange={handleSelectedRoomTypeChange}
-              onUpdateHotel={handleUpdateHotel}
-              onUpdateRoomType={handleUpdateRoomType}
-              roomTypes={roomTypes}
-              roomTypeServices={roomTypeServices}
-              selectedHotelId={selectedHotelId}
-              selectedRoomTypeId={selectedRoomTypeId}
-              updateEditHotelForm={updateEditHotelForm}
-              updateEditRoomTypeForm={updateEditRoomTypeForm}
-            />
+            <>
+              <SettingsView
+                editHotelForm={editHotelForm}
+                editRoomTypeForm={editRoomTypeForm}
+                hotels={hotels}
+                hotelServices={hotelServices}
+                isSaving={isSaving}
+                onHotelChange={handleSelectedHotelChange}
+                onRoomTypeChange={handleSelectedRoomTypeChange}
+                onUpdateHotel={handleUpdateHotel}
+                onUpdateRoomType={handleUpdateRoomType}
+                roomTypes={roomTypes}
+                roomTypeServices={roomTypeServices}
+                selectedHotelId={selectedHotelId}
+                selectedRoomTypeId={selectedRoomTypeId}
+                updateEditHotelForm={updateEditHotelForm}
+                updateEditRoomTypeForm={updateEditRoomTypeForm}
+              />
+              <div className="mt-6">
+                <AccountSecurityPanel />
+              </div>
+            </>
           )}
         </>
       )}
