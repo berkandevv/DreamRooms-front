@@ -27,7 +27,11 @@ export function getBookingCancellationText(cancellation) {
     return 'Cancelación gratuita sin fecha límite.'
   }
 
-  const deadline = formatDateTime(cancellation.deadline_at)
+  const deadline = formatDateTime(
+    cancellation.deadline_at,
+    '-',
+    cancellation.timezone,
+  )
 
   return cancellation.can_cancel
     ? `Cancelación gratuita hasta el ${deadline}.`

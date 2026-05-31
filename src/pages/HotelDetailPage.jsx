@@ -338,12 +338,6 @@ export default function HotelDetailPage() {
               <ServicesList services={hotel.services} />
             </div>
 
-            <div className="mt-8 border-t border-outline-variant pt-6">
-              <h3 className="text-lg font-bold text-on-surface">Políticas</h3>
-              <p className="mt-3 text-on-surface-variant">
-                {hotel.cancellation_policy || 'Política no disponible.'}
-              </p>
-            </div>
           </div>
 
           <div className="rounded-xl border border-outline-variant bg-surface-container p-6">

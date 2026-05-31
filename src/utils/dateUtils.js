@@ -12,7 +12,7 @@ export function formatDate(date, fallback = '-') {
 }
 
 // Formatea una fecha y hora para mostrarla en castellano
-export function formatDateTime(date, fallback = '-') {
+export function formatDateTime(date, fallback = '-', timeZone) {
   if (!date) {
     return fallback
   }
@@ -22,6 +22,7 @@ export function formatDateTime(date, fallback = '-') {
     hour: '2-digit',
     minute: '2-digit',
     month: 'short',
+    timeZone,
     year: 'numeric',
   })
 }
