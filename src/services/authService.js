@@ -1,5 +1,5 @@
 import { API_BASE_URL } from '../config/api'
-import { requestJson } from './apiClient'
+import { requestJson, translateApiErrorMessage } from './apiClient'
 
 const AUTH_API_URL = `${API_BASE_URL}/auth`
 export const AUTH_SESSION_CHANGED_EVENT = 'auth-session-changed'
@@ -193,6 +193,8 @@ export async function logoutUser() {
   if (!response.ok) {
     const result = await response.json().catch(() => ({}))
 
-    throw new Error(result.message || 'No se pudo cerrar sesión')
+    throw new Error(
+      translateApiErrorMessage(result.message || 'No se pudo cerrar sesión'),
+    )
   }
 }
