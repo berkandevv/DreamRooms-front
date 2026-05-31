@@ -24,12 +24,17 @@ export const initialHotelForm = {
   smoking_allowed: false,
 }
 
+// Normaliza las horas de la API al formato aceptado por los formularios y el backend
+function getHoursAndMinutes(time, fallback) {
+  return time ? time.slice(0, 5) : fallback
+}
+
 // Prepara los datos de un hotel para enviarlos a la API
 export function buildHotelPayload(formData) {
   return {
     address: formData.address,
-    check_in_time: formData.check_in_time,
-    check_out_time: formData.check_out_time,
+    check_in_time: getHoursAndMinutes(formData.check_in_time, '15:00'),
+    check_out_time: getHoursAndMinutes(formData.check_out_time, '11:00'),
     city: formData.city,
     contact_email: formData.email,
     contact_phone: formData.phone,
@@ -56,8 +61,8 @@ export function mapHotelToForm(hotel) {
 
   return {
     address: hotel.location?.address || hotel.contact?.address || '',
-    check_in_time: hotel.check_in_time || '15:00',
-    check_out_time: hotel.check_out_time || '11:00',
+    check_in_time: getHoursAndMinutes(hotel.check_in_time, '15:00'),
+    check_out_time: getHoursAndMinutes(hotel.check_out_time, '11:00'),
     city: hotel.location?.city || '',
     country: hotel.location?.country || '',
     currency: hotel.pricing?.currency || hotel.currency || 'EUR',
