@@ -20,34 +20,34 @@ export default function PrivacyPolicyPage() {
               Política de privacidad
             </h1>
             <p className="mt-3 text-sm text-secondary">
-              Última actualización: Noviembre 2024
+              Última actualización: 31 de mayo de 2026
             </p>
 
             <PolicySection icon={FaDatabase} title="Recopilación de información">
               <p>
                 En Dream Rooms recopilamos la información necesaria para operar
-                reservas, inventario, pagos y cuentas de usuario de forma segura.
+                las cuentas, reservas y funciones de gestión de la plataforma.
               </p>
               <ul className="mt-4 list-disc space-y-2 pl-5">
-                <li>Datos de contacto del huésped y del propietario.</li>
+                <li>Nombre, email y teléfono opcional de la cuenta.</li>
                 <li>Información de propiedades, habitaciones y disponibilidad.</li>
-                <li>Registros de reservas, pagos y actividad dentro de la plataforma.</li>
+                <li>Datos de reservas, huéspedes, pagos, favoritos y reseñas.</li>
               </ul>
             </PolicySection>
 
             <PolicySection icon={FaUserCheck} title="Uso de datos">
               <p>
-                Utilizamos los datos para mantener la integridad de la plataforma
-                y mejorar la operación diaria de propietarios y huéspedes.
+                Utilizamos los datos para prestar las funciones solicitadas por
+                viajeros y propietarios dentro de Dream Rooms.
               </p>
               <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <InfoBox
-                  body="Ajustes proactivos en disponibilidad, tarifas y visualización del inventario."
-                  title="Optimización operativa"
+                  body="Consulta de disponibilidad, creación y gestión de reservas y publicación de reseñas."
+                  title="Gestión de estancias"
                 />
                 <InfoBox
-                  body="Alertas de seguridad, confirmaciones de reserva y comunicaciones esenciales."
-                  title="Comunicación crítica"
+                  body="Administración de alojamientos, habitaciones, disponibilidad y pagos manuales."
+                  title="Panel de propietario"
                 />
               </div>
               <div className="relative mt-8 overflow-hidden rounded-lg">
@@ -58,30 +58,31 @@ export default function PrivacyPolicyPage() {
                 />
                 <div className="absolute inset-0 bg-primary/35" />
                 <p className="absolute bottom-6 left-6 right-6 text-lg font-semibold italic text-on-primary">
-                  La integridad de tus datos sostiene una experiencia hotelera
-                  fiable.
+                  Utilizamos la información necesaria para prestar las
+                  funciones disponibles en la plataforma.
                 </p>
               </div>
             </PolicySection>
 
             <PolicySection icon={FaShieldAlt} title="Protección de la información">
               <p>
-                Aplicamos medidas técnicas y organizativas para proteger la
-                información frente al acceso no autorizado.
+                Limitamos el acceso a las funciones privadas mediante
+                autenticación y permisos según el tipo de cuenta.
               </p>
               <div className="mt-5 border-l-4 border-primary bg-surface-container-low p-5">
                 <ul className="space-y-3">
                   <li className="flex gap-3">
                     <FaLock className="mt-1 h-4 w-4 shrink-0" />
-                    Cifrado para datos en tránsito y controles de acceso por rol.
+                    Acceso a la API privada mediante token de autenticación.
                   </li>
                   <li className="flex gap-3">
                     <FaLock className="mt-1 h-4 w-4 shrink-0" />
-                    Auditorías periódicas de seguridad y revisión de permisos.
+                    Separación de permisos para cuentas de cliente y propietario.
                   </li>
                   <li className="flex gap-3">
                     <FaLock className="mt-1 h-4 w-4 shrink-0" />
-                    Monitorización de actividad para detectar usos anómalos.
+                    Revocación del token al cerrar sesión y de todos los tokens
+                    al desactivar la cuenta.
                   </li>
                 </ul>
               </div>

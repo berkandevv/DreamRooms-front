@@ -11,35 +11,51 @@ import Layout from '../components/Layout'
 const categories = [
   {
     description:
-      'Configura tu propiedad, completa tu perfil y publica tus primeras habitaciones.',
+      'Crea tu cuenta, busca hoteles, guarda favoritos y consulta tus reservas.',
     icon: FaRocket,
     title: 'Primeros pasos',
   },
   {
     description:
-      'Controla disponibilidad, bloqueos, cambios de fechas y comunicación con huéspedes.',
+      'Comprueba fechas, revisa el importe total y cancela dentro del plazo disponible.',
     icon: FaCalendarAlt,
-    title: 'Gestión de reservas',
+    title: 'Reservas de cliente',
   },
   {
     description:
-      'Administra usuarios, roles del equipo, datos fiscales y seguridad de la cuenta.',
+      'Publica alojamientos, configura habitaciones y actualiza precios o disponibilidad.',
     icon: FaUserCog,
-    title: 'Cuenta de propietario',
+    title: 'Panel de propietario',
   },
   {
     description:
-      'Consulta liquidaciones, comisiones, facturas y transferencias bancarias.',
+      'Revisa el estado de las reservas y registra pagos manuales de estancias con pago en hotel.',
     icon: FaCreditCard,
     title: 'Pagos',
   },
 ]
 
 const faqs = [
-  '¿Cómo puedo actualizar la disponibilidad de mis habitaciones?',
-  '¿Cuándo recibiré el pago de mis reservas completadas?',
-  '¿Qué debo hacer si un huésped cancela a última hora?',
-  '¿Puedo integrar Dream Rooms con otros canales de venta?',
+  {
+    answer:
+      'Desde el panel de propietario, abre Inventario, elige un tipo de habitación y guarda la disponibilidad del rango de fechas. También puedes cerrar una fecha concreta.',
+    question: '¿Cómo puedo actualizar la disponibilidad de mis habitaciones?',
+  },
+  {
+    answer:
+      'Antes de reservar, Dream Rooms comprueba las fechas seleccionadas y muestra el desglose de precio. Puedes elegir pago con tarjeta simulado o pago en el hotel.',
+    question: '¿Cómo se confirma una reserva?',
+  },
+  {
+    answer:
+      'En Mis reservas puedes cancelar una estancia activa mientras no haya vencido su plazo de cancelación gratuita. El plazo se muestra antes de confirmar.',
+    question: '¿Cómo puedo cancelar una reserva?',
+  },
+  {
+    answer:
+      'En Mi cuenta puedes cambiar tu contraseña o desactivar tu cuenta. Para cambiar la contraseña necesitas indicar la contraseña actual.',
+    question: '¿Cómo gestiono la seguridad de mi cuenta?',
+  },
 ]
 
 const heroImage = '/images/static-pages/privacy-city.jpg'
@@ -96,15 +112,14 @@ export default function HelpCenterPage() {
             Preguntas frecuentes
           </h2>
           <div className="mt-10 divide-y divide-outline-variant">
-            {faqs.map((question) => (
+            {faqs.map(({ answer, question }) => (
               <details className="group py-5" key={question}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-primary">
                   {question}
                   <FaChevronDown className="h-3 w-3 transition group-open:rotate-180" />
                 </summary>
                 <p className="mt-4 leading-7 text-on-surface-variant">
-                  Escríbenos con el detalle de tu caso y el equipo de Dream
-                  Rooms te indicará los siguientes pasos para resolverlo.
+                  {answer}
                 </p>
               </details>
             ))}
@@ -115,8 +130,8 @@ export default function HelpCenterPage() {
               ¿Aún tienes dudas?
             </h3>
             <p className="mx-auto mt-3 max-w-xl leading-7 text-secondary">
-              Nuestro equipo de soporte puede ayudarte con reservas,
-              disponibilidad, pagos o configuración de propiedades.
+              Escríbenos si necesitas ayuda con reservas, disponibilidad, pagos
+              manuales o configuración de propiedades.
             </p>
             <div className="mt-6 flex justify-center">
               <Link
@@ -143,7 +158,7 @@ export default function HelpCenterPage() {
               <h2 className="text-3xl font-bold">Excelencia en cada reserva</h2>
               <p className="mt-4 leading-7">
                 Te damos herramientas claras para que cada propiedad mantenga su
-                disponibilidad, tarifas y comunicación bajo control.
+                disponibilidad, tarifas y reservas bajo control.
               </p>
             </div>
           </div>

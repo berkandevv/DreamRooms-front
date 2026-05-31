@@ -25,7 +25,7 @@ export default function TermsPage() {
             </p>
             <p className="mt-5 flex items-center gap-3 text-sm font-semibold text-primary">
               <FaClock className="h-4 w-4" />
-              Última actualización: 24 de Mayo, 2024
+              Última actualización: 31 de mayo de 2026
             </p>
           </div>
 
@@ -86,18 +86,19 @@ export default function TermsPage() {
                   3. Reservas y pagos
                 </h2>
                 <p className="mt-4 leading-8 text-on-surface-variant">
-                  El sistema procesa reservas en tiempo real. Al confirmar una
-                  reserva, el usuario acepta las condiciones comerciales visibles
-                  durante el flujo de compra.
+                  Antes de crear una reserva, el sistema comprueba la
+                  disponibilidad por fechas y muestra el desglose del importe.
+                  Al confirmar, el usuario acepta las condiciones visibles
+                  durante el proceso.
                 </p>
                 <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <TermBox
-                    body="Se aplicará una tarifa de gestión sobre el valor total de cada reserva confirmada."
-                    title="Comisiones"
+                    body="El flujo de tarjeta disponible en esta versión es una simulación: no solicita ni procesa datos bancarios."
+                    title="Pago con tarjeta"
                   />
                   <TermBox
-                    body="Las liquidaciones se realizarán tras la validación del check-out del huésped."
-                    title="Ciclo de pago"
+                    body="Las reservas con pago en el hotel quedan pendientes y permiten registrar después el pago manual completo."
+                    title="Pago en el hotel"
                   />
                 </div>
               </section>
@@ -107,8 +108,8 @@ export default function TermsPage() {
                   4. Cancelaciones
                 </h2>
                 <p className="mt-4 leading-8 text-on-surface-variant">
-                  Nuestra política de cancelación protege al operador y al
-                  huésped, manteniendo la estabilidad financiera del inventario.
+                  El plazo de cancelación gratuita depende del tipo de
+                  habitación elegido.
                 </p>
                 <div className="mt-5 rounded-lg border border-secondary-container bg-secondary-container/35 p-7 leading-8 text-on-surface-variant">
                   <p className="font-semibold italic text-primary">
@@ -116,9 +117,9 @@ export default function TermsPage() {
                     gratuita antes de confirmar la reserva.
                   </p>
                   <p className="mt-4">
-                    El plazo queda fijado al crear la reserva. Dream Rooms no
-                    aplica penalizaciones ni reembolsos parciales desde la
-                    plataforma.
+                    El plazo queda fijado al crear la reserva. Cuando la
+                    cancelación está permitida, la disponibilidad se restaura.
+                    Los pagos parciales no están disponibles.
                   </p>
                 </div>
               </section>
@@ -131,7 +132,7 @@ export default function TermsPage() {
                 />
                 <div className="absolute inset-0 bg-primary/35" />
                 <p className="absolute bottom-7 left-7 right-7 max-w-xl text-2xl font-bold leading-8 text-on-primary">
-                  Comprometidos con la excelencia en la gestión hospitalaria.
+                  Una experiencia clara para reservar y gestionar alojamientos.
                 </p>
               </div>
             </article>

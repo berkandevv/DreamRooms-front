@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react'
-import { FaEnvelope, FaExternalLinkAlt, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
+import { FaEnvelope, FaExternalLinkAlt } from 'react-icons/fa'
 import Layout from '../components/Layout'
 
 const contactEmail = 'berkanraimov@gmail.com'
-const mapImage = '/images/static-pages/contact-map.jpg'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -46,8 +45,8 @@ export default function ContactPage() {
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-4xl font-bold text-primary">Contáctanos</h1>
             <p className="mt-4 text-lg leading-8 text-on-surface-variant">
-              Estamos aquí para ayudarte a gestionar tu inventario hotelero con
-              mayor eficiencia y claridad.
+              Escríbenos si necesitas ayuda con tu cuenta, una reserva o la
+              gestión de un alojamiento.
             </p>
           </div>
 
@@ -96,36 +95,13 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="mx-auto mt-10 max-w-md">
             <ContactCard
               icon={FaEnvelope}
               label="Email"
               value={contactEmail}
               href={`mailto:${contactEmail}`}
             />
-            <ContactCard icon={FaPhone} label="Teléfono" value="+34 912 345 678" />
-            <ContactCard
-              icon={FaMapMarkerAlt}
-              label="Dirección"
-              value="Paseo de la Castellana 200, 28046 Madrid"
-            />
-          </div>
-
-          <div className="relative mt-12 overflow-hidden rounded-lg border border-outline-variant">
-            <img
-              alt="Mapa urbano conceptual"
-              className="h-105 w-full object-cover"
-              src={mapImage}
-            />
-            <a
-              className="absolute bottom-5 right-5 inline-flex items-center gap-2 rounded-lg bg-surface-container-lowest px-4 py-3 text-sm font-semibold text-primary shadow-lg transition hover:bg-surface-container"
-              href="https://maps.google.com/?q=Paseo%20de%20la%20Castellana%20200%2C%2028046%20Madrid"
-              rel="noreferrer"
-              target="_blank"
-            >
-              <FaMapMarkerAlt className="h-4 w-4" />
-              Ver en Google Maps
-            </a>
           </div>
         </div>
       </section>

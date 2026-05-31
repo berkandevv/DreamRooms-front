@@ -16,34 +16,34 @@ const storyImage = '/images/static-pages/about-story-elegant-pexels.jpg'
 const values = [
   {
     description:
-      'Solo propiedades seleccionadas a mano. Valoramos la calidad sobre el volumen en cada elección',
+      'Consulta alojamientos, habitaciones, servicios y reseñas desde un catálogo claro y accesible.',
     icon: FaShieldAlt,
-    title: 'Excelencia curada',
+    title: 'Catálogo útil',
   },
   {
     description:
-      'Tecnología que no interfiere, proporcionando claridad y eficiencia operativa',
+      'Comprueba la disponibilidad por fechas antes de confirmar una estancia.',
     icon: FaMagic,
-    title: 'Simplicidad funcional',
+    title: 'Reservas claras',
   },
   {
     description:
-      'Gestión transparente para propietarios y datos de alta integridad en cada paso',
+      'Gestiona hoteles, tipos de habitación, tarifas y disponibilidad desde un único panel.',
     icon: FaBolt,
-    title: 'Confianza e integridad',
+    title: 'Gestión directa',
   },
   {
     description:
-      'Hospitalidad sin fronteras, brindando una experiencia constante en más de 30 regiones',
+      'Separa las herramientas de viajeros y propietarios para mostrar a cada persona lo necesario.',
     icon: FaGlobeEurope,
-    title: 'Alcance global',
+    title: 'Experiencia sencilla',
   },
 ]
 
 const stats = [
-  ['500+', 'Propiedades'],
-  ['30+', 'Regiones'],
-  ['98%', 'Satisfacción del huésped'],
+  ['Hoteles', 'Catálogo y filtros'],
+  ['Estancias', 'Disponibilidad y reservas'],
+  ['Propietarios', 'Inventario y pagos'],
 ]
 
 export default function AboutPage() {
@@ -70,27 +70,23 @@ export default function AboutPage() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-5 md:grid-cols-2 md:px-8">
           <div>
             <span className="mb-4 block text-sm font-bold uppercase tracking-widest text-secondary">
-              Nuestra herencia
+              El proyecto
             </span>
             <h2 className="mb-6 text-3xl font-bold text-primary md:text-4xl">
-              La narrativa de Dream Rooms
+              Una plataforma para reservar y gestionar alojamientos
             </h2>
             <div className="space-y-4 text-justify text-lg leading-8 text-on-surface-variant">
               <p>
-                Dream Rooms nació en la intersección de la pasión arquitectónica
-                y la necesidad tecnológica. Nuestros fundadores, veteranos tanto
-                del mundo de la hospitalidad moderna como del sector fintech,
-                notaron una fricción persistente: las herramientas utilizadas
-                para gestionar propiedades de clase mundial a menudo eran
-                toscas, obsoletas y estaban desconectadas de la experiencia del
-                huésped.
+                Dream Rooms reúne en una misma aplicación la búsqueda de
+                hoteles, la consulta de habitaciones y la creación de reservas.
+                Los viajeros pueden filtrar alojamientos, comprobar fechas,
+                guardar favoritos y gestionar sus estancias.
               </p>
               <p>
-                Nos propusimos cerrar la brecha entre alojamientos cuidados y la
-                gestión funcional. Al construir una plataforma que prioriza la
-                confiabilidad institucional y los datos de alta integridad,
-                permitimos que los propietarios se concentren en lo que realmente
-                importa: el arte de la estancia.
+                La plataforma también ofrece a los propietarios un panel para
+                publicar hoteles, configurar tipos de habitación, actualizar
+                precios y disponibilidad, revisar reservas y registrar pagos
+                manuales cuando correspondan.
               </p>
             </div>
           </div>
@@ -103,11 +99,6 @@ export default function AboutPage() {
                 src={storyImage}
               />
             </div>
-            <div className="absolute -bottom-5 -left-5 hidden rounded-lg bg-primary p-6 shadow-lg lg:block">
-              <p className="text-2xl font-bold text-on-primary">
-                Fundada en 2026
-              </p>
-            </div>
           </div>
         </div>
       </section>
@@ -115,12 +106,12 @@ export default function AboutPage() {
       <section className="bg-surface-container-low py-20">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-5 md:grid-cols-2 md:px-8">
           <InfoCard
-            description="Empoderar a los propietarios y facilitar estancias más claras para los viajeros a través de una tecnología útil y directa. Creemos que la gestión debe ser sencilla, dejando espacio para una experiencia cuidada."
+            description="Facilitar la búsqueda y reserva de alojamientos mientras damos a los propietarios herramientas concretas para mantener actualizado su inventario."
             icon={FaRocket}
             title="Nuestra misión"
           />
           <InfoCard
-            description="Convertirnos en un estándar para estancias bien seleccionadas y gestión hotelera simplificada. Nuestro objetivo es hacer que reservar y administrar alojamientos sea más claro, fiable y accesible."
+            description="Mantener una experiencia directa para viajeros y propietarios: información visible, disponibilidad por fechas y operaciones reunidas en un mismo lugar."
             icon={FaRegEye}
             title="Nuestra visión"
             variant="secondary"
@@ -153,7 +144,7 @@ export default function AboutPage() {
                 <div className="hidden h-12 w-px bg-on-primary-container/30 md:block" />
               )}
               <div className="text-center">
-                <p className="mb-1 text-5xl font-bold text-primary-fixed">
+                <p className="mb-1 text-3xl font-bold text-primary-fixed">
                   {value}
                 </p>
                 <p className="text-sm font-bold uppercase tracking-widest text-primary-fixed-dim">
@@ -171,8 +162,8 @@ export default function AboutPage() {
             ¿Listo para elevar tu portafolio?
           </h2>
           <p className="mb-8 text-lg leading-8 text-on-surface-variant">
-            Únete a nuestra colección de propiedades exclusivas y experimenta el
-            futuro de la gestión de la hospitalidad.
+            Crea una cuenta de propietario y empieza a configurar tus
+            alojamientos desde el panel de gestión.
           </p>
           <PartnerRegistrationForm
             buttonLabel="Comenzar"
