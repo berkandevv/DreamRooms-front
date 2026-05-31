@@ -329,6 +329,7 @@ export default function OwnerPanelPage() {
 
       setHotels((currentHotels) => [hotel, ...currentHotels])
       setSelectedHotelId(hotel.id)
+      setEditHotelForm(mapHotelToForm(hotel))
       setHotelForm(initialHotelForm)
       setMessage('Hotel creado correctamente.')
     } catch (saveError) {
