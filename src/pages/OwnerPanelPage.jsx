@@ -890,6 +890,7 @@ function InventoryView({
                 min="1"
                 name="capacity_adults"
                 onChange={updateRoomTypeForm}
+                required
                 type="number"
                 value={roomTypeForm.capacity_adults}
               />
@@ -898,6 +899,7 @@ function InventoryView({
                 min="0"
                 name="capacity_children"
                 onChange={updateRoomTypeForm}
+                required
                 type="number"
                 value={roomTypeForm.capacity_children}
               />
@@ -915,6 +917,7 @@ function InventoryView({
                 min="1"
                 name="total_units"
                 onChange={updateRoomTypeForm}
+                required
                 type="number"
                 value={roomTypeForm.total_units}
               />
@@ -1032,6 +1035,7 @@ function InventoryView({
                 min="0"
                 name="available_units"
                 onChange={updateAvailabilityForm}
+                required
                 type="number"
                 value={availabilityForm.available_units}
               />
@@ -1040,6 +1044,7 @@ function InventoryView({
                 min="0"
                 name="price"
                 onChange={updateAvailabilityForm}
+                required
                 step="0.01"
                 type="number"
                 value={availabilityForm.price}
@@ -1262,6 +1267,7 @@ function NewPropertyView({
                 min="1"
                 name="stars"
                 onChange={updateHotelForm}
+                required
                 type="number"
                 value={hotelForm.stars}
               />
@@ -1282,6 +1288,7 @@ function NewPropertyView({
                 label="País"
                 name="country"
                 onChange={updateHotelForm}
+                required
                 value={hotelForm.country}
               />
               <TextInput
@@ -1294,12 +1301,14 @@ function NewPropertyView({
                 label="Ciudad"
                 name="city"
                 onChange={updateHotelForm}
+                required
                 value={hotelForm.city}
               />
               <TextInput
                 label="Dirección"
                 name="address"
                 onChange={updateHotelForm}
+                required
                 value={hotelForm.address}
               />
               <TextInput
@@ -1332,6 +1341,7 @@ function NewPropertyView({
               />
               <TextInput
                 label="Impuestos %"
+                max="100"
                 min="0"
                 name="tax_rate_percent"
                 onChange={updateHotelForm}
@@ -1341,6 +1351,7 @@ function NewPropertyView({
               />
               <TextInput
                 label="Descuento %"
+                max="100"
                 min="0"
                 name="discount_rate_percent"
                 onChange={updateHotelForm}
@@ -1458,6 +1469,7 @@ function SettingsView({
                 min="1"
                 name="stars"
                 onChange={updateEditHotelForm}
+                required
                 type="number"
                 value={editHotelForm.stars}
               />
@@ -1478,6 +1490,7 @@ function SettingsView({
                 label="Ciudad"
                 name="city"
                 onChange={updateEditHotelForm}
+                required
                 value={editHotelForm.city}
               />
               <TextInput
@@ -1490,12 +1503,14 @@ function SettingsView({
                 label="País"
                 name="country"
                 onChange={updateEditHotelForm}
+                required
                 value={editHotelForm.country}
               />
               <TextInput
                 label="Dirección"
                 name="address"
                 onChange={updateEditHotelForm}
+                required
                 value={editHotelForm.address}
               />
               <TextInput
@@ -1523,6 +1538,7 @@ function SettingsView({
               />
               <TextInput
                 label="Impuestos %"
+                max="100"
                 min="0"
                 name="tax_rate_percent"
                 onChange={updateEditHotelForm}
@@ -1532,6 +1548,7 @@ function SettingsView({
               />
               <TextInput
                 label="Descuento %"
+                max="100"
                 min="0"
                 name="discount_rate_percent"
                 onChange={updateEditHotelForm}
@@ -1611,6 +1628,7 @@ function SettingsView({
                 min="1"
                 name="capacity_adults"
                 onChange={updateEditRoomTypeForm}
+                required
                 type="number"
                 value={editRoomTypeForm.capacity_adults}
               />
@@ -1619,6 +1637,7 @@ function SettingsView({
                 min="0"
                 name="capacity_children"
                 onChange={updateEditRoomTypeForm}
+                required
                 type="number"
                 value={editRoomTypeForm.capacity_children}
               />
@@ -1636,6 +1655,7 @@ function SettingsView({
                 min="1"
                 name="total_units"
                 onChange={updateEditRoomTypeForm}
+                required
                 type="number"
                 value={editRoomTypeForm.total_units}
               />
@@ -1650,6 +1670,7 @@ function SettingsView({
                 min="0"
                 name="base_price"
                 onChange={updateEditRoomTypeForm}
+                required
                 step="0.01"
                 type="number"
                 value={editRoomTypeForm.base_price}

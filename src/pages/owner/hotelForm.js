@@ -27,33 +27,24 @@ export const initialHotelForm = {
 // Prepara los datos de un hotel para enviarlos a la API
 export function buildHotelPayload(formData) {
   return {
-    name: formData.name,
-    description: formData.description,
-    stars: Number(formData.stars),
-    status: formData.status,
-    location: {
-      address: formData.address,
-      city: formData.city,
-      country: formData.country,
-      postal_code: formData.postal_code,
-      region: formData.region,
-    },
-    contact: {
-      address: formData.address,
-      email: formData.email,
-      phone: formData.phone,
-    },
+    address: formData.address,
     check_in_time: formData.check_in_time,
     check_out_time: formData.check_out_time,
-    pricing: {
-      currency: formData.currency,
-      currency_symbol: formData.currency_symbol,
-      discount_rate_percent: Number(formData.discount_rate_percent),
-      tax_rate_percent: Number(formData.tax_rate_percent),
-    },
+    city: formData.city,
+    contact_email: formData.email,
+    contact_phone: formData.phone,
+    country: formData.country,
+    name: formData.name,
+    description: formData.description,
+    discount_rate_percent: Number(formData.discount_rate_percent),
     pets_allowed: formData.pets_allowed,
+    postal_code: formData.postal_code,
+    region: formData.region,
     service_ids: formData.service_ids.map(Number),
     smoking_allowed: formData.smoking_allowed,
+    stars: Number(formData.stars),
+    status: formData.status,
+    tax_rate_percent: Number(formData.tax_rate_percent),
   }
 }
 
