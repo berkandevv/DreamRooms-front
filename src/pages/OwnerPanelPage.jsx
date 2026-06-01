@@ -31,7 +31,7 @@ import {
   initialRoomTypeForm,
   mapHotelToForm,
   mapRoomTypeToForm,
-} from './owner/ownerForms'
+} from './owner/forms/ownerForms'
 import { getTotalBookingAmount } from './owner/ownerHelpers'
 import { getAvailabilityPreviewRange } from './owner/availabilityHelpers'
 import OwnerShell from './owner/OwnerShell'

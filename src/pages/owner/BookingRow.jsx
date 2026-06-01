@@ -1,7 +1,7 @@
 import { FaCreditCard } from 'react-icons/fa'
 import PaymentMethodBadge from '../../components/PaymentMethodBadge'
 import { formatPrice } from '../../utils/formatPrice'
-import { bookingStatuses } from './ownerForms'
+import { bookingStatuses } from './forms/ownerForms'
 import {
   canRegisterManualPayment,
   getBookedUnits,

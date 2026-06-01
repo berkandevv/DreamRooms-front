@@ -1,4 +1,4 @@
-import { getIntegerSquareMeters } from '../../utils/formatSquareMeters'
+import { getIntegerSquareMeters } from '../../../utils/formatSquareMeters'
 
 export const initialRoomTypeForm = {
   name: '',

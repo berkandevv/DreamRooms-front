@@ -1,5 +1,5 @@
 import BookingRow from '../BookingRow'
-import { bookingStatuses, paymentStatuses } from '../ownerForms'
+import { bookingStatuses, paymentStatuses } from '../forms/ownerForms'
 import { getStatusLabel } from '../ownerHelpers'
 import { SelectInput } from '../OwnerUi'
 
