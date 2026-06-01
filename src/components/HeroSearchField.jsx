@@ -15,7 +15,7 @@ export default function HeroSearchField({
     type === 'date' ? inputClassNames.date : inputClassNames.default
 
   return (
-    <label className="px-4 py-2 md:border-r md:border-outline-variant">
+    <label className="px-4 py-2 lg:border-r lg:border-outline-variant">
       <span className="block text-xs font-bold uppercase text-secondary">
         {label}
       </span>

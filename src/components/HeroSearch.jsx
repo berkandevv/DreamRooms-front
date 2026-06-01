@@ -53,12 +53,12 @@ export default function HeroSearch() {
         <div className="absolute inset-0 bg-primary/45" />
 
         <div className="relative mx-auto w-full max-w-5xl px-5 py-12 md:px-10">
-          <h1 className="mx-auto max-w-5xl text-center text-4xl font-bold leading-tight text-on-primary md:whitespace-nowrap md:text-5xl">
+          <h1 className="mx-auto max-w-5xl text-center text-4xl font-bold leading-tight text-on-primary md:text-5xl">
             Tu próxima escapada empieza aquí
           </h1>
 
           <form
-            className="mt-8 grid gap-3 rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-[0_18px_45px_rgba(19,27,46,0.22)] md:grid-cols-[1.3fr_1fr_1fr_0.8fr_0.8fr_auto] md:rounded-full"
+            className="mt-8 grid gap-3 rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-[0_18px_45px_rgba(19,27,46,0.22)] lg:grid-cols-[1.3fr_1fr_1fr_0.8fr_0.8fr_auto] lg:rounded-full"
             onSubmit={handleSubmit}
           >
             <HeroSearchField
