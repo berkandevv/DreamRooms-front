@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
@@ -125,6 +125,7 @@ export default function HotelDetailPage() {
   const [availabilityError, setAvailabilityError] = useState('')
   const [availabilityNotice, setAvailabilityNotice] = useState('')
   const [availableRoomTypeIds, setAvailableRoomTypeIds] = useState(null)
+  const [priceAvailableRoomTypeIds, setPriceAvailableRoomTypeIds] = useState(null)
   const [availableUnitsByRoomType, setAvailableUnitsByRoomType] = useState({})
   const [nextAvailabilityByRoomType, setNextAvailabilityByRoomType] = useState({})
   const [nextAvailabilityError, setNextAvailabilityError] = useState('')
@@ -132,6 +133,20 @@ export default function HotelDetailPage() {
 
   const { hotel, isLoading, error } = detail
   const googleMapsHref = getGoogleMapsHref(hotel?.location)
+
+  // Precio "desde" recalculado al tipo disponible más barato (solo por precio)
+  const availableStartingPrice = useMemo(() => {
+    if (!priceAvailableRoomTypeIds || priceAvailableRoomTypeIds.length === 0) {
+      return null
+    }
+
+    const prices = (hotel?.room_types || [])
+      .filter((roomType) => priceAvailableRoomTypeIds.includes(roomType.id))
+      .map((roomType) => Number(roomType.base_price))
+      .filter((price) => Number.isFinite(price))
+
+    return prices.length > 0 ? Math.min(...prices) : null
+  }, [priceAvailableRoomTypeIds, hotel])
 
   // Desplaza la vista hasta la sección de habitaciones
   function scrollToRooms() {
@@ -153,6 +168,7 @@ export default function HotelDetailPage() {
 
     if (stayDates.length === 0) {
       setAvailableRoomTypeIds(null)
+      setPriceAvailableRoomTypeIds(null)
       setAvailableUnitsByRoomType({})
       setAvailabilityNotice(
         'Para comprobar disponibilidad real, vuelve desde una búsqueda con fechas de entrada y salida.',
@@ -197,14 +213,19 @@ export default function HotelDetailPage() {
           )
         })
         .map((roomType) => roomType.id)
+      const priceAvailableIds = roomTypes
+        .filter((roomType) => quoteByRoomType[roomType.id]?.is_available === true)
+        .map((roomType) => roomType.id)
 
       setAvailableRoomTypeIds(availableIds)
+      setPriceAvailableRoomTypeIds(priceAvailableIds)
       setAvailableUnitsByRoomType(unitsByRoomType)
       setAvailabilityNotice(
         `${availableIds.length} tipos de habitación disponibles para las fechas seleccionadas.`,
       )
     } catch {
       setAvailableRoomTypeIds(null)
+      setPriceAvailableRoomTypeIds(null)
       setAvailableUnitsByRoomType({})
       setAvailabilityError('No se pudo comprobar la disponibilidad.')
     } finally {
@@ -354,11 +375,13 @@ export default function HotelDetailPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <HotelDetailHero hotel={hotel} />
           <BookingSummary
+            availabilityChecked={priceAvailableRoomTypeIds !== null}
             checkIn={checkIn}
             checkOut={checkOut}
             hotel={hotel}
             isCheckingAvailability={isCheckingAvailability}
             onCheckAvailability={handleCheckAvailability}
+            startingPrice={availableStartingPrice}
           />
         </div>
 

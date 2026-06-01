@@ -1,12 +1,17 @@
 import PricePerNight from './PricePerNight'
 
 export default function BookingSummary({
+  availabilityChecked = false,
   checkIn,
   checkOut,
   hotel,
   isCheckingAvailability,
   onCheckAvailability,
+  startingPrice = null,
 }) {
+  const hasAvailablePrice = startingPrice != null
+  const displayedPrice = hasAvailablePrice ? startingPrice : hotel.starting_price
+  const noAvailability = availabilityChecked && !hasAvailablePrice
   return (
     <aside className="h-fit rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(19,27,46,0.10)] lg:sticky lg:top-24">
       <h2 className="text-2xl font-bold text-on-surface">Resumen</h2>
@@ -44,13 +49,21 @@ export default function BookingSummary({
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase text-secondary">
-                Desde
+                {hasAvailablePrice && availabilityChecked
+                  ? 'Desde · disponible'
+                  : 'Desde'}
               </p>
-              <PricePerNight
-                className="text-3xl"
-                currencySymbol={hotel.currency_symbol}
-                price={hotel.starting_price}
-              />
+              {noAvailability ? (
+                <p className="mt-1 text-xl font-bold text-error">
+                  Sin disponibilidad
+                </p>
+              ) : (
+                <PricePerNight
+                  className="text-3xl"
+                  currencySymbol={hotel.currency_symbol}
+                  price={displayedPrice}
+                />
+              )}
             </div>
           </div>
 
