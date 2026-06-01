@@ -538,12 +538,22 @@ export default function CheckoutPage() {
               )}
 
               {booking && (
-                <div className="mt-5 rounded-lg border border-outline-variant bg-secondary-container p-4 text-sm font-semibold text-on-secondary-fixed">
-                  {booking.payment_method === 'card' ||
-                  booking.payment_status === 'paid'
-                    ? 'Reserva confirmada y pagada.'
-                    : 'Reserva pendiente de confirmación/pago en hotel.'}{' '}
-                  Referencia: {booking.booking_reference || booking.id}
+                <div className="mt-5 rounded-lg border border-on-tertiary-container bg-tertiary-fixed p-4 text-on-tertiary-fixed">
+                  <p className="font-bold">
+                    {booking.payment_method === 'card' ||
+                    booking.payment_status === 'paid'
+                      ? '¡Reserva confirmada y pagada!'
+                      : 'Reserva registrada, pendiente de pago en el hotel.'}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">
+                    Referencia: {booking.booking_reference || booking.id}
+                  </p>
+                  <Link
+                    className="mt-3 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-90"
+                    to="/my-bookings"
+                  >
+                    Ver mis reservas
+                  </Link>
                 </div>
               )}
             </section>
@@ -558,6 +568,7 @@ export default function CheckoutPage() {
             }
             hotel={hotel}
             isAvailabilityLoading={isAvailabilityLoading}
+            isBooked={Boolean(booking)}
             isSubmitting={isSubmitting}
             nights={nights}
             paymentMethod={paymentMethod}

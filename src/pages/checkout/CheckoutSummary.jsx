@@ -8,6 +8,7 @@ export default function CheckoutSummary({
   freeCancellationHours,
   hotel,
   isAvailabilityLoading,
+  isBooked,
   isSubmitting,
   nights,
   paymentMethod,
@@ -95,17 +96,22 @@ export default function CheckoutSummary({
         <button
           className="h-12 w-full cursor-pointer rounded-lg bg-primary px-4 font-semibold text-on-primary shadow-lg transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           disabled={
-            isSubmitting || isAvailabilityLoading || shouldBlockReservation
+            isBooked ||
+            isSubmitting ||
+            isAvailabilityLoading ||
+            shouldBlockReservation
           }
           type="submit"
         >
-          {isSubmitting
-            ? "Confirmando reserva..."
-            : isAvailabilityLoading
-              ? "Comprobando disponibilidad..."
-              : paymentMethod === "card"
-                ? "Ir al pago"
-                : "Confirmar reserva"}
+          {isBooked
+            ? "Reserva confirmada"
+            : isSubmitting
+              ? "Confirmando reserva..."
+              : isAvailabilityLoading
+                ? "Comprobando disponibilidad..."
+                : paymentMethod === "card"
+                  ? "Ir al pago"
+                  : "Confirmar reserva"}
         </button>
 
         <p className="text-center text-xs font-semibold text-secondary">
