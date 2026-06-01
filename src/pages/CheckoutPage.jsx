@@ -10,31 +10,15 @@ import {
 import { createCustomerBooking } from '../services/customerBookingService'
 import { getHotelBySlug } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
-import { formatDate, getIsoDate, getStayDates } from '../utils/dateUtils'
+import { getIsoDate, getStayDates } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
-import { getFreeCancellationPolicyText } from '../utils/cancellationUtils'
 import { pluralize } from '../utils/textUtils'
-
-const initialCustomerData = {
-  name: '',
-  email: '',
-  phone: '',
-  password: '',
-  password_confirmation: '',
-  notes: '',
-}
-
-// Obtiene el desglose de precios de una estancia
-function getPriceQuote(availabilityQuote, hotel) {
-  return {
-    discount: availabilityQuote?.discount_amount,
-    discountRate: hotel?.pricing?.discount_rate_percent || 0,
-    subtotal: availabilityQuote?.subtotal_amount,
-    taxes: availabilityQuote?.taxes_amount,
-    taxRate: hotel?.pricing?.tax_rate_percent || 0,
-    total: availabilityQuote?.total_amount,
-  }
-}
+import AvailabilityResult from './checkout/AvailabilityResult'
+import CheckoutField from './checkout/CheckoutField'
+import CheckoutSummary from './checkout/CheckoutSummary'
+import PaymentGatewayModal from './checkout/PaymentGatewayModal'
+import PaymentMethodOption from './checkout/PaymentMethodOption'
+import { getPriceQuote, initialCustomerData } from './checkout/checkoutHelpers'
 
 export default function CheckoutPage() {
   const { slug } = useParams()
@@ -374,7 +358,7 @@ export default function CheckoutPage() {
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField
+                <CheckoutField
                   label="Check-in"
                   name="check_in"
                   onChange={handleStayChange}
@@ -382,7 +366,7 @@ export default function CheckoutPage() {
                   type="date"
                   value={stayData.check_in}
                 />
-                <FormField
+                <CheckoutField
                   label="Check-out"
                   name="check_out"
                   onChange={handleStayChange}
@@ -390,7 +374,7 @@ export default function CheckoutPage() {
                   type="date"
                   value={stayData.check_out}
                 />
-                <FormField
+                <CheckoutField
                   label="Adultos"
                   min="1"
                   name="adults_count"
@@ -399,7 +383,7 @@ export default function CheckoutPage() {
                   type="number"
                   value={stayData.adults_count}
                 />
-                <FormField
+                <CheckoutField
                   label="Niños"
                   min="0"
                   name="children_count"
@@ -408,7 +392,7 @@ export default function CheckoutPage() {
                   type="number"
                   value={stayData.children_count}
                 />
-                <FormField
+                <CheckoutField
                   label="Habitaciones"
                   min="1"
                   name="units_booked"
@@ -424,7 +408,7 @@ export default function CheckoutPage() {
                 {pluralize(nights, 'noche', 'noches')}
               </div>
 
-              <Availability
+              <AvailabilityResult
                 error={availabilityError}
                 isLoading={isAvailabilityLoading}
                 quote={availabilityQuote}
@@ -487,14 +471,14 @@ export default function CheckoutPage() {
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField
+                <CheckoutField
                   label="Nombre completo"
                   name="name"
                   onChange={handleCustomerChange}
                   required
                   value={customerData.name}
                 />
-                <FormField
+                <CheckoutField
                   label="Email"
                   name="email"
                   onChange={handleCustomerChange}
@@ -502,7 +486,7 @@ export default function CheckoutPage() {
                   type="email"
                   value={customerData.email}
                 />
-                <FormField
+                <CheckoutField
                   label="Teléfono"
                   name="phone"
                   onChange={handleCustomerChange}
@@ -513,7 +497,7 @@ export default function CheckoutPage() {
 
                 {!isAuthenticated && (
                   <>
-                    <FormField
+                    <CheckoutField
                       label="Contraseña"
                       name="password"
                       onChange={handleCustomerChange}
@@ -521,7 +505,7 @@ export default function CheckoutPage() {
                       type="password"
                       value={customerData.password}
                     />
-                    <FormField
+                    <CheckoutField
                       label="Confirmar contraseña"
                       name="password_confirmation"
                       onChange={handleCustomerChange}
@@ -565,7 +549,7 @@ export default function CheckoutPage() {
             </section>
           </div>
 
-          <Quote
+          <CheckoutSummary
             currencySymbol={currencySymbol}
             freeCancellationHours={
               availabilityQuote
@@ -585,7 +569,7 @@ export default function CheckoutPage() {
         </form>
 
         {isPaymentGatewayOpen && (
-          <Book
+          <PaymentGatewayModal
             amount={formatPrice(priceQuote.total, currencySymbol, {
               decimals: true,
             })}
@@ -603,406 +587,5 @@ export default function CheckoutPage() {
         )}
       </section>
     </Layout>
-  )
-}
-
-function Availability({ error, isLoading, quote, stayDates, unitsBooked }) {
-  if (stayDates.length === 0) {
-    return (
-      <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-4 text-sm font-semibold text-secondary">
-        Selecciona check-in y check-out para comprobar la disponibilidad diaria.
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-4 text-sm font-semibold text-secondary">
-        Comprobando disponibilidad para {stayDates.length}{' '}
-        {pluralize(stayDates.length, 'noche', 'noches')}...
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="mt-5 rounded-lg border border-error bg-error-container p-4 text-sm font-semibold text-error">
-        {error}
-      </div>
-    )
-  }
-
-  if (!quote) {
-    return (
-      <div className="mt-5 rounded-lg border border-outline-variant bg-surface p-4 text-sm font-semibold text-secondary">
-        Preparando la comprobación de disponibilidad...
-      </div>
-    )
-  }
-
-  const isAvailable = quote.is_available === true
-  const checkedNights = quote.stay_dates || stayDates
-  const dailyAvailability = quote.daily_available_units || []
-  const availabilityByDate = new Map(
-    dailyAvailability.map((dayAvailability) => [
-      dayAvailability.date,
-      dayAvailability,
-    ]),
-  )
-
-  return (
-    <div
-      className={`mt-5 rounded-lg border p-4 ${
-        isAvailable
-          ? 'border-[#A7F3D0] bg-[#ECFDF5]'
-          : 'border-error bg-error-container'
-      }`}
-    >
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-        <div>
-          <p
-            className={`text-base font-bold ${
-              isAvailable ? 'text-[#047857]' : 'text-error'
-            }`}
-          >
-            {isAvailable
-              ? 'Disponible para las fechas seleccionadas'
-              : 'No disponible para toda la estancia'}
-          </p>
-          <p className="mt-1 text-sm font-semibold text-secondary">
-            Se comprueban las noches del {formatDate(stayDates[0])} al{' '}
-            {formatDate(stayDates[stayDates.length - 1])}. El día de salida no
-            cuenta como noche.
-          </p>
-        </div>
-        <span
-          className={`w-fit whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold ${
-            isAvailable
-              ? 'bg-[#D1FAE5] text-[#047857]'
-              : 'bg-error text-on-primary'
-          }`}
-        >
-          {quote.nights || checkedNights.length}{' '}
-          {pluralize(quote.nights || checkedNights.length, 'noche', 'noches')} ·{' '}
-          {unitsBooked} {pluralize(unitsBooked, 'habitación', 'habitaciones')}
-        </span>
-      </div>
-
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="rounded-lg bg-surface-container-lowest p-3">
-          <p className="text-xs font-bold uppercase tracking-wider text-secondary">
-            Disponibles para toda la estancia
-          </p>
-          <p className="mt-1 text-2xl font-bold text-on-surface">
-            {quote.available_units_for_stay ?? 0}
-          </p>
-        </div>
-        <div className="rounded-lg bg-surface-container-lowest p-3">
-          <p className="text-xs font-bold uppercase tracking-wider text-secondary">
-            Quedarían tras reservar
-          </p>
-          <p className="mt-1 text-2xl font-bold text-on-surface">
-            {quote.remaining_units_after_booking ?? 0}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        {checkedNights.map((date) => {
-          const dayAvailability = availabilityByDate.get(date)
-          const dayIsAvailable =
-            dayAvailability?.status === 'open' &&
-            Number(dayAvailability.available_units) >= unitsBooked
-
-          return (
-            <div
-              className="grid grid-cols-1 gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 text-sm sm:grid-cols-[1fr_auto] sm:items-center"
-              key={date}
-            >
-              <div>
-                <p className="font-semibold text-on-surface">
-                  Noche del {formatDate(date)}
-                </p>
-                <p className="mt-0.5 text-xs font-semibold text-secondary">
-                  {dayAvailability
-                    ? `${dayAvailability.available_units || 0} habitaciones libres`
-                    : 'No existe disponibilidad para esa noche'}
-                </p>
-                {date === stayDates[0] && dayAvailability?.min_stay_nights && (
-                  <p className="mt-1 text-xs font-bold text-secondary">
-                    Mínimo desde check-in:{' '}
-                    {dayAvailability.min_stay_nights}{' '}
-                    {pluralize(
-                      Number(dayAvailability.min_stay_nights),
-                      'noche',
-                      'noches',
-                    )}
-                  </p>
-                )}
-              </div>
-              <span
-                className={`w-fit rounded-full px-2.5 py-1 text-xs font-bold ${
-                  dayIsAvailable
-                    ? 'bg-[#D1FAE5] text-[#047857]'
-                    : 'bg-error-container text-error'
-                }`}
-              >
-                {dayIsAvailable ? 'Disponible' : 'No disponible'}
-              </span>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-function Quote({
-  currencySymbol,
-  freeCancellationHours,
-  hotel,
-  isAvailabilityLoading,
-  isSubmitting,
-  nights,
-  paymentMethod,
-  quote,
-  roomType,
-  shouldBlockReservation,
-  stayData,
-}) {
-  return (
-    <aside className="h-fit overflow-hidden rounded-xl border border-outline-variant bg-surface-container-highest shadow-[0_8px_24px_rgba(19,27,46,0.10)] lg:sticky lg:top-24">
-      {roomType.cover_image?.url && (
-        <div className="h-44 overflow-hidden">
-          <img
-            alt={roomType.cover_image?.alt_text || roomType.name}
-            className="h-full w-full object-cover"
-            src={roomType.cover_image.url}
-          />
-        </div>
-      )}
-      <div className="space-y-5 p-6">
-        <div>
-          <p className="text-sm font-semibold text-secondary">{hotel.name}</p>
-          <h2 className="mt-1 text-2xl font-bold text-on-surface">
-            {roomType.name}
-          </h2>
-        </div>
-
-        <div className="space-y-3 border-y border-outline-variant py-5 text-sm">
-          <SummaryRow label="Check-in" value={formatDate(stayData.check_in)} />
-          <SummaryRow label="Check-out" value={formatDate(stayData.check_out)} />
-          <SummaryRow label="Noches" value={nights || '-'} />
-          <SummaryRow
-            label="Ocupación"
-            value={`${stayData.adults_count} adultos, ${stayData.children_count} niños`}
-          />
-          <SummaryRow label="Habitaciones" value={stayData.units_booked} />
-          <SummaryRow
-            label="Precio base"
-            value={`${formatPrice(roomType.base_price, currencySymbol, {
-              decimals: true,
-            })}/noche`}
-          />
-          <SummaryRow
-            label="Subtotal"
-            value={formatPrice(quote.subtotal, currencySymbol, {
-              decimals: true,
-            })}
-          />
-          {quote.discount > 0 && (
-            <SummaryRow
-              label={`Descuento (${quote.discountRate}%)`}
-              value={`-${formatPrice(quote.discount, currencySymbol, {
-                decimals: true,
-              })}`}
-            />
-          )}
-          <SummaryRow
-            label={`Tasas (${quote.taxRate}%)`}
-            value={formatPrice(quote.taxes, currencySymbol, {
-              decimals: true,
-            })}
-          />
-        </div>
-
-        <div className="flex items-end justify-between gap-4">
-          <span className="text-lg font-bold text-primary">Total</span>
-          <span className="text-3xl font-bold text-primary">
-            {formatPrice(quote.total, currencySymbol, {
-              decimals: true,
-            })}
-          </span>
-        </div>
-
-        <p className="rounded-lg bg-surface-container p-3 text-xs font-semibold text-secondary">
-          Total estimado con las tasas y descuentos configurados por el hotel
-        </p>
-
-        <p className="rounded-lg bg-surface-container p-3 text-xs font-semibold text-secondary">
-          {getFreeCancellationPolicyText(freeCancellationHours)}
-        </p>
-
-        <button
-          className="h-12 w-full cursor-pointer rounded-lg bg-primary px-4 font-semibold text-on-primary shadow-lg transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isSubmitting || isAvailabilityLoading || shouldBlockReservation}
-          type="submit"
-        >
-          {isSubmitting
-            ? 'Confirmando reserva...'
-            : isAvailabilityLoading
-              ? 'Comprobando disponibilidad...'
-              : paymentMethod === 'card'
-                ? 'Ir al pago'
-                : 'Confirmar reserva'}
-        </button>
-
-        <p className="text-center text-xs font-semibold text-secondary">
-          {paymentMethod === 'card'
-            ? 'Pago con tarjeta: confirmación inmediata'
-            : 'Pago en hotel: la reserva queda pendiente'}
-        </p>
-      </div>
-    </aside>
-  )
-}
-
-function PaymentMethodOption({
-  checked,
-  description,
-  label,
-  name,
-  onChange,
-  value,
-}) {
-  return (
-    <label
-      className={`cursor-pointer rounded-xl border p-4 transition ${
-        checked
-          ? 'border-primary bg-secondary-container'
-          : 'border-outline-variant bg-surface hover:border-primary'
-      }`}
-    >
-      <span className="flex items-start gap-3">
-        <input
-          checked={checked}
-          className="mt-1 h-4 w-4 accent-primary"
-          name={name}
-          onChange={onChange}
-          type="radio"
-          value={value}
-        />
-        <span>
-          <span className="block font-bold text-on-surface">{label}</span>
-          <span className="mt-1 block text-sm text-secondary">
-            {description}
-          </span>
-        </span>
-      </span>
-    </label>
-  )
-}
-
-function Book({
-  amount,
-  error,
-  hotelName,
-  isProcessing,
-  onCancel,
-  onPay,
-  roomTypeName,
-}) {
-  return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center bg-on-surface/45 px-5 py-8 backdrop-blur-sm">
-      <section className="w-full max-w-md overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_24px_70px_rgba(19,27,46,0.25)]">
-        <div className="border-b border-outline-variant bg-surface-container p-5">
-          <p className="text-sm font-bold uppercase tracking-wider text-secondary">
-            Pasarela segura
-          </p>
-          <h2 className="mt-1 text-2xl font-bold text-on-surface">
-            Pago con tarjeta
-          </h2>
-        </div>
-
-        <div className="space-y-5 p-5">
-          <div className="rounded-lg border border-outline-variant bg-surface p-4">
-            <p className="text-sm font-semibold text-secondary">{hotelName}</p>
-            <p className="mt-1 font-bold text-on-surface">{roomTypeName}</p>
-            <div className="mt-4 flex items-end justify-between gap-4 border-t border-outline-variant pt-4">
-              <span className="text-sm font-bold uppercase tracking-wider text-secondary">
-                Total a pagar
-              </span>
-              <span className="text-3xl font-bold text-primary">{amount}</span>
-            </div>
-          </div>
-
-          <div className="rounded-lg bg-secondary-container p-4 text-sm font-semibold text-on-secondary-fixed">
-            El sistema
-            marcará la reserva como pagada al confirmar.
-          </div>
-
-          {error && (
-            <p className="rounded-lg border border-error bg-error-container p-3 text-sm font-semibold text-error">
-              {error}
-            </p>
-          )}
-
-          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-            <button
-              className="h-11 rounded-lg border border-outline-variant px-4 text-sm font-semibold text-secondary transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isProcessing}
-              onClick={onCancel}
-              type="button"
-            >
-              Volver
-            </button>
-            <button
-              className="h-11 rounded-lg bg-primary px-5 text-sm font-semibold text-on-primary shadow-md transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isProcessing}
-              onClick={onPay}
-              type="button"
-            >
-              {isProcessing ? 'Procesando pago...' : `Pagar ${amount}`}
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function FormField({
-  label,
-  min,
-  name,
-  onChange,
-  required = false,
-  type = 'text',
-  value,
-}) {
-  return (
-    <label>
-      <span className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">
-        {label}
-      </span>
-      <input
-        className="mt-2 w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-        min={min}
-        name={name}
-        onChange={onChange}
-        required={required}
-        type={type}
-        value={value}
-      />
-    </label>
-  )
-}
-
-function SummaryRow({ label, value }) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-on-surface-variant">{label}</span>
-      <span className="font-semibold text-on-surface">{value}</span>
-    </div>
   )
 }
