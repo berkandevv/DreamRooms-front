@@ -1,4 +1,4 @@
-import { CheckboxInput, TextInput } from "../OwnerUi"
+import { TextInput } from "../OwnerUi"
 
 // Campos para subir una imagen (archivo, texto alternativo y portada)
 export default function ImageUploadFields({ formData, label, onChange }) {
@@ -27,14 +27,9 @@ export default function ImageUploadFields({ formData, label, onChange }) {
         Describe brevemente lo que aparece en la imagen. Ayuda a personas que
         usan lectores de pantalla y se muestra si la foto no carga.
       </p>
-      <div className="mt-3">
-        <CheckboxInput
-          checked={formData.image_is_cover}
-          label="Usar como portada"
-          name="image_is_cover"
-          onChange={onChange}
-        />
-      </div>
+      <p className="mt-3 text-xs leading-5 text-secondary">
+        Solo se admite una foto. Si subes una nueva, sustituirá a la actual.
+      </p>
     </div>
   );
 }

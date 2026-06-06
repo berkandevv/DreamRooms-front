@@ -26,7 +26,6 @@ export function buildImageFormData(formData, fallbackAltText) {
 
   imageFormData.append('image', formData.image)
   imageFormData.append('alt_text', formData.image_alt_text || fallbackAltText)
-  imageFormData.append('is_cover', formData.image_is_cover ? 'true' : 'false')
 
   return imageFormData
 }

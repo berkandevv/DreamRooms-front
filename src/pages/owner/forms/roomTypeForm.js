@@ -12,7 +12,6 @@ export const initialRoomTypeForm = {
   currency: 'EUR',
   image: null,
   image_alt_text: '',
-  image_is_cover: true,
   service_ids: [],
   total_units: 1,
   status: 'active',
@@ -23,13 +22,11 @@ export function buildRoomTypePayload(formData) {
   const {
     image,
     image_alt_text,
-    image_is_cover,
     ...roomTypeData
   } = formData
 
   void image
   void image_alt_text
-  void image_is_cover
 
   return {
     ...roomTypeData,
@@ -62,7 +59,6 @@ export function mapRoomTypeToForm(roomType) {
     free_cancellation_hours: roomType.free_cancellation_hours ?? '',
     image: null,
     image_alt_text: '',
-    image_is_cover: true,
     name: roomType.name || '',
     service_ids: (roomType.services || []).map((service) => service.id),
     size_m2: getIntegerSquareMeters(roomType.size_m2),
