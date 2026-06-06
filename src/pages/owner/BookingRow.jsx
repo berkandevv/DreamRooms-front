@@ -100,7 +100,7 @@ export default function BookingRow({
           {!compact && (
             <div className="flex flex-wrap gap-2">
               <select
-                className="h-10 rounded-lg border border-outline-variant bg-surface px-3 text-sm outline-none focus:border-primary"
+                className="h-10 cursor-pointer rounded-lg border border-outline-variant bg-surface px-3 text-sm text-on-surface outline-none transition hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={disabled}
                 onChange={(event) => onStatusChange(booking.id, event.target.value)}
                 value={booking.status}

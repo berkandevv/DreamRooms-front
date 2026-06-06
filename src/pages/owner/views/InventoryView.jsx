@@ -59,7 +59,7 @@ export default function InventoryView({
             </p>
           </div>
           <select
-            className="rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 outline-none focus:border-primary"
+            className="cursor-pointer rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface outline-none transition hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/15"
             onChange={(event) => onHotelChange(event.target.value)}
             value={selectedHotelId}
           >

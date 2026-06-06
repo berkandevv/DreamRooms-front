@@ -63,7 +63,7 @@ export function TextInput({ label, name, onChange, value, ...props }) {
         {label}
       </span>
       <input
-        className="mt-2 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="mt-1.5 w-full rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-on-surface outline-none transition placeholder:text-outline hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/15"
         name={name}
         onChange={onChange}
         value={value}
@@ -81,7 +81,7 @@ export function TextArea({ label, name, onChange, value }) {
         {label}
       </span>
       <textarea
-        className="mt-2 min-h-28 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="mt-1.5 min-h-28 w-full rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-on-surface outline-none transition placeholder:text-outline hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/15"
         name={name}
         onChange={onChange}
         value={value}
@@ -98,7 +98,7 @@ export function SelectInput({ children, label, name, onChange, value }) {
         {label}
       </span>
       <select
-        className="mt-2 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="mt-1.5 w-full cursor-pointer rounded-lg border border-outline-variant bg-surface px-3.5 py-2.5 text-on-surface outline-none transition hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/15"
         name={name}
         onChange={onChange}
         value={value}
@@ -109,10 +109,16 @@ export function SelectInput({ children, label, name, onChange, value }) {
   )
 }
 
-// Muestra una casilla de verificación del panel
+// Muestra una casilla de verificación del panel como chip seleccionable
 export function CheckboxInput({ checked, label, name, onChange, value }) {
   return (
-    <label className="flex items-center gap-2 text-sm font-semibold text-secondary">
+    <label
+      className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-semibold transition ${
+        checked
+          ? 'border-primary bg-primary/5 text-primary'
+          : 'border-outline-variant bg-surface text-secondary hover:border-outline'
+      }`}
+    >
       <input
         checked={checked}
         className="h-4 w-4 accent-primary"
@@ -130,7 +136,7 @@ export function CheckboxInput({ checked, label, name, onChange, value }) {
 export function PrimaryButton({ children, disabled }) {
   return (
     <button
-      className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 font-semibold text-on-primary transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg bg-primary px-6 font-semibold text-on-primary shadow-[0_8px_20px_rgba(19,27,46,0.12)] transition hover:opacity-90 hover:shadow-[0_10px_26px_rgba(19,27,46,0.18)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
       disabled={disabled}
       type="submit"
     >

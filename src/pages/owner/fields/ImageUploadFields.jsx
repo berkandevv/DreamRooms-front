@@ -3,7 +3,7 @@ import { CheckboxInput, TextInput } from "../OwnerUi"
 // Campos para subir una imagen (archivo, texto alternativo y portada)
 export default function ImageUploadFields({ formData, label, onChange }) {
   return (
-    <div className="rounded-lg border border-outline-variant bg-surface p-4">
+    <div className="rounded-xl border border-outline-variant bg-surface-container-low p-5">
       <label className="block">
         <span className="text-xs font-bold uppercase tracking-wider text-secondary">
           {label}

@@ -7,11 +7,11 @@ export default function ServiceCheckboxGroup({ label, onChange, selectedIds, ser
   }
 
   return (
-    <fieldset className="rounded-lg border border-outline-variant bg-surface p-4">
+    <fieldset className="rounded-xl border border-outline-variant bg-surface-container-low p-5">
       <legend className="px-1 text-xs font-bold uppercase tracking-wider text-secondary">
         {label}
       </legend>
-      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((service) => (
           <CheckboxInput
             checked={selectedIds.some((serviceId) => Number(serviceId) === Number(service.id))}
