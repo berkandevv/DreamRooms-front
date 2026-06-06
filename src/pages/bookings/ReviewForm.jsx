@@ -10,6 +10,7 @@ function isAlreadyReviewedError(error) {
 export default function ReviewForm({ booking, onAlreadyReviewed, onCreated }) {
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
+  const [image, setImage] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -22,6 +23,7 @@ export default function ReviewForm({ booking, onAlreadyReviewed, onCreated }) {
     try {
       const review = await createCustomerBookingReview(booking.id, {
         comment,
+        image,
         rating,
       })
       onCreated(booking.id, review)
@@ -68,6 +70,22 @@ export default function ReviewForm({ booking, onAlreadyReviewed, onCreated }) {
         required
         value={comment}
       />
+      <div className="mt-4">
+        <label className="text-sm font-semibold text-secondary">
+          Foto (opcional, solo una)
+        </label>
+        <input
+          accept="image/*"
+          className="mt-2 block w-full text-sm text-secondary file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-secondary-container file:px-4 file:py-2 file:text-sm file:font-semibold file:text-on-secondary-container"
+          onChange={(event) => setImage(event.target.files[0] || null)}
+          type="file"
+        />
+        {image && (
+          <p className="mt-2 text-sm font-semibold text-secondary">
+            Foto seleccionada: {image.name}
+          </p>
+        )}
+      </div>
       {error && (
         <p className="mt-3 rounded-lg border border-error bg-error-container p-3 text-sm font-semibold text-error">
           {error}

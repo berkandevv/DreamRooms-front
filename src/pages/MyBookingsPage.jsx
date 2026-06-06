@@ -377,6 +377,13 @@ function BookingReviewSummary({ booking }) {
       <p className="mt-2 text-sm leading-6 text-on-surface-variant">
         {review?.comment || 'Comentario registrado.'}
       </p>
+      {review?.image_url && (
+        <img
+          alt="Foto del comentario"
+          className="mt-3 max-h-48 rounded-lg border border-outline-variant object-cover"
+          src={review.image_url}
+        />
+      )}
       {isPending && (
         <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-secondary">
           <FaRegClock className="h-4 w-4" />

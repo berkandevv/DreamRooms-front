@@ -37,6 +37,14 @@ export default function ReviewsSection({ reviews, error }) {
               <p className="mt-4 leading-6 text-on-surface-variant">
                 {review.comment || 'Sin comentario.'}
               </p>
+
+              {review.image_url && (
+                <img
+                  alt="Foto del comentario"
+                  className="mt-4 max-h-56 w-full rounded-lg border border-outline-variant object-cover"
+                  src={review.image_url}
+                />
+              )}
             </article>
           ))}
         </div>

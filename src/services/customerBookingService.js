@@ -45,11 +45,22 @@ export async function createCustomerBooking(bookingData) {
 
 // Publica una reseña de una reserva completada
 export async function createCustomerBookingReview(bookingId, reviewData) {
+  // Se envía como FormData para poder adjuntar la foto opcional del comentario
+  const formData = new FormData()
+  formData.append('rating', reviewData.rating)
+
+  if (reviewData.comment) {
+    formData.append('comment', reviewData.comment)
+  }
+
+  if (reviewData.image) {
+    formData.append('image', reviewData.image)
+  }
+
   const result = await requestJson(`${API_URL}/${bookingId}/review`, {
-    body: JSON.stringify(reviewData),
+    body: formData,
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json',
       ...getAuthHeaders(),
     },
     method: 'POST',
