@@ -51,25 +51,34 @@ function getNumericValue(value, fallback = 0) {
   return Number.isFinite(numberValue) ? numberValue : fallback
 }
 
-// Crea el enlace de Google Maps cuando el hotel tiene coordenadas válidas
+// Crea el enlace de búsqueda en Google Maps a partir de la dirección del hotel
 function getGoogleMapsHref(location) {
-  const { latitude: latitudeValue, longitude: longitudeValue } = location || {}
-
-  if (
-    latitudeValue === null ||
-    latitudeValue === undefined ||
-    latitudeValue === '' ||
-    longitudeValue === null ||
-    longitudeValue === undefined ||
-    longitudeValue === ''
-  ) {
+  if (!location) {
     return ''
   }
 
-  const latitude = Number(latitudeValue)
-  const longitude = Number(longitudeValue)
+  // Se busca por dirección para que Maps muestre el lugar en vez de las coordenadas
+  const query = [
+    location.address,
+    location.postal_code,
+    location.city,
+    location.region,
+    location.country,
+  ]
+    .filter(Boolean)
+    .join(', ')
+
+  if (query) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+  }
+
+  // Si no hay dirección, se usa la coordenada como respaldo
+  const latitude = Number(location.latitude)
+  const longitude = Number(location.longitude)
 
   if (
+    location.latitude === '' ||
+    location.longitude === '' ||
     !Number.isFinite(latitude) ||
     !Number.isFinite(longitude) ||
     latitude < -90 ||
@@ -80,7 +89,7 @@ function getGoogleMapsHref(location) {
     return ''
   }
 
-  return `https://maps.google.com/?q=${encodeURIComponent(
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${latitude},${longitude}`,
   )}`
 }
