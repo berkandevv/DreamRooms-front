@@ -1,4 +1,5 @@
 import {
+  FaArrowLeft,
   FaBed,
   FaCalendarAlt,
   FaChartLine,
@@ -50,12 +51,15 @@ export default function OwnerShell({ activeView, children, setActiveView }) {
           ))}
         </nav>
 
-        <Link
-          className="mt-auto rounded-lg border border-outline-variant px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-surface-container-high hover:text-primary"
-          to="/"
-        >
-          Volver a la web
-        </Link>
+        <div className="mt-auto border-t border-outline-variant pt-3">
+          <Link
+            className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold text-secondary transition hover:bg-surface-container-high hover:text-primary"
+            to="/"
+          >
+            <FaArrowLeft className="h-4 w-4" />
+            Volver a la web
+          </Link>
+        </div>
       </aside>
 
       <main className="min-w-0 flex-1">
