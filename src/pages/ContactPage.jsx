@@ -141,7 +141,7 @@ function ContactCard({ href, icon: Icon, label, value }) {
   if (href) {
     return (
       <a
-        className="rounded-lg border border-outline-variant bg-surface-container-low p-7 text-center transition hover:border-primary"
+        className="block rounded-lg border border-outline-variant bg-surface-container-low p-7 text-center transition hover:border-primary"
         href={href}
       >
         {content}

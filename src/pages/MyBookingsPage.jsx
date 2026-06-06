@@ -294,10 +294,7 @@ export default function MyBookingsPage() {
                         <div className="flex items-center justify-start gap-3 md:justify-end">
                           <StatusBadge status={booking.status} />
                           {reviewedBookings.includes(booking.id) ? (
-                            <span className="flex items-center gap-2 text-sm font-semibold text-on-tertiary-container">
-                              <FaCheckCircle className="h-4 w-4" />
-                              Comentado
-                            </span>
+                            <ReviewStatusBadge booking={booking} />
                           ) : (
                             canReviewBooking(booking, reviewedBookings) && (
                               <button
@@ -362,6 +359,27 @@ function StatCard({ label, value }) {
   )
 }
 
+// Muestra el estado de la reseña: pendiente en amarillo o comentado en verde
+function ReviewStatusBadge({ booking }) {
+  const review = getReview(booking)
+
+  if (review?.status === 'pending') {
+    return (
+      <span className="flex items-center gap-2 rounded-full bg-[#FEF3C7] px-3 py-1 text-sm font-semibold text-[#92400E]">
+        <FaRegClock className="h-4 w-4" />
+        Pendiente
+      </span>
+    )
+  }
+
+  return (
+    <span className="flex items-center gap-2 rounded-full bg-on-tertiary-container/10 px-3 py-1 text-sm font-semibold text-on-tertiary-container">
+      <FaCheckCircle className="h-4 w-4" />
+      Comentado
+    </span>
+  )
+}
+
 function BookingReviewSummary({ booking }) {
   const review = getReview(booking)
   const isPending = review?.status === 'pending'
@@ -385,8 +403,8 @@ function BookingReviewSummary({ booking }) {
         />
       )}
       {isPending && (
-        <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-secondary">
-          <FaRegClock className="h-4 w-4" />
+        <p className="mt-3 flex items-center gap-2 rounded-lg bg-[#FEF3C7] px-3 py-2 text-sm font-semibold text-[#92400E]">
+          <FaRegClock className="h-4 w-4 shrink-0" />
           Pendiente de revisión por el administrador de la web antes de publicarse
         </p>
       )}
