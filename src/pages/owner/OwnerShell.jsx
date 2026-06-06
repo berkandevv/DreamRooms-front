@@ -18,8 +18,8 @@ export default function OwnerShell({ activeView, children, setActiveView }) {
   ]
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
-      <aside className="fixed left-0 top-0 z-40 hidden h-full w-64 border-r border-outline-variant bg-surface-container-low p-4 lg:flex lg:flex-col">
+    <div className="flex min-h-screen bg-background text-on-surface">
+      <aside className="sticky top-0 z-40 hidden h-screen w-64 shrink-0 flex-col self-start overflow-y-auto border-r border-outline-variant bg-surface-container-low p-4 lg:flex">
         <Link className="mb-8 flex items-center gap-3 px-3 py-4" to="/">
           <BrandLogo compact />
           <span>
@@ -58,7 +58,7 @@ export default function OwnerShell({ activeView, children, setActiveView }) {
         </Link>
       </aside>
 
-      <main className="lg:ml-64">
+      <main className="min-w-0 flex-1">
         <div className="mx-auto max-w-7xl px-5 py-8 md:px-8">{children}</div>
       </main>
     </div>
