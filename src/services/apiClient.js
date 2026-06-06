@@ -35,10 +35,6 @@ const apiErrorTranslations = {
     'No hay disponibilidad para todas las noches de la estancia seleccionada.',
   'This action is unauthorized.': 'No tienes permisos para realizar esta acción.',
   'This booking already has a review.': 'Esta reserva ya tiene un comentario.',
-  'This booking has expired and cannot be confirmed.':
-    'Esta reserva ha caducado y no se puede confirmar.',
-  'This booking has expired and cannot receive payments.':
-    'Esta reserva ha caducado y no puede recibir pagos.',
   'This booking is already paid.': 'Esta reserva ya está pagada.',
   'This user account is not active.': 'Esta cuenta no está activa.',
   'Unauthenticated.': 'Debes iniciar sesión para realizar esta acción.',
