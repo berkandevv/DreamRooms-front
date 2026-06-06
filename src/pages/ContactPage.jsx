@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { FaEnvelope, FaExternalLinkAlt } from 'react-icons/fa'
 import Layout from '../components/Layout'
 
@@ -13,21 +13,18 @@ export default function ContactPage() {
   })
 
   // Prepara el enlace de correo con los datos del formulario
-  const mailtoHref = useMemo(() => {
-    const subject = formData.subject || 'Consulta sobre Dream Rooms'
-    const body = [
-      formData.name && `Nombre: ${formData.name}`,
-      formData.email && `Email: ${formData.email}`,
-      '',
-      formData.message,
-    ]
-      .filter((line) => line !== false)
-      .join('\n')
-
-    return `mailto:${contactEmail}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(body)}`
-  }, [formData])
+  const mailtoSubject = formData.subject || 'Consulta sobre Dream Rooms'
+  const mailtoBody = [
+    formData.name && `Nombre: ${formData.name}`,
+    formData.email && `Email: ${formData.email}`,
+    '',
+    formData.message,
+  ]
+    .filter((line) => line !== false)
+    .join('\n')
+  const mailtoHref = `mailto:${contactEmail}?subject=${encodeURIComponent(
+    mailtoSubject,
+  )}&body=${encodeURIComponent(mailtoBody)}`
 
   // Actualiza el valor de un campo del formulario
   function handleChange(event) {

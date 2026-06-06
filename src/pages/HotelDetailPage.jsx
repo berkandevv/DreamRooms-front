@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import { Link, useParams, useSearchParams } from 'react-router'
 import BookingSummary from '../components/BookingSummary'
@@ -15,6 +15,20 @@ import {
   getRoomTypeAvailabilityQuote,
 } from '../services/roomTypeService'
 import { getStayDates } from '../utils/dateUtils'
+
+// Precio "desde" del tipo disponible más barato (solo por precio)
+function getAvailableStartingPrice(hotel, priceAvailableRoomTypeIds) {
+  if (!priceAvailableRoomTypeIds || priceAvailableRoomTypeIds.length === 0) {
+    return null
+  }
+
+  const prices = (hotel?.room_types || [])
+    .filter((roomType) => priceAvailableRoomTypeIds.includes(roomType.id))
+    .map((roomType) => Number(roomType.base_price))
+    .filter((price) => Number.isFinite(price))
+
+  return prices.length > 0 ? Math.min(...prices) : null
+}
 
 // Añade días a una fecha
 function addDays(date, days) {
@@ -144,18 +158,10 @@ export default function HotelDetailPage() {
   const googleMapsHref = getGoogleMapsHref(hotel?.location)
 
   // Precio "desde" recalculado al tipo disponible más barato (solo por precio)
-  const availableStartingPrice = useMemo(() => {
-    if (!priceAvailableRoomTypeIds || priceAvailableRoomTypeIds.length === 0) {
-      return null
-    }
-
-    const prices = (hotel?.room_types || [])
-      .filter((roomType) => priceAvailableRoomTypeIds.includes(roomType.id))
-      .map((roomType) => Number(roomType.base_price))
-      .filter((price) => Number.isFinite(price))
-
-    return prices.length > 0 ? Math.min(...prices) : null
-  }, [priceAvailableRoomTypeIds, hotel])
+  const availableStartingPrice = getAvailableStartingPrice(
+    hotel,
+    priceAvailableRoomTypeIds,
+  )
 
   // Desplaza la vista hasta la sección de habitaciones
   function scrollToRooms() {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import Layout from '../components/Layout'
 import {
@@ -74,9 +74,9 @@ export default function CheckoutPage() {
   }, [slug])
 
   // Obtiene la habitación seleccionada desde la URL
-  const roomType = useMemo(() => {
-    return hotel?.room_types?.find((item) => Number(item.id) === roomTypeId)
-  }, [hotel, roomTypeId])
+  const roomType = hotel?.room_types?.find(
+    (item) => Number(item.id) === roomTypeId,
+  )
   const unitsBooked = Number(stayData.units_booked) || 1
   const currencySymbol =
     hotel?.pricing?.currency_symbol || hotel?.currency_symbol || '€'

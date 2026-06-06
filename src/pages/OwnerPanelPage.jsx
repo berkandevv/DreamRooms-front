@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { Link } from 'react-router'
 import { getAuthToken } from '../services/authService'
@@ -102,22 +102,19 @@ export default function OwnerPanelPage() {
   const isAuthenticated = Boolean(getAuthToken())
 
   // Calcula las métricas principales del panel
-  const stats = useMemo(() => {
-    const activeHotels = hotels.filter((hotel) => hotel.status === 'published').length
-    const pendingBookings = bookings.filter(
-      (booking) => booking.status === 'pending',
-    ).length
-    const confirmedBookings = bookings.filter(
-      (booking) => booking.status === 'confirmed',
-    ).length
-    const revenue = bookings
-      .filter((booking) => booking.status === 'completed')
-      .reduce((total, booking) => {
-        return total + (Number(booking.amounts?.total) || 0)
-      }, 0)
-
-    return { activeHotels, confirmedBookings, pendingBookings, revenue }
-  }, [bookings, hotels])
+  const activeHotels = hotels.filter((hotel) => hotel.status === 'published').length
+  const pendingBookings = bookings.filter(
+    (booking) => booking.status === 'pending',
+  ).length
+  const confirmedBookings = bookings.filter(
+    (booking) => booking.status === 'confirmed',
+  ).length
+  const revenue = bookings
+    .filter((booking) => booking.status === 'completed')
+    .reduce((total, booking) => {
+      return total + (Number(booking.amounts?.total) || 0)
+    }, 0)
+  const stats = { activeHotels, confirmedBookings, pendingBookings, revenue }
 
   useEffect(() => {
     sessionStorage.setItem(OWNER_ACTIVE_VIEW_STORAGE_KEY, activeView)

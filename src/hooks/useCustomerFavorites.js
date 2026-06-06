@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   AUTH_SESSION_CHANGED_EVENT,
   getAuthenticatedUser,
@@ -31,9 +31,7 @@ export function useCustomerFavorites() {
   const canUseFavorites = authSession.isAuthenticated && authSession.isCustomer
 
   // Obtiene los identificadores de los hoteles favoritos
-  const favoriteIds = useMemo(() => {
-    return new Set(favoriteHotels.map((hotel) => Number(hotel.id)))
-  }, [favoriteHotels])
+  const favoriteIds = new Set(favoriteHotels.map((hotel) => Number(hotel.id)))
 
   // Carga los favoritos disponibles para la sesión actual
   const loadFavorites = useCallback(() => {
@@ -77,7 +75,9 @@ export function useCustomerFavorites() {
         return false
       }
 
-      const wasFavorite = favoriteIds.has(hotelId)
+      const wasFavorite = favoriteHotels.some((favoriteHotel) => {
+        return Number(favoriteHotel.id) === hotelId
+      })
 
       if (wasFavorite) {
         await removeCustomerFavorite(hotelId)
@@ -98,7 +98,7 @@ export function useCustomerFavorites() {
 
       return true
     },
-    [canUseFavorites, favoriteIds],
+    [canUseFavorites, favoriteHotels],
   )
 
   useEffect(() => {
