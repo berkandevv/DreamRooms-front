@@ -110,9 +110,11 @@ export default function OwnerPanelPage() {
     const confirmedBookings = bookings.filter(
       (booking) => booking.status === 'confirmed',
     ).length
-    const revenue = bookings.reduce((total, booking) => {
-      return total + (Number(booking.amounts?.total) || 0)
-    }, 0)
+    const revenue = bookings
+      .filter((booking) => booking.status === 'completed')
+      .reduce((total, booking) => {
+        return total + (Number(booking.amounts?.total) || 0)
+      }, 0)
 
     return { activeHotels, confirmedBookings, pendingBookings, revenue }
   }, [bookings, hotels])
