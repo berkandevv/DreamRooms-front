@@ -8,6 +8,7 @@ const sections = [
   'Uso de la plataforma',
   'Reservas y pagos',
   'Cancelaciones',
+  'Reseñas y contenido',
 ]
 
 export default function TermsPage() {
@@ -122,6 +123,19 @@ export default function TermsPage() {
                     Los pagos parciales no están disponibles.
                   </p>
                 </div>
+              </section>
+
+              <section id="term-5">
+                <h2 className="text-2xl font-bold text-primary">
+                  5. Reseñas y contenido
+                </h2>
+                <p className="mt-4 leading-8 text-on-surface-variant">
+                  Solo puedes reseñar estancias completadas, con una valoración,
+                  un comentario y una sola foto opcional. Las reseñas y sus fotos
+                  quedan pendientes de revisión y Dream Rooms puede publicarlas u
+                  ocultarlas. Debes subir contenido propio y veraz; no se permite
+                  contenido ofensivo, falso o que infrinja derechos de terceros.
+                </p>
               </section>
 
               <div className="relative overflow-hidden rounded-lg">

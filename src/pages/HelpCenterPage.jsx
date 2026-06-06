@@ -53,6 +53,11 @@ const faqs = [
   },
   {
     answer:
+      'Cuando una estancia está completada puedes dejar un comentario con tu valoración y, si quieres, una sola foto. El comentario y la foto quedan pendientes de revisión por el equipo de Dream Rooms antes de publicarse en la página del hotel.',
+    question: '¿Cómo funcionan los comentarios y las fotos de las reseñas?',
+  },
+  {
+    answer:
       'En Mi cuenta puedes cambiar tu contraseña o desactivar tu cuenta. Para cambiar la contraseña necesitas indicar la contraseña actual.',
     question: '¿Cómo gestiono la seguridad de mi cuenta?',
   },

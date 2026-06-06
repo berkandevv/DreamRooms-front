@@ -31,7 +31,7 @@ export default function PrivacyPolicyPage() {
               <ul className="mt-4 list-disc space-y-2 pl-5">
                 <li>Nombre, email y teléfono opcional de la cuenta.</li>
                 <li>Información de propiedades, habitaciones y disponibilidad.</li>
-                <li>Datos de reservas, huéspedes, pagos, favoritos y reseñas.</li>
+                <li>Datos de reservas, huéspedes, pagos, favoritos y reseñas, incluidas las fotos que subas con tus comentarios.</li>
               </ul>
             </PolicySection>
 
