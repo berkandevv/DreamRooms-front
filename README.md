@@ -4,6 +4,10 @@ Frontend de Dream Rooms, una aplicación web para buscar hoteles, consultar habi
 
 El proyecto está hecho con React, Vite, React Router y Tailwind CSS.
 
+> La forma recomendada de levantar todo el entorno (frontend, API y panel) es el
+> repositorio principal con Docker. Estas instrucciones son para arrancar **solo
+> el frontend a mano**, sin Docker, clonando este repositorio por separado.
+
 ## Funcionalidades principales
 
 - Listado de hoteles con filtros por comunidad autónoma, ciudad, estrellas, precio y servicios
