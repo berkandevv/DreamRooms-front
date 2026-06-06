@@ -122,11 +122,11 @@ body {
 }
 
 .route-slide-in-left {
-  animation: auth-page-enter-left 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: auth-page-enter-left 1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .route-slide-in-right {
-  animation: auth-page-enter-right 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: auth-page-enter-right 1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
