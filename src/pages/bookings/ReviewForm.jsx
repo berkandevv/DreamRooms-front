@@ -13,7 +13,7 @@ export default function ReviewForm({ booking, onAlreadyReviewed, onCreated }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  // Publica la reseña introducida por el cliente
+  // Envía la reseña introducida por el cliente
   async function handleSubmit(event) {
     event.preventDefault()
     setIsSubmitting(true)
@@ -73,13 +73,17 @@ export default function ReviewForm({ booking, onAlreadyReviewed, onCreated }) {
           {error}
         </p>
       )}
+      <p className="mt-3 text-sm font-semibold text-secondary">
+        Tu comentario quedará pendiente de revisión por el administrador de la web
+        antes de publicarse.
+      </p>
       <div className="mt-4 flex justify-end gap-3">
         <button
           className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isSubmitting}
           type="submit"
         >
-          {isSubmitting ? 'Publicando...' : 'Publicar comentario'}
+          {isSubmitting ? 'Enviando...' : 'Enviar comentario'}
         </button>
       </div>
     </form>

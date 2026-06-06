@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaCheckCircle, FaStar } from 'react-icons/fa'
+import { FaCheckCircle, FaRegClock, FaStar } from 'react-icons/fa'
 import { Link } from 'react-router'
 import Layout from '../components/Layout'
 import BookingCard from './bookings/BookingCard'
@@ -364,6 +364,7 @@ function StatCard({ label, value }) {
 
 function BookingReviewSummary({ booking }) {
   const review = getReview(booking)
+  const isPending = review?.status === 'pending'
 
   return (
     <div className="rounded-lg border border-outline-variant bg-surface p-4">
@@ -376,6 +377,12 @@ function BookingReviewSummary({ booking }) {
       <p className="mt-2 text-sm leading-6 text-on-surface-variant">
         {review?.comment || 'Comentario registrado.'}
       </p>
+      {isPending && (
+        <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-secondary">
+          <FaRegClock className="h-4 w-4" />
+          Pendiente de revisión por el administrador de la web antes de publicarse
+        </p>
+      )}
     </div>
   )
 }

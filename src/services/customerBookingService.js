@@ -53,7 +53,7 @@ export async function createCustomerBookingReview(bookingId, reviewData) {
       ...getAuthHeaders(),
     },
     method: 'POST',
-  }, 'No se pudo publicar el comentario')
+  }, 'No se pudo enviar el comentario')
 
   return result.data
 }
