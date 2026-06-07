@@ -144,7 +144,11 @@ export default function AvailabilityResult({
                 </p>
                 <p className="mt-0.5 text-xs font-semibold text-secondary">
                   {dayAvailability
-                    ? `${dayAvailability.available_units || 0} habitaciones libres`
+                    ? `${dayAvailability.available_units || 0} ${pluralize(
+                        Number(dayAvailability.available_units) || 0,
+                        "habitación libre",
+                        "habitaciones libres",
+                      )}`
                     : "No existe disponibilidad para esa noche"}
                 </p>
                 {date === stayDates[0] && dayAvailability?.min_stay_nights && (

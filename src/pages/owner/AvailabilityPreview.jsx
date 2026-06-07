@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { formatDate } from '../../utils/dateUtils'
 import { formatPrice } from '../../utils/formatPrice'
+import { pluralize } from '../../utils/textUtils'
 import {
   getMinStayNights,
   isSpecialAvailabilityDay,
@@ -187,9 +188,10 @@ function AvailabilityRangeRow({ availabilityRange, roomType }) {
             {formatAvailabilityRangeDate(availabilityRange)}
           </p>
           <p className="mt-1 text-sm text-secondary">
-            {sample.available_units} unidades ·{' '}
+            {sample.available_units}{' '}
+            {pluralize(sample.available_units, 'unidad', 'unidades')} ·{' '}
             {formatPrice(sample.price, roomType.currency_symbol)} · mínimo{' '}
-            {minStayNights} {Number(minStayNights) === 1 ? 'noche' : 'noches'}
+            {minStayNights} {pluralize(minStayNights, 'noche', 'noches')}
           </p>
         </div>
         <StatusBadge status={sample.status} />

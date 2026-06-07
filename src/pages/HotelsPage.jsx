@@ -7,6 +7,7 @@ import { useCustomerFavorites } from '../hooks/useCustomerFavorites'
 import { getHotelBySlug, getHotels } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
 import { getStayDates } from '../utils/dateUtils'
+import { pluralize } from '../utils/textUtils'
 import {
   filterHotels,
   getAvailableCities,
@@ -301,7 +302,8 @@ export default function HotelsPage() {
                 {(adults > 0 || children > 0) && (
                   <span>
                     {' '}
-                    · {adults || 0} adultos, {children || 0} niños
+                    · {adults || 0} {pluralize(adults, 'adulto', 'adultos')},{' '}
+                    {children || 0} {pluralize(children, 'niño', 'niños')}
                   </span>
                 )}
                 {(checkIn || checkOut) && (

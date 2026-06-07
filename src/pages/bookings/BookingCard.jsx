@@ -60,8 +60,10 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
               {pluralize(booking.stay?.nights, 'noche', 'noches')} ·{' '}
               {getBookedUnits(booking)}{' '}
               {pluralize(getBookedUnits(booking), 'habitación', 'habitaciones')} ·{' '}
-              {booking.stay?.adults_count || 0} adultos,{' '}
-              {booking.stay?.children_count || 0} niños
+              {booking.stay?.adults_count || 0}{' '}
+              {pluralize(booking.stay?.adults_count, 'adulto', 'adultos')},{' '}
+              {booking.stay?.children_count || 0}{' '}
+              {pluralize(booking.stay?.children_count, 'niño', 'niños')}
             </p>
 
             <div className="mt-4 flex flex-col gap-4 text-sm sm:flex-row sm:items-end sm:gap-10">

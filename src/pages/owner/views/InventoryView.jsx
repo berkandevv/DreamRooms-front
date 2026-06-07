@@ -1,5 +1,6 @@
 import { formatPrice } from '../../../utils/formatPrice'
 import { formatSquareMeters } from '../../../utils/formatSquareMeters'
+import { pluralize } from '../../../utils/textUtils'
 import AvailabilityPreview from '../AvailabilityPreview'
 import {
   getAvailabilityRanges,
@@ -102,7 +103,15 @@ export default function InventoryView({
                   <Metric label="Unidades" value={roomType.total_units || 0} />
                   <Metric
                     label="Capacidad"
-                    value={`${roomType.capacity_adults || 0} adultos, ${roomType.capacity_children || 0} niños`}
+                    value={`${roomType.capacity_adults || 0} ${pluralize(
+                      roomType.capacity_adults,
+                      'adulto',
+                      'adultos',
+                    )}, ${roomType.capacity_children || 0} ${pluralize(
+                      roomType.capacity_children,
+                      'niño',
+                      'niños',
+                    )}`}
                   />
                   <Metric
                     label="Precio"

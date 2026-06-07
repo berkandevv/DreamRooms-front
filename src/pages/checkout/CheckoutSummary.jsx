@@ -1,6 +1,7 @@
 import { formatDate } from "../../utils/dateUtils"
 import { formatPrice } from "../../utils/formatPrice"
 import { getFreeCancellationPolicyText } from "../../utils/cancellationUtils"
+import { pluralize } from "../../utils/textUtils"
 
 // Resumen lateral con el desglose de precios y el botón de confirmación
 export default function CheckoutSummary({
@@ -45,7 +46,15 @@ export default function CheckoutSummary({
           <SummaryRow label="Noches" value={nights || "-"} />
           <SummaryRow
             label="Ocupación"
-            value={`${stayData.adults_count} adultos, ${stayData.children_count} niños`}
+            value={`${stayData.adults_count} ${pluralize(
+              stayData.adults_count,
+              "adulto",
+              "adultos",
+            )}, ${stayData.children_count} ${pluralize(
+              stayData.children_count,
+              "niño",
+              "niños",
+            )}`}
           />
           <SummaryRow label="Habitaciones" value={stayData.units_booked} />
           <SummaryRow

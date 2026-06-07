@@ -4,6 +4,7 @@ import { formatServices } from '../utils/formatServices'
 import { formatDate } from '../utils/dateUtils'
 import { formatSquareMeters } from '../utils/formatSquareMeters'
 import { getFreeCancellationPolicyText } from '../utils/cancellationUtils'
+import { pluralize } from '../utils/textUtils'
 import PricePerNight from './PricePerNight'
 
 export default function RoomTypeCard({
@@ -26,8 +27,8 @@ export default function RoomTypeCard({
   // Sin cupo libre la habitación sigue siendo reservable mediante pago en el hotel (overbooking)
   const isOverbooked = hasSelectedDates && availableUnits <= 0
   const availableUnitsLabel = hasSelectedDates
-    ? 'unidades disponibles para estas fechas'
-    : 'unidades totales'
+    ? `${pluralize(availableUnits, 'unidad disponible', 'unidades disponibles')} para estas fechas`
+    : pluralize(availableUnits, 'unidad total', 'unidades totales')
   const servicesText =
     services.length > 0 ? services.join(', ') : 'Servicios no disponibles'
 
@@ -69,8 +70,10 @@ export default function RoomTypeCard({
             <div className="flex items-center gap-3">
               <FaUsers className="h-4 w-4 shrink-0 text-secondary" />
               <span>
-                {roomType.capacity_adults || 0} adultos,{' '}
-                {roomType.capacity_children || 0} niños
+                {roomType.capacity_adults || 0}{' '}
+                {pluralize(roomType.capacity_adults, 'adulto', 'adultos')},{' '}
+                {roomType.capacity_children || 0}{' '}
+                {pluralize(roomType.capacity_children, 'niño', 'niños')}
               </span>
             </div>
             <div className="flex items-start gap-3">

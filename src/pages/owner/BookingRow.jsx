@@ -1,6 +1,7 @@
 import { FaCreditCard } from 'react-icons/fa'
 import PaymentMethodBadge from '../../components/PaymentMethodBadge'
 import { formatPrice } from '../../utils/formatPrice'
+import { pluralize } from '../../utils/textUtils'
 import { bookingStatuses } from './forms/ownerForms'
 import {
   canRegisterManualPayment,
@@ -47,8 +48,10 @@ export default function BookingRow({
           <p className="mt-1 text-sm text-secondary">
             {getDateLabel(booking.stay?.check_in)} -{' '}
             {getDateLabel(booking.stay?.check_out)} ·{' '}
-            {booking.stay?.nights || 0} noches · {getBookedUnits(booking)}{' '}
-            {getBookedUnits(booking) === 1 ? 'habitación' : 'habitaciones'}
+            {booking.stay?.nights || 0}{' '}
+            {pluralize(booking.stay?.nights, 'noche', 'noches')} ·{' '}
+            {getBookedUnits(booking)}{' '}
+            {pluralize(getBookedUnits(booking), 'habitación', 'habitaciones')}
           </p>
         </div>
 

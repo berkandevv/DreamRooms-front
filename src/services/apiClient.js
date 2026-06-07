@@ -1,3 +1,5 @@
+import { pluralize } from '../utils/textUtils'
+
 const apiErrorTranslations = {
   'Account deactivated successfully.': 'Cuenta eliminada correctamente.',
   'Admin users cannot authenticate through the API.':
@@ -187,7 +189,11 @@ function translateDynamicApiError(message) {
     [
       /^The selected dates require at least (\d+) nights\.$/,
       ([, minimumNights]) =>
-        `Las fechas seleccionadas requieren al menos ${minimumNights} noches.`,
+        `Las fechas seleccionadas requieren al menos ${minimumNights} ${pluralize(
+          Number(minimumNights),
+          'noche',
+          'noches',
+        )}.`,
     ],
     [
       /^Total units cannot be lower than existing availability \((\d+)\)\.$/,
