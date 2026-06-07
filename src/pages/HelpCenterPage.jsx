@@ -58,7 +58,7 @@ const faqs = [
   },
   {
     answer:
-      'En Mi cuenta puedes cambiar tu contraseña o desactivar tu cuenta. Para cambiar la contraseña necesitas indicar la contraseña actual.',
+      'En Mi cuenta puedes cambiar tu contraseña o eliminar tu cuenta. Para cambiar la contraseña necesitas indicar la contraseña actual.',
     question: '¿Cómo gestiono la seguridad de mi cuenta?',
   },
 ]
