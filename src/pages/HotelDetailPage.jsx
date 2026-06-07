@@ -164,20 +164,20 @@ export default function HotelDetailPage() {
     priceAvailableRoomTypeIds,
   )
 
-  // Desplaza la vista hasta la sección de habitaciones
+  // Desplaza la vista hasta la sección de habitaciones.
+  // Se difiere al siguiente frame para que el re-render de la comprobación
+  // ya esté aplicado y el navegador no cancele el scroll suave.
   function scrollToRooms() {
-    roomsSectionRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
+    requestAnimationFrame(() => {
+      roomsSectionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
     })
   }
 
   // Comprueba la disponibilidad real de las habitaciones
-  const checkRoomTypeAvailability = useCallback(async ({ shouldScroll = false } = {}) => {
-    if (shouldScroll) {
-      scrollToRooms()
-    }
-
+  const checkRoomTypeAvailability = useCallback(async () => {
     setAvailabilityError('')
 
     const stayDates = getStayDates(checkIn, checkOut)
@@ -252,9 +252,10 @@ export default function HotelDetailPage() {
     }
   }, [adults, checkIn, checkOut, children, hotel, unitsBooked])
 
-  // Comprueba la disponibilidad y muestra las habitaciones
+  // Comprueba la disponibilidad y desplaza la vista a las habitaciones
   function handleCheckAvailability() {
-    checkRoomTypeAvailability({ shouldScroll: true })
+    checkRoomTypeAvailability()
+    scrollToRooms()
   }
 
   useEffect(() => {
