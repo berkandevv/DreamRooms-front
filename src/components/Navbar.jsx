@@ -149,7 +149,7 @@ export default function Navbar() {
 
             <div className="relative">
               <button
-                className="flex max-w-[12rem] items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
+                className="flex max-w-48 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:opacity-80"
                 onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
                 type="button"
               >
