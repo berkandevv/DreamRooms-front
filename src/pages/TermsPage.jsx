@@ -133,7 +133,7 @@ export default function TermsPage() {
                   Solo puedes reseñar estancias completadas, con una valoración,
                   un comentario y una sola foto opcional. Las reseñas y sus fotos
                   quedan pendientes de revisión y Dream Rooms puede publicarlas u
-                  ocultarlas. Debes subir contenido propio y veraz; no se permite
+                  ocultarlas. Debes subir contenido propio y veraz, no se permite
                   contenido ofensivo, falso o que infrinja derechos de terceros.
                 </p>
               </section>
