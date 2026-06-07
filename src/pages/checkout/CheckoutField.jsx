@@ -1,6 +1,8 @@
 // Campo de texto reutilizable de los formularios del checkout
 export default function CheckoutField({
+  hint,
   label,
+  max,
   min,
   name,
   onChange,
@@ -16,6 +18,7 @@ export default function CheckoutField({
       </span>
       <input
         className="mt-2 w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        max={max}
         min={min}
         name={name}
         onChange={onChange}
@@ -23,6 +26,9 @@ export default function CheckoutField({
         type={type}
         value={value}
       />
+      {hint && (
+        <span className="mt-1 block text-xs text-secondary">{hint}</span>
+      )}
     </label>
   );
 }

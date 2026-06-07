@@ -79,6 +79,11 @@ export default function CheckoutPage() {
     (item) => Number(item.id) === roomTypeId,
   )
   const unitsBooked = Number(stayData.units_booked) || 1
+  // Capacidad máxima según la habitación elegida y el nº de habitaciones reservadas
+  const maxAdults = roomType ? Number(roomType.capacity_adults) * unitsBooked : 0
+  const maxChildren = roomType
+    ? Number(roomType.capacity_children) * unitsBooked
+    : 0
   const currencySymbol =
     hotel?.pricing?.currency_symbol || hotel?.currency_symbol || '€'
   const stayDates = getStayDates(stayData.check_in, stayData.check_out)
@@ -381,7 +386,13 @@ export default function CheckoutPage() {
                   value={stayData.check_out}
                 />
                 <CheckoutField
+                  hint={
+                    maxAdults
+                      ? `Máximo ${maxAdults} ${pluralize(maxAdults, 'adulto', 'adultos')}`
+                      : undefined
+                  }
                   label="Adultos"
+                  max={maxAdults || undefined}
                   min="1"
                   name="adults_count"
                   onChange={handleStayChange}
@@ -390,7 +401,13 @@ export default function CheckoutPage() {
                   value={stayData.adults_count}
                 />
                 <CheckoutField
+                  hint={
+                    roomType
+                      ? `Máximo ${maxChildren} ${pluralize(maxChildren, 'niño', 'niños')}`
+                      : undefined
+                  }
                   label="Niños"
+                  max={maxChildren}
                   min="0"
                   name="children_count"
                   onChange={handleStayChange}
