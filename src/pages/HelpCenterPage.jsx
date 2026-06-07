@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     answer:
-      'Antes de reservar, Dream Rooms comprueba las fechas seleccionadas y muestra el desglose de precio. Puedes elegir pago con tarjeta simulado o pago en el hotel.',
+      'Antes de reservar, Dream Rooms comprueba las fechas seleccionadas y muestra el desglose de precio. Puedes elegir pago con tarjeta o pago en el hotel.',
     question: '¿Cómo se confirma una reserva?',
   },
   {
