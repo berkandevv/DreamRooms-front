@@ -10,6 +10,7 @@ import {
 import { createCustomerBooking } from '../services/customerBookingService'
 import { getHotelBySlug } from '../services/hotelService'
 import { getRoomTypeAvailabilityQuote } from '../services/roomTypeService'
+import { isStayBookableWithOverbooking } from '../utils/availabilityUtils'
 import { getIsoDate, getStayDates } from '../utils/dateUtils'
 import { formatPrice } from '../utils/formatPrice'
 import { pluralize } from '../utils/textUtils'
@@ -91,11 +92,16 @@ export default function CheckoutPage() {
   const nights = availabilityQuote?.nights ?? stayDates.length
   const priceQuote = getPriceQuote(availabilityQuote, hotel)
   const isAvailabilityReady = Boolean(availabilityQuote)
+  // El pago en hotel admite overbooking: solo se bloquea por fechas no reservables, no por falta de cupo
+  const isStayBookable =
+    paymentMethod === 'hotel'
+      ? isStayBookableWithOverbooking(availabilityQuote)
+      : availabilityQuote?.is_available === true
   const shouldBlockReservation =
     stayDates.length > 0 &&
     !isAvailabilityLoading &&
     !availabilityError &&
-    (!isAvailabilityReady || availabilityQuote?.is_available === false)
+    (!isAvailabilityReady || !isStayBookable)
 
   useEffect(() => {
     if (!roomType?.id || stayDates.length === 0) {
@@ -411,6 +417,7 @@ export default function CheckoutPage() {
               <AvailabilityResult
                 error={availabilityError}
                 isLoading={isAvailabilityLoading}
+                paymentMethod={paymentMethod}
                 quote={availabilityQuote}
                 stayDates={stayDates}
                 unitsBooked={unitsBooked}

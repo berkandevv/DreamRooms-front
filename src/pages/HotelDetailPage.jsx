@@ -14,6 +14,7 @@ import {
   getRoomTypeAvailability,
   getRoomTypeAvailabilityQuote,
 } from '../services/roomTypeService'
+import { isStayBookableWithOverbooking } from '../utils/availabilityUtils'
 import { getStayDates } from '../utils/dateUtils'
 
 // Precio "desde" del tipo disponible más barato (solo por precio)
@@ -220,16 +221,19 @@ export default function HotelDetailPage() {
           quoteByRoomType[roomType.id]?.available_units_for_stay ?? null,
         ]),
       )
+      // Se admite overbooking: las habitaciones sin cupo siguen siendo reservables con pago en hotel
       const availableIds = roomTypes
         .filter((roomType) => {
           return (
             roomTypeMatchesCapacity(roomType, adults, children) &&
-            quoteByRoomType[roomType.id]?.is_available === true
+            isStayBookableWithOverbooking(quoteByRoomType[roomType.id])
           )
         })
         .map((roomType) => roomType.id)
       const priceAvailableIds = roomTypes
-        .filter((roomType) => quoteByRoomType[roomType.id]?.is_available === true)
+        .filter((roomType) =>
+          isStayBookableWithOverbooking(quoteByRoomType[roomType.id]),
+        )
         .map((roomType) => roomType.id)
 
       setAvailableRoomTypeIds(availableIds)

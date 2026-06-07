@@ -18,14 +18,16 @@ export default function RoomTypeCard({
   const imageUrl = roomType.cover_image?.url
   const imageAlt = roomType.cover_image?.alt_text || roomType.name
   const services = formatServices(roomType.services)
-  const availableUnits =
-    selectedAvailableUnits === null || selectedAvailableUnits === undefined
-      ? Number(roomType.total_units) || 0
-      : Number(selectedAvailableUnits) || 0
-  const availableUnitsLabel =
-    selectedAvailableUnits === null || selectedAvailableUnits === undefined
-      ? 'unidades totales'
-      : 'unidades disponibles para estas fechas'
+  const hasSelectedDates =
+    selectedAvailableUnits !== null && selectedAvailableUnits !== undefined
+  const availableUnits = hasSelectedDates
+    ? Number(selectedAvailableUnits) || 0
+    : Number(roomType.total_units) || 0
+  // Sin cupo libre la habitación sigue siendo reservable mediante pago en el hotel (overbooking)
+  const isOverbooked = hasSelectedDates && availableUnits <= 0
+  const availableUnitsLabel = hasSelectedDates
+    ? 'unidades disponibles para estas fechas'
+    : 'unidades totales'
   const servicesText =
     services.length > 0 ? services.join(', ') : 'Servicios no disponibles'
 
@@ -113,9 +115,15 @@ export default function RoomTypeCard({
               currencySymbol={currencySymbol}
               price={roomType.base_price}
             />
-            <p className="mt-1 text-xs font-semibold text-on-tertiary-container">
-              {availableUnits} {availableUnitsLabel}
-            </p>
+            {isOverbooked ? (
+              <p className="mt-1 text-xs font-semibold text-[#92400E]">
+                Sin cupo inmediato · disponible con pago en el hotel
+              </p>
+            ) : (
+              <p className="mt-1 text-xs font-semibold text-on-tertiary-container">
+                {availableUnits} {availableUnitsLabel}
+              </p>
+            )}
           </div>
 
           <button

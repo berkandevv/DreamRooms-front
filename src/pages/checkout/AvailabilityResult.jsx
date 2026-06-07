@@ -1,3 +1,4 @@
+import { isStayBookableWithOverbooking } from "../../utils/availabilityUtils"
 import { formatDate } from "../../utils/dateUtils"
 import { pluralize } from "../../utils/textUtils"
 
@@ -5,6 +6,7 @@ import { pluralize } from "../../utils/textUtils"
 export default function AvailabilityResult({
   error,
   isLoading,
+  paymentMethod,
   quote,
   stayDates,
   unitsBooked,
@@ -43,6 +45,11 @@ export default function AvailabilityResult({
   }
 
   const isAvailable = quote.is_available === true;
+  // Sin cupo libre pero reservable con pago en hotel (overbooking)
+  const isOverbookable =
+    !isAvailable &&
+    paymentMethod === "hotel" &&
+    isStayBookableWithOverbooking(quote);
   const checkedNights = quote.stay_dates || stayDates;
   const dailyAvailability = quote.daily_available_units || [];
   const availabilityByDate = new Map(
@@ -57,19 +64,27 @@ export default function AvailabilityResult({
       className={`mt-5 rounded-lg border p-4 ${
         isAvailable
           ? "border-[#A7F3D0] bg-[#ECFDF5]"
-          : "border-error bg-error-container"
+          : isOverbookable
+            ? "border-[#FCD34D] bg-[#FFFBEB]"
+            : "border-error bg-error-container"
       }`}
     >
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
         <div>
           <p
             className={`text-base font-bold ${
-              isAvailable ? "text-[#047857]" : "text-error"
+              isAvailable
+                ? "text-[#047857]"
+                : isOverbookable
+                  ? "text-[#92400E]"
+                  : "text-error"
             }`}
           >
             {isAvailable
               ? "Disponible para las fechas seleccionadas"
-              : "No disponible para toda la estancia"}
+              : isOverbookable
+                ? "Sin cupo inmediato · reservable con pago en el hotel"
+                : "No disponible para toda la estancia"}
           </p>
           <p className="mt-1 text-sm font-semibold text-secondary">
             Se comprueban las noches del {formatDate(stayDates[0])} al{" "}
@@ -81,7 +96,9 @@ export default function AvailabilityResult({
           className={`w-fit whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold ${
             isAvailable
               ? "bg-[#D1FAE5] text-[#047857]"
-              : "bg-error text-on-primary"
+              : isOverbookable
+                ? "bg-[#FDE68A] text-[#92400E]"
+                : "bg-error text-on-primary"
           }`}
         >
           {quote.nights || checkedNights.length}{" "}

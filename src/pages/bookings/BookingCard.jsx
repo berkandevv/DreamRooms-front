@@ -14,14 +14,16 @@ export default function BookingCard({ booking, isCancelling, onCancel }) {
   const imageUrl = getBookingImage(booking)
   const cancellationText = getBookingCancellationText(booking.cancellation)
   const canCancel = booking.cancellation?.can_cancel === true
+  const isFreeCancellation = booking.cancellation?.is_free === true
 
   // Solicita la cancelación de la reserva
   function handleCancelClick() {
     const hotelName = booking.hotel?.name || 'este hotel'
     const reference = booking.booking_reference || booking.id
-    const shouldCancel = window.confirm(
-      `¿Seguro que quieres cancelar la reserva ${reference} en ${hotelName}?`,
-    )
+    const warning = isFreeCancellation
+      ? `¿Seguro que quieres cancelar la reserva ${reference} en ${hotelName}? Se te reembolsará el importe pagado.`
+      : `El plazo de cancelación gratuita ya finalizó. Si cancelas la reserva ${reference} en ${hotelName}, se te cobrará igualmente y no se reembolsará el importe. ¿Quieres continuar?`
+    const shouldCancel = window.confirm(warning)
 
     if (shouldCancel) {
       onCancel(booking.id)

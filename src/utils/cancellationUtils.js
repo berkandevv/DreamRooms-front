@@ -33,7 +33,7 @@ export function getBookingCancellationText(cancellation) {
     cancellation.timezone,
   )
 
-  return cancellation.can_cancel
+  return cancellation.is_free
     ? `Cancelación gratuita hasta el ${deadline}.`
-    : `El plazo de cancelación gratuita finalizó el ${deadline}.`
+    : `El plazo de cancelación gratuita finalizó el ${deadline}. Si cancelas ahora, se te cobrará igualmente y no se reembolsará el importe.`
 }
