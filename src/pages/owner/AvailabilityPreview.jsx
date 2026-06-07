@@ -16,6 +16,7 @@ export default function AvailabilityPreview({
   selectedRoomType,
   specialAvailabilityDays,
 }) {
+  // Clasifica los días y rangos por estado (abiertos, cerrados y especiales)
   const openDays = availabilityDays.filter((dayAvailability) => {
     return dayAvailability.status === 'open'
   }).length
@@ -135,6 +136,7 @@ export default function AvailabilityPreview({
   )
 }
 
+// Botón para mostrar u ocultar los rangos adicionales de una sección
 function ShowMoreButton({ hiddenItems, isExpanded, labels, onClick }) {
   return (
     <button
@@ -147,6 +149,7 @@ function ShowMoreButton({ hiddenItems, isExpanded, labels, onClick }) {
   )
 }
 
+// Renderiza una sección con su lista de rangos de disponibilidad
 function AvailabilityRangeSection({ emptyText, ranges, roomType, title }) {
   return (
     <section>
@@ -168,6 +171,7 @@ function AvailabilityRangeSection({ emptyText, ranges, roomType, title }) {
   )
 }
 
+// Da formato a la fecha o al rango de fechas de un periodo
 function formatAvailabilityRangeDate(availabilityRange) {
   if (availabilityRange.from === availabilityRange.to) {
     return formatDate(availabilityRange.from)
@@ -176,6 +180,7 @@ function formatAvailabilityRangeDate(availabilityRange) {
   return `${formatDate(availabilityRange.from)} - ${formatDate(availabilityRange.to)}`
 }
 
+// Muestra el detalle de un rango de disponibilidad (unidades, precio y estado)
 function AvailabilityRangeRow({ availabilityRange, roomType }) {
   const { sample } = availabilityRange
   const minStayNights = getMinStayNights(sample)

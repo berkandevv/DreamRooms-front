@@ -9,6 +9,7 @@ export default function BookingSummary({
   onCheckAvailability,
   startingPrice = null,
 }) {
+  // Usa el precio comprobado si existe, si no, el precio "desde" del hotel
   const hasAvailablePrice = startingPrice != null
   const displayedPrice = hasAvailablePrice ? startingPrice : hotel.starting_price
   const noAvailability = availabilityChecked && !hasAvailablePrice

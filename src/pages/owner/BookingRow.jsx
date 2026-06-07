@@ -20,6 +20,7 @@ export default function BookingRow({
   onCreatePayment,
   onStatusChange,
 }) {
+  // Calcula los importes de pago y si se puede registrar un pago manual
   const paidAmount = getPaidBookingAmount(booking)
   const remainingAmount = getRemainingBookingAmount(booking)
   const canCreateManualPayment = canRegisterManualPayment(booking)
@@ -138,6 +139,7 @@ export default function BookingRow({
   )
 }
 
+// Etiqueta con el importe de pago y un color según su tipo
 function PaymentAmountBadge({ label, tone, value }) {
   const toneClassNames = {
     discount: 'bg-on-tertiary-container/10 text-on-tertiary-container',
